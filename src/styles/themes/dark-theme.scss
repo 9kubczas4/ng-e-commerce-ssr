@@ -1,5 +1,6 @@
+// Dark Theme - Angular.dev inspired color palette
 [data-theme='dark'] {
-  // Angular.dev inspired colors for dark mode
+  // Primary colors
   --primary: #ff4081;
   --primary-light: #ff6e9f;
   --primary-dark: #dd0031;
@@ -7,16 +8,20 @@
   // Background and surfaces
   --background: #1e1e1e;
   --surface: rgba(30, 30, 30, 0.7);
+  --surface-elevated: rgba(40, 40, 40, 0.9);
 
   // Text colors
   --text-primary: #ffffff;
   --text-secondary: #b0b0b0;
+  --text-disabled: #666666;
 
-  // Borders and dividers
+  // Border and dividers
   --border: rgba(255, 255, 255, 0.1);
+  --divider: rgba(255, 255, 255, 0.08);
 
-  // Shadows (darker for dark theme)
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+  // Shadows (adjusted for dark theme)
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
 }

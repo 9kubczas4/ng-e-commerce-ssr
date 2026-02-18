@@ -1,28 +1,67 @@
-// Glass morphism effect styles
+// Glass Morphism Effects
+// Inspired by angular.dev design system
+
+// Base glass effect mixin
+@mixin glass-effect($opacity: 0.7, $blur: 10px) {
+  background: var(--surface);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+// Glass effect utility class
 .glass-effect {
-  background: var(--surface);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
+  @include glass-effect();
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
 }
 
-// Variations
-.glass-effect-subtle {
-  background: var(--surface);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid var(--border);
+// Glass effect variants
+.glass-effect-sm {
+  @include glass-effect(0.6, 8px);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
 }
 
-.glass-effect-strong {
-  background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+.glass-effect-lg {
+  @include glass-effect(0.8, 12px);
+  border-radius: var(--radius-xl);
+}
+
+// Glass card component
+.glass-card {
+  @include glass-effect();
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-lg);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+// Glass panel for sidebars and overlays
+.glass-panel {
+  @include glass-effect(0.9, 15px);
+  border-radius: 0;
+  box-shadow: var(--shadow-xl);
+}
+
+// Glass button
+.glass-button {
+  @include glass-effect(0.6, 8px);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: var(--surface-elevated);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }

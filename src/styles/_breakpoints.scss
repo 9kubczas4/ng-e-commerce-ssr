@@ -1,18 +1,52 @@
-// Responsive breakpoints
+// Responsive Breakpoints
+// Mobile-first approach
+
+@use 'sass:map';
+
 $breakpoints: (
   'mobile': 320px,
   'tablet': 768px,
   'desktop': 1024px,
-  'wide': 1440px,
+  'wide': 1440px
 );
 
-// Mixin for responsive design
-@mixin respond-to($breakpoint) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    @media (min-width: map-get($breakpoints, $breakpoint)) {
+// Breakpoint mixin for min-width media queries
+@mixin breakpoint($size) {
+  @if map.has-key($breakpoints, $size) {
+    @media (min-width: map.get($breakpoints, $size)) {
       @content;
     }
   } @else {
-    @warn "Breakpoint #{$breakpoint} not found in $breakpoints map.";
+    @warn "Breakpoint '#{$size}' not found in $breakpoints map.";
   }
+}
+
+// Breakpoint mixin for max-width media queries
+@mixin breakpoint-max($size) {
+  @if map.has-key($breakpoints, $size) {
+    @media (max-width: map.get($breakpoints, $size) - 1px) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint '#{$size}' not found in $breakpoints map.";
+  }
+}
+
+// Breakpoint mixin for range queries
+@mixin breakpoint-between($min, $max) {
+  @if map.has-key($breakpoints, $min) and map.has-key($breakpoints, $max) {
+    @media (min-width: map.get($breakpoints, $min)) and (max-width: map.get($breakpoints, $max) - 1px) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoints '#{$min}' or '#{$max}' not found in $breakpoints map.";
+  }
+}
+
+// CSS custom properties for breakpoints (for use in JavaScript)
+:root {
+  --breakpoint-mobile: #{map.get($breakpoints, 'mobile')};
+  --breakpoint-tablet: #{map.get($breakpoints, 'tablet')};
+  --breakpoint-desktop: #{map.get($breakpoints, 'desktop')};
+  --breakpoint-wide: #{map.get($breakpoints, 'wide')};
 }
