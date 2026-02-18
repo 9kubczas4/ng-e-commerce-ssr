@@ -15,16 +15,16 @@ export default defineConfig({
         '**/*.pbt.spec.ts',
         '**/node_modules/**',
         '**/dist/**',
-        '**/.angular/**'
-      ]
-    }
+        '**/.angular/**',
+      ],
+    },
   },
   resolve: {
     alias: {
       '@app': resolve(__dirname, './src/app'),
       '@core': resolve(__dirname, './src/app/core'),
       '@features': resolve(__dirname, './src/app/features'),
-      '@shared': resolve(__dirname, './src/app/shared')
-    }
-  }
+      '@shared': resolve(__dirname, './src/app/shared'),
+    },
+  },
 });

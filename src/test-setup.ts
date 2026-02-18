@@ -7,8 +7,5 @@ import {
 
 beforeAll(() => {
   // Initialize Angular testing environment
-  getTestBed().initTestEnvironment(
-    BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting()
-  );
+  getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
 });
