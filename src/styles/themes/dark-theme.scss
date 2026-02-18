@@ -1,0 +1,22 @@
+[data-theme='dark'] {
+  // Angular.dev inspired colors for dark mode
+  --primary: #ff4081;
+  --primary-light: #ff6e9f;
+  --primary-dark: #dd0031;
+
+  // Background and surfaces
+  --background: #1e1e1e;
+  --surface: rgba(30, 30, 30, 0.7);
+
+  // Text colors
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+
+  // Borders and dividers
+  --border: rgba(255, 255, 255, 0.1);
+
+  // Shadows (darker for dark theme)
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+}

@@ -1,0 +1,31 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Import themes
+@use 'styles/themes/light-theme';
+@use 'styles/themes/dark-theme';
+
+// Import glass effects
+@use 'styles/glass-effects';
+
+// Import breakpoints
+@use 'styles/breakpoints';
+
+// Global styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background-color: var(--background);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Smooth transitions for theme switching
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
