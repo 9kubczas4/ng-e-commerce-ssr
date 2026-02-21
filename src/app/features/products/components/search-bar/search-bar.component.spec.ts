@@ -59,14 +59,13 @@ describe('SearchBarComponent', () => {
   });
 
   describe('Debouncing', () => {
-    it('should emit searchChange event after debounce delay', (done) => {
-      let emittedValue: string | undefined;
-      component.searchChange.subscribe((value: string) => {
-        if (value === 'test') {
-          emittedValue = value;
-          expect(emittedValue).toBe('test');
-          done();
-        }
+    it('should emit searchChange event after debounce delay', async () => {
+      const emittedPromise = new Promise<string>((resolve) => {
+        component.searchChange.subscribe((value: string) => {
+          if (value === 'test') {
+            resolve(value);
+          }
+        });
       });
 
       const mockEvent = {
@@ -74,9 +73,12 @@ describe('SearchBarComponent', () => {
       } as unknown as Event;
 
       component.onSearchInput(mockEvent);
+
+      const emittedValue = await emittedPromise;
+      expect(emittedValue).toBe('test');
     });
 
-    it('should debounce rapid input changes', (done) => {
+    it('should debounce rapid input changes', async () => {
       const emittedValues: string[] = [];
       component.searchChange.subscribe((value: string) => {
         emittedValues.push(value);
@@ -88,11 +90,10 @@ describe('SearchBarComponent', () => {
       component.onSearchInput({ target: { value: 'ang' } } as unknown as Event);
 
       // Wait for debounce to complete
-      setTimeout(() => {
-        // Last value should be the final input
-        expect(emittedValues[emittedValues.length - 1]).toBe('ang');
-        done();
-      }, 400);
+      await new Promise(resolve => setTimeout(resolve, 400));
+
+      // Last value should be the final input
+      expect(emittedValues[emittedValues.length - 1]).toBe('ang');
     });
   });
 
@@ -108,7 +109,7 @@ describe('SearchBarComponent', () => {
       expect(component.searchQuery()).toBe('');
     });
 
-    it('should emit empty string after clearing search', (done) => {
+    it('should emit empty string after clearing search', async () => {
       const emittedValues: string[] = [];
       component.searchChange.subscribe((value: string) => {
         emittedValues.push(value);
@@ -118,32 +119,33 @@ describe('SearchBarComponent', () => {
       component.searchQuery.set('test');
 
       // Wait for first emission
-      setTimeout(() => {
-        // Clear search
-        component.clearSearch();
+      await new Promise(resolve => setTimeout(resolve, 400));
 
-        // Wait for clear emission
-        setTimeout(() => {
-          // Last emitted value should be empty string
-          expect(emittedValues[emittedValues.length - 1]).toBe('');
-          done();
-        }, 400);
-      }, 400);
+      // Clear search
+      component.clearSearch();
+
+      // Wait for clear emission
+      await new Promise(resolve => setTimeout(resolve, 400));
+
+      // Last emitted value should be empty string
+      expect(emittedValues[emittedValues.length - 1]).toBe('');
     });
   });
 
   describe('Event Emission', () => {
-    it('should emit searchChange event with current query value', (done) => {
-      let emittedValue: string | undefined;
-      component.searchChange.subscribe((value: string) => {
-        if (value === 'Angular') {
-          emittedValue = value;
-          expect(emittedValue).toBe('Angular');
-          done();
-        }
+    it('should emit searchChange event with current query value', async () => {
+      const emittedPromise = new Promise<string>((resolve) => {
+        component.searchChange.subscribe((value: string) => {
+          if (value === 'Angular') {
+            resolve(value);
+          }
+        });
       });
 
       component.onSearchInput({ target: { value: 'Angular' } } as unknown as Event);
+
+      const emittedValue = await emittedPromise;
+      expect(emittedValue).toBe('Angular');
     });
   });
 });
