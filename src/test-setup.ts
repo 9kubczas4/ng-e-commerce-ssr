@@ -1,16 +1,19 @@
-import { beforeAll, vi } from 'vitest';
-import { getTestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import { afterEach, beforeEach } from 'vitest';
+import { getTestBed, ɵgetCleanupHook as getCleanupHook } from '@angular/core/testing';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+import { NgModule } from '@angular/core';
 
-// Mock SCSS imports for Angular components
-vi.mock('*.scss', () => ({
-  default: '',
-}));
+beforeEach(getCleanupHook(false));
+afterEach(getCleanupHook(true));
 
-beforeAll(() => {
-  // Initialize Angular testing environment
-  getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-});
+@NgModule({ providers: [] })
+class TestModule {}
+
+getTestBed().initTestEnvironment(
+  [BrowserTestingModule, TestModule],
+  platformBrowserTesting(),
+  {
+    errorOnUnknownElements: true,
+    errorOnUnknownProperties: true,
+  }
+);

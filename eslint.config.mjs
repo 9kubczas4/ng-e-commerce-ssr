@@ -13,7 +13,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ['**/*.ts'],
-    ignores: ['**/*.config.ts', 'e2e/**/*.ts'],
+    ignores: ['**/*.config.ts', 'e2e/**/*.ts', '**/*.spec.ts', 'src/test-setup.ts'],
     plugins: {
       '@angular-eslint': angular,
       boundaries,
@@ -21,7 +21,7 @@ export default tseslint.config(
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        projectService: true,
+        project: './tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -95,6 +95,33 @@ export default tseslint.config(
           ],
         },
       ],
+    },
+  },
+  // Test files - use tsconfig.spec.json
+  {
+    files: ['**/*.spec.ts', 'src/test-setup.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: './tsconfig.spec.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  // Config files - lighter rules, no type checking
+  {
+    files: ['**/*.config.ts', '**/*.config.mjs'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {

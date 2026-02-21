@@ -1,0 +1,37 @@
+<div class="product-card glass-effect" (click)="onCardClick()">
+  <div class="product-image">
+    <img
+      [ngSrc]="product().imageUrl"
+      [alt]="product().title"
+      width="400"
+      height="300"
+      priority />
+    @if (hasDiscount()) {
+      <div class="discount-badge" aria-label="{{ product().discount }}% discount">-{{ product().discount }}%</div>
+    }
+  </div>
+
+  <div class="product-content">
+    <h3 class="product-title">{{ product().title }}</h3>
+    <p class="product-description">{{ product().description }}</p>
+
+    <div class="product-footer">
+      <div class="product-pricing">
+        @if (hasDiscount()) {
+          <span class="original-price" aria-label="Original price">${{ product().price.toFixed(2) }}</span>
+          <span class="discounted-price" aria-label="Discounted price">${{ discountedPrice().toFixed(2) }}</span>
+        } @else {
+          <span class="price" aria-label="Price">${{ product().price.toFixed(2) }}</span>
+        }
+      </div>
+
+      <button
+        class="add-to-basket-btn"
+        (click)="onAddToBasket($event)"
+        type="button"
+        aria-label="Add {{ product().title }} to basket">
+        Add to Basket
+      </button>
+    </div>
+  </div>
+</div>
