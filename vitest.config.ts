@@ -7,6 +7,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.{spec,pbt.spec}.ts'],
+    css: true, // Enable CSS processing
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
