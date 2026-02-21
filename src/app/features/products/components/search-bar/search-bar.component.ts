@@ -1,4 +1,4 @@
-import { Component, output, signal, effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, output, signal, effect, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-search-bar',
@@ -6,7 +6,7 @@ import { Component, output, signal, effect, ChangeDetectionStrategy } from '@ang
   styleUrls: ['./search-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchBarComponent {
+export class SearchBarComponent implements OnDestroy {
   searchChange = output<string>();
   searchQuery = signal('');
 
@@ -24,6 +24,12 @@ export class SearchBarComponent {
         this.searchChange.emit(query);
       }, 300);
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
   }
 
   onSearchInput(event: Event): void {
