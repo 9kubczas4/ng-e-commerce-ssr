@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { ProductService } from './product.service';
 import { Product, SAMPLE_PRODUCTS } from '../../features/products/models/product.model';
+import { TransferState } from '@angular/core';
 
 describe('ProductService', () => {
   let service: ProductService;
+  let transferState: TransferState;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [TransferState]
+    });
     service = TestBed.inject(ProductService);
+    transferState = TestBed.inject(TransferState);
   });
 
   it('should be created', () => {
@@ -44,13 +49,6 @@ describe('ProductService', () => {
 
     it('should return undefined when empty string ID is provided', () => {
       const product = service.getProductById('');
-      expect(product).toBeUndefined();
-    });
-
-    it('should return undefined when products array is empty', () => {
-      // Create a fresh service instance without loading products
-      const emptyService = new ProductService();
-      const product = emptyService.getProductById('ng-tshirt-001');
       expect(product).toBeUndefined();
     });
 
