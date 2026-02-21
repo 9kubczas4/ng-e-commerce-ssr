@@ -1,0 +1,31 @@
+<div class="header__container">
+  <div class="header__logo">
+    <svg class="header__logo-icon" width="32" height="32" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
+      <path fill="currentColor" d="M125 30L31.9 63.2l14.2 123.1L125 230l78.9-43.7 14.2-123.1z"/>
+      <path fill="var(--background)" d="M125 30v22.2-.1V230l78.9-43.7 14.2-123.1L125 30z"/>
+      <path fill="currentColor" d="M125 52.1L66.8 182.6h21.7l11.7-29.2h49.4l11.7 29.2H183L125 52.1zm17 83.3h-34l17-40.9 17 40.9z"/>
+    </svg>
+    <h1 class="header__title">Angular Dev Shop</h1>
+  </div>
+
+  <div class="header__actions">
+    <button app-theme-toggle></button>
+
+    <button
+      class="header__basket-button"
+      type="button"
+      (click)="onBasketClick()"
+      [attr.aria-label]="'Shopping basket with ' + basketItemCount().itemCount + ' items'"
+    >
+      <svg class="header__basket-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 2L7 6H3C1.9 6 1 6.9 1 8V20C1 21.1 1.9 22 3 22H21C22.1 22 23 21.1 23 20V8C23 6.9 22.1 6 21 6H17L15 2H9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 6V4C9 3.4 9.4 3 10 3H14C14.6 3 15 3.4 15 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      @if (basketItemCount().itemCount > 0) {
+        <span class="header__basket-badge" [attr.aria-label]="basketItemCount().itemCount + ' items'">
+          {{ basketItemCount().itemCount }}
+        </span>
+      }
+    </button>
+  </div>
+</div>
