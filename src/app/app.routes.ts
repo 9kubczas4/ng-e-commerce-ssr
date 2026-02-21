@@ -16,14 +16,14 @@ export const routes: Routes = [
           ),
         title: 'Angular Dev Shop - Home',
       },
-      // {
-      //   path: 'product/:id',
-      //   loadComponent: () =>
-      //     import('./features/product-details/containers/product-details-page/product-details-page.component').then(
-      //       (m) => m.ProductDetailsPageComponent
-      //     ),
-      //   title: 'Product Details - Angular Dev Shop',
-      // },
+      {
+        path: 'product/:id',
+        loadComponent: () =>
+          import('./features/product-details/containers/product-details-page/product-details-page.component').then(
+            (m) => m.ProductDetailsPageComponent
+          ),
+        title: 'Product Details - Angular Dev Shop',
+      },
     ],
   },
   {

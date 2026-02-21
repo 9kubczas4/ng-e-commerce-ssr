@@ -1,0 +1,48 @@
+@if (product()) {
+  <div class="product-details">
+    <button class="back-button" (click)="goBack()" aria-label="Go back to products">
+      ← Back to Products
+    </button>
+
+    <div class="product-content">
+      <div class="product-image-container">
+        <img
+          [src]="product()!.imageUrl"
+          [alt]="product()!.title"
+          class="product-image"
+        />
+        @if (hasDiscount()) {
+          <span class="discount-badge">-{{ product()!.discount }}%</span>
+        }
+      </div>
+
+      <div class="product-info">
+        <h1 class="product-title">{{ product()!.title }}</h1>
+
+        <div class="product-category">
+          <span class="category-label">Category:</span>
+          <span class="category-value">{{ product()!.category }}</span>
+        </div>
+
+        <p class="product-description">{{ product()!.description }}</p>
+
+        <div class="product-pricing">
+          @if (hasDiscount()) {
+            <span class="original-price">${{ product()!.price.toFixed(2) }}</span>
+            <span class="discounted-price">${{ discountedPrice().toFixed(2) }}</span>
+          } @else {
+            <span class="price">${{ product()!.price.toFixed(2) }}</span>
+          }
+        </div>
+
+        <button
+          class="add-to-basket-button"
+          (click)="addToBasket()"
+          aria-label="Add {{ product()!.title }} to basket"
+        >
+          Add to Basket
+        </button>
+      </div>
+    </div>
+  </div>
+}
