@@ -1,0 +1,16 @@
+<div class="product-grid-container">
+  @if (filteredProducts().length > 0) {
+    <div class="product-grid">
+      @for (product of filteredProducts(); track product.id) {
+        <app-product-card
+          [product]="product"
+          (addToBasket)="onAddToBasket($event)"
+          (cardClick)="onProductClick($event)" />
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>No products found matching your criteria.</p>
+    </div>
+  }
+</div>

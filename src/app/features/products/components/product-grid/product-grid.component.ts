@@ -1,0 +1,53 @@
+import { Component, ChangeDetectionStrategy, computed, input, output } from '@angular/core';
+import { Product } from '../../models/product.model';
+import { ProductCardComponent } from '../product-card/product-card.component';
+
+@Component({
+  selector: 'app-product-grid',
+  imports: [ProductCardComponent],
+  templateUrl: './product-grid.component.html',
+  styleUrl: './product-grid.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class ProductGridComponent {
+  // Signal-based inputs
+  products = input.required<Product[]>();
+  searchQuery = input<string>('');
+  selectedCategory = input<string | null>(null);
+
+  // Computed filtered products
+  filteredProducts = computed(() => this.filterProducts());
+
+  // Outputs
+  productClick = output<string>();
+  addToBasket = output<Product>();
+
+  private filterProducts(): Product[] {
+    let filtered = this.products();
+    const query = this.searchQuery().toLowerCase().trim();
+    const category = this.selectedCategory();
+
+    // Apply search filter
+    if (query) {
+      filtered = filtered.filter(product =>
+        product.title.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply category filter
+    if (category) {
+      filtered = filtered.filter(product => product.category === category);
+    }
+
+    return filtered;
+  }
+
+  onProductClick(productId: string): void {
+    this.productClick.emit(productId);
+  }
+
+  onAddToBasket(product: Product): void {
+    this.addToBasket.emit(product);
+  }
+}
