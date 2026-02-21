@@ -1,0 +1,20 @@
+<div class="product-list-container">
+  <div class="filters-section">
+    <app-search-bar
+      (searchChange)="onSearchChange($event)">
+    </app-search-bar>
+
+    <app-category-filter
+      [products]="products()"
+      (categoryChange)="onCategoryChange($event)">
+    </app-category-filter>
+  </div>
+
+  <app-product-grid
+    [products]="products()"
+    [searchQuery]="searchQuery()"
+    [selectedCategory]="selectedCategory()"
+    (productClick)="onProductClick($event)"
+    (addToBasket)="onAddToBasket($event)">
+  </app-product-grid>
+</div>
