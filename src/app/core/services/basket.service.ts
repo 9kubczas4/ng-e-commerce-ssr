@@ -120,18 +120,22 @@ export class BasketService {
     }
 
     try {
+      // Check if localStorage is available
+      if (!this.isLocalStorageAvailable()) {
+        console.warn('LocalStorage is not available. Basket will not be persisted.');
+        return;
+      }
+
       const basket = this.basketSignal();
       const data = {
         items: basket.items,
         timestamp: Date.now()
       };
-      localStorage.setItem(BASKET_STORAGE_KEY, JSON.stringify(data));
+
+      const serializedData = JSON.stringify(data);
+      localStorage.setItem(BASKET_STORAGE_KEY, serializedData);
     } catch (error) {
-      if (error instanceof Error && error.name === 'QuotaExceededError') {
-        console.error('LocalStorage quota exceeded. Unable to save basket.');
-      } else {
-        console.error('Failed to save basket to LocalStorage:', error);
-      }
+      this.handleStorageError(error, 'save');
     }
   }
 
@@ -141,16 +145,89 @@ export class BasketService {
     }
 
     try {
+      // Check if localStorage is available
+      if (!this.isLocalStorageAvailable()) {
+        console.warn('LocalStorage is not available. Starting with empty basket.');
+        return;
+      }
+
       const stored = localStorage.getItem(BASKET_STORAGE_KEY);
       if (stored) {
         const data = JSON.parse(stored);
-        if (data.items && Array.isArray(data.items)) {
+
+        // Validate data structure
+        if (data && data.items && Array.isArray(data.items)) {
           this.updateBasket(data.items);
+        } else {
+          console.warn('Invalid basket data structure in LocalStorage. Starting with empty basket.');
         }
       }
     } catch (error) {
-      console.error('Failed to load basket from LocalStorage:', error);
-      // Continue with empty basket on error
+      this.handleStorageError(error, 'load');
+      // Continue with empty basket on error - graceful degradation
+    }
+  }
+
+  /**
+   * Check if LocalStorage is available and accessible
+   */
+  private isLocalStorageAvailable(): boolean {
+    try {
+      const testKey = '__angular_dev_shop_test__';
+      localStorage.setItem(testKey, 'test');
+      localStorage.removeItem(testKey);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Handle storage errors with specific error types
+   */
+  private handleStorageError(error: unknown, operation: 'save' | 'load'): void {
+    if (error instanceof Error) {
+      if (error.name === 'QuotaExceededError') {
+        console.error(
+          `LocalStorage quota exceeded while trying to ${operation} basket. ` +
+          'Consider clearing old data or reducing basket size.'
+        );
+
+        // Attempt to clear old basket data and retry save operation
+        if (operation === 'save') {
+          this.attemptStorageRecovery();
+        }
+      } else if (error.name === 'SecurityError') {
+        console.error(
+          `LocalStorage access denied (SecurityError) while trying to ${operation} basket. ` +
+          'This may occur in private browsing mode or due to browser security settings.'
+        );
+      } else {
+        console.error(`Failed to ${operation} basket to/from LocalStorage:`, error.message);
+      }
+    } else {
+      console.error(`Unknown error occurred while trying to ${operation} basket:`, error);
+    }
+  }
+
+  /**
+   * Attempt to recover from QuotaExceededError by clearing storage
+   */
+  private attemptStorageRecovery(): void {
+    try {
+      console.warn('Attempting to recover from storage quota error by clearing basket data...');
+      localStorage.removeItem(BASKET_STORAGE_KEY);
+
+      // Try to save again with current basket
+      const basket = this.basketSignal();
+      const data = {
+        items: basket.items,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(BASKET_STORAGE_KEY, JSON.stringify(data));
+      console.info('Storage recovery successful. Basket saved.');
+    } catch (recoveryError) {
+      console.error('Storage recovery failed. Basket will not be persisted:', recoveryError);
     }
   }
 }
