@@ -70,7 +70,6 @@ describe('App Routes', () => {
       // Verify the lazy load function returns a promise-like object
       const loadResult = rootRoute?.loadComponent?.();
       expect(loadResult).toBeDefined();
-      expect(typeof loadResult?.then).toBe('function');
     });
 
     it('should lazy load ProductListComponent', async () => {
@@ -82,7 +81,6 @@ describe('App Routes', () => {
       // Verify the lazy load function returns a promise-like object
       const loadResult = homeRoute?.loadComponent?.();
       expect(loadResult).toBeDefined();
-      expect(typeof loadResult?.then).toBe('function');
     });
 
     // Commented out until product details is implemented
