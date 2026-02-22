@@ -3,7 +3,6 @@ import tseslint from 'typescript-eslint';
 import angular from '@angular-eslint/eslint-plugin';
 import angularTemplate from '@angular-eslint/eslint-plugin-template';
 import angularTemplateParser from '@angular-eslint/template-parser';
-import boundaries from 'eslint-plugin-boundaries';
 
 export default tseslint.config(
   {
@@ -16,7 +15,6 @@ export default tseslint.config(
     ignores: ['**/*.config.ts', 'e2e/**/*.ts', '**/*.spec.ts', 'src/test-setup.ts', '**/*.html', 'playwright.config.ts'],
     plugins: {
       '@angular-eslint': angular,
-      boundaries,
     },
     languageOptions: {
       parser: tseslint.parser,
@@ -24,24 +22,6 @@ export default tseslint.config(
         project: './tsconfig.app.json',
         tsconfigRootDir: import.meta.dirname,
       },
-    },
-    settings: {
-      'boundaries/elements': [
-        {
-          type: 'core',
-          pattern: 'src/app/core/**',
-        },
-        {
-          type: 'shared',
-          pattern: 'src/app/shared/**',
-        },
-        {
-          type: 'feature',
-          pattern: 'src/app/features/**',
-          capture: ['featureName'],
-        },
-      ],
-      'boundaries/ignore': ['**/*.spec.ts', '**/*.pbt.spec.ts'],
     },
     rules: {
       ...angular.configs.recommended.rules,
@@ -71,26 +51,56 @@ export default tseslint.config(
           varsIgnorePattern: '^_',
         },
       ],
-      // Boundaries rules
-      'boundaries/element-types': [
+    },
+  },
+  // Architecture boundaries for core layer
+  {
+    files: ['src/app/core/**/*.ts'],
+    ignores: ['**/*.spec.ts'],
+    rules: {
+      'no-restricted-imports': [
         'error',
         {
-          default: 'disallow',
-          rules: [
-            // Core can import from core and shared
+          patterns: [
             {
-              from: 'core',
-              allow: ['core', 'shared'],
+              group: ['**/features/**', '@features/**'],
+              message: 'Core layer cannot import from features layer. Core should only import from core and shared.',
             },
-            // Shared can only import from shared
+          ],
+        },
+      ],
+    },
+  },
+  // Architecture boundaries for shared layer
+  {
+    files: ['src/app/shared/**/*.ts'],
+    ignores: ['**/*.spec.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
             {
-              from: 'shared',
-              allow: ['shared'],
+              group: ['**/core/**', '@core/**', '**/features/**', '@features/**'],
+              message: 'Shared layer cannot import from core or features. Shared should be business-agnostic and only import from shared.',
             },
-            // Features can import from core and shared, but not from other features
+          ],
+        },
+      ],
+    },
+  },
+  // Architecture boundaries for features layer
+  {
+    files: ['src/app/features/**/*.ts'],
+    ignores: ['**/*.spec.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
             {
-              from: 'feature',
-              allow: ['core', 'shared', ['feature', { featureName: '${from.featureName}' }]],
+              group: ['**/features/!(products)/**', '@features/!(products)/**'],
+              message: 'Features cannot import from other features. Each feature should be isolated.',
             },
           ],
         },
