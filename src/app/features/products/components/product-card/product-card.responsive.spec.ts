@@ -179,11 +179,11 @@ describe('ProductCardComponent - Responsive Behavior', () => {
       expect(image).toBeTruthy();
     });
 
-    it('should have image with object-fit cover', () => {
+    it('should have image with object-fit contain', () => {
       const image = compiled.querySelector('.product-image img') as HTMLElement;
       const styles = window.getComputedStyle(image);
 
-      expect(styles.objectFit).toBe('cover');
+      expect(styles.objectFit).toBe('contain');
     });
 
     it('should render image within container', () => {

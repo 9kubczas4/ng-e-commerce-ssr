@@ -1,11 +1,20 @@
 <div class="header__container">
   <div class="header__logo">
     <svg class="header__logo-icon" width="32" height="32" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
-      <path fill="currentColor" d="M125 30L31.9 63.2l14.2 123.1L125 230l78.9-43.7 14.2-123.1z"/>
-      <path fill="var(--background)" d="M125 30v22.2-.1V230l78.9-43.7 14.2-123.1L125 30z"/>
-      <path fill="currentColor" d="M125 52.1L66.8 182.6h21.7l11.7-29.2h49.4l11.7 29.2H183L125 52.1zm17 83.3h-34l17-40.9 17 40.9z"/>
+      <defs>
+        <linearGradient id="angular-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:var(--primary);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:var(--primary-light);stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <path fill="url(#angular-gradient)" d="M125 30L31.9 63.2l14.2 123.1L125 230l78.9-43.7 14.2-123.1z"/>
+      <path fill="var(--background)" opacity="0.75" d="M125 30v22.2-.1V230l78.9-43.7 14.2-123.1L125 30z"/>
+      <path fill="var(--background)" d="M125 52.1L66.8 182.6h21.7l11.7-29.2h49.4l11.7 29.2H183L125 52.1zm17 83.3h-34l17-40.9 17 40.9z"/>
     </svg>
-    <h1 class="header__title">Angular Dev Shop</h1>
+    <div class="header__title-wrapper">
+      <h1 class="header__title">Angular Dev Shop</h1>
+      <span class="header__subtitle">Modern E-Commerce</span>
+    </div>
   </div>
 
   <div class="header__actions">
