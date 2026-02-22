@@ -10,7 +10,7 @@
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: var(--surface);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-md);
 
   &::before {
@@ -23,7 +23,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.4) 50%,
       transparent 100%
     );
     animation: shimmer 1.5s infinite;
@@ -67,4 +67,19 @@
     transparent 100%
   );
   animation: shimmer 2s infinite;
+}
+
+[data-theme='dark'] {
+  .skeleton {
+    background: rgba(255, 255, 255, 0.08);
+
+    &::before {
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.15) 50%,
+        transparent 100%
+      );
+    }
+  }
 }
