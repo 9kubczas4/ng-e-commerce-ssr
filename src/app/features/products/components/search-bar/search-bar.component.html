@@ -12,6 +12,7 @@
       [value]="searchQuery()"
       (input)="onSearchInput($event)"
       aria-label="Search products"
+      data-testid="search-input"
     />
 
     @if (searchQuery()) {

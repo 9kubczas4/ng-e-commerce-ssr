@@ -8,7 +8,7 @@ import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.comp
     <div class="product-card-skeleton glass-effect">
       <app-skeleton-loader variant="image" />
       <div class="skeleton-content">
-        <app-skeleton-loader variant="title" />
+        <app-skeleton-loader variant="text" />
         <app-skeleton-loader variant="text" />
         <app-skeleton-loader variant="text" />
         <div class="skeleton-footer">

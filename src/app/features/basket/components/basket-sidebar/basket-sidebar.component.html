@@ -1,27 +1,28 @@
 <div class="basket-overlay" [class.open]="isOpen()" (click)="close()"></div>
 
-<aside class="basket-sidebar" [class.open]="isOpen()" role="complementary" aria-label="Shopping basket">
+<aside class="basket-sidebar" [class.open]="isOpen()" role="complementary" aria-label="Shopping basket" data-testid="basket-sidebar">
   <div class="basket-header">
     <h2>Your Basket</h2>
     <button
       class="close-button"
       (click)="close()"
       aria-label="Close basket"
-      type="button">
+      type="button"
+      data-testid="basket-close-btn">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="basket-content">
     @if (basket().items.length === 0) {
-      <div class="empty-basket">
+      <div class="empty-basket" data-testid="basket-empty">
         <p>Your basket is empty</p>
         <p class="empty-basket-subtitle">Add some products to get started!</p>
       </div>
     } @else {
       <ul class="basket-items">
         @for (item of basket().items; track item.product.id) {
-          <li class="basket-item">
+          <li class="basket-item" data-testid="basket-item">
             <img
               [src]="item.product.imageUrl"
               [alt]="item.product.title"
@@ -48,16 +49,18 @@
                     (click)="decrementQuantity(item.product.id, item.quantity)"
                     [disabled]="item.quantity <= 1"
                     aria-label="Decrease quantity"
-                    type="button">
+                    type="button"
+                    data-testid="quantity-decrement">
                     -
                   </button>
-                  <span class="quantity" aria-label="Quantity">{{ item.quantity }}</span>
+                  <span class="quantity" aria-label="Quantity" data-testid="item-quantity">{{ item.quantity }}</span>
                   <button
                     class="quantity-button"
                     (click)="incrementQuantity(item.product.id, item.quantity)"
                     [disabled]="item.quantity >= 99"
                     aria-label="Increase quantity"
-                    type="button">
+                    type="button"
+                    data-testid="quantity-increment">
                     +
                   </button>
                 </div>
@@ -66,7 +69,8 @@
                   class="remove-button"
                   (click)="removeItem(item.product.id)"
                   aria-label="Remove item from basket"
-                  type="button">
+                  type="button"
+                  data-testid="remove-item-btn">
                   Remove
                 </button>
               </div>
@@ -82,7 +86,7 @@
       <div class="basket-footer">
         <div class="total-section">
           <span class="total-label">Total:</span>
-          <span class="total-price">${{ basket().totalPrice.toFixed(2) }}</span>
+          <span class="total-price" data-testid="basket-total">${{ basket().totalPrice.toFixed(2) }}</span>
         </div>
         <div class="item-count">
           {{ basket().itemCount }} {{ basket().itemCount === 1 ? 'item' : 'items' }}

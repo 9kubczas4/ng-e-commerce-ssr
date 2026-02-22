@@ -17,16 +17,16 @@
       </div>
 
       <div class="product-info">
-        <h1 class="product-title">{{ product()!.title }}</h1>
+        <h1 class="product-title" data-testid="product-details-title">{{ product()!.title }}</h1>
 
         <div class="product-category">
           <span class="category-label">Category:</span>
           <span class="category-value">{{ product()!.category }}</span>
         </div>
 
-        <p class="product-description">{{ product()!.description }}</p>
+        <p class="product-description" data-testid="product-details-description">{{ product()!.description }}</p>
 
-        <div class="product-pricing">
+        <div class="product-pricing" data-testid="product-details-price">
           @if (hasDiscount()) {
             <span class="original-price">${{ product()!.price.toFixed(2) }}</span>
             <span class="discounted-price">${{ discountedPrice().toFixed(2) }}</span>
