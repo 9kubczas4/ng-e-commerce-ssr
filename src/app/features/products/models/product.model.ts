@@ -26,7 +26,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     description: 'Premium cotton t-shirt with the iconic Angular logo. Comfortable fit for coding marathons and tech meetups. Available in multiple sizes.',
     price: 29.99,
     discount: 10,
-    imageUrl: '/assets/products/angular-tshirt.jpg',
+    imageUrl: '/assets/products/angular-tshirt.png',
     category: 'Apparel'
   },
   {
@@ -34,7 +34,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     title: 'Angular Developer Mug',
     description: 'Start your day with coffee in this ceramic mug featuring Angular branding. Microwave and dishwasher safe.',
     price: 14.99,
-    imageUrl: '/assets/products/angular-mug.jpg',
+    imageUrl: '/assets/products/angular-mug.png',
     category: 'Accessories'
   },
   {
@@ -43,7 +43,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     description: 'Stay warm while coding with this comfortable hoodie featuring the Angular shield logo. Made from soft fleece material with a kangaroo pocket.',
     price: 49.99,
     discount: 15,
-    imageUrl: '/assets/products/angular-hoodie.jpg',
+    imageUrl: '/assets/products/angular-hoodie.png',
     category: 'Apparel'
   },
   {
@@ -51,7 +51,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     title: 'Angular Sticker Pack',
     description: 'Collection of 10 high-quality vinyl stickers featuring Angular logos and developer humor. Perfect for laptops and water bottles.',
     price: 9.99,
-    imageUrl: '/assets/products/angular-stickers.jpg',
+    imageUrl: '/assets/products/angular-stickers.png',
     category: 'Stickers'
   },
   {
@@ -60,7 +60,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     description: 'Comprehensive guide to building modern Angular applications with standalone components, signals, and SSR. Written by Angular experts.',
     price: 39.99,
     discount: 20,
-    imageUrl: '/assets/products/angular-book.jpg',
+    imageUrl: '/assets/products/angular-book.png',
     category: 'Books'
   },
   {
@@ -68,7 +68,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     title: 'Angular Baseball Cap',
     description: 'Adjustable baseball cap with embroidered Angular logo. One size fits all with snapback closure.',
     price: 19.99,
-    imageUrl: '/assets/products/angular-cap.jpg',
+    imageUrl: '/assets/products/angular-cap.png',
     category: 'Accessories'
   },
   {
@@ -77,7 +77,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     description: 'Large gaming mouse pad with Angular branding and smooth surface for precise mouse control. Non-slip rubber base.',
     price: 12.99,
     discount: 5,
-    imageUrl: '/assets/products/angular-mousepad.jpg',
+    imageUrl: '/assets/products/angular-mousepad.png',
     category: 'Accessories'
   },
   {
@@ -85,7 +85,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     title: 'Angular Developer Notebook',
     description: 'Hardcover notebook with 200 lined pages for sketching components, planning architecture, and taking notes during code reviews.',
     price: 16.99,
-    imageUrl: '/assets/products/angular-notebook.jpg',
+    imageUrl: '/assets/products/angular-notebook.png',
     category: 'Accessories'
   },
   {
@@ -93,7 +93,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     title: 'Angular Logo Keychain',
     description: 'Metal keychain with the Angular shield logo. Durable and stylish accessory for your keys.',
     price: 7.99,
-    imageUrl: '/assets/products/angular-keychain.jpg',
+    imageUrl: '/assets/products/angular-keychain.png',
     category: 'Accessories'
   },
   {
@@ -102,7 +102,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     description: 'Large format poster illustrating Angular application architecture patterns. Perfect for office or home workspace.',
     price: 24.99,
     discount: 10,
-    imageUrl: '/assets/products/angular-poster.jpg',
+    imageUrl: '/assets/products/angular-poster.png',
     category: 'Accessories'
   },
   {
@@ -110,7 +110,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     title: 'Angular Developer Socks',
     description: 'Comfortable crew socks with Angular logo pattern. Made from breathable cotton blend. Sold as a pair.',
     price: 11.99,
-    imageUrl: '/assets/products/angular-socks.jpg',
+    imageUrl: '/assets/products/angular-socks.png',
     category: 'Apparel'
   },
   {
@@ -119,7 +119,7 @@ export const SAMPLE_PRODUCTS: Product[] = [
     description: 'High-speed USB 3.0 flash drive with Angular branding. 32GB capacity for storing your projects and documentation.',
     price: 22.99,
     discount: 15,
-    imageUrl: '/assets/products/angular-usb.jpg',
+    imageUrl: '/assets/products/angular-usb.png',
     category: 'Electronics'
   }
 ];
