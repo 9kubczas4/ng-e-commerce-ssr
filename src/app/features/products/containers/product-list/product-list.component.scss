@@ -9,27 +9,87 @@
     padding: 1rem 0.75rem;
   }
 
-  .filters-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  // Search section spans full width
+  .search-section {
     margin-bottom: 2rem;
 
     @include breakpoint-max(tablet) {
-      gap: 1rem;
       margin-bottom: 1.5rem;
     }
+  }
 
-    @include breakpoint(tablet) {
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 2rem;
+  // Two-column layout wrapper
+  .content-wrapper {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+
+    @include breakpoint(desktop) {
+      grid-template-columns: 280px 1fr;
+      gap: 2.5rem;
     }
+
+    @include breakpoint(wide) {
+      grid-template-columns: 300px 1fr;
+      gap: 3rem;
+    }
+  }
+
+  // Sidebar filter (desktop only)
+  .filters-sidebar {
+    display: none;
+
+    @include breakpoint(desktop) {
+      display: block;
+      position: sticky;
+      top: 6rem; // Below header
+      align-self: start;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      padding-right: 0.5rem;
+
+      // Custom scrollbar styling
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+
+        &:hover {
+          background: var(--text-secondary);
+        }
+      }
+    }
+  }
+
+  // Mobile/Tablet filter (horizontal pills)
+  .mobile-filters {
+    display: block;
+    margin-bottom: 1.5rem;
+
+    @include breakpoint(desktop) {
+      display: none;
+    }
+
+    @include breakpoint-max(tablet) {
+      margin-bottom: 1.25rem;
+    }
+  }
+
+  // Main products section
+  .products-section {
+    min-width: 0; // Prevent grid blowout
   }
 
   .skeleton-grid {
     display: grid;
-    gap: 1.5rem;
+    gap: 1rem;
     grid-template-columns: 1fr;
 
     @include breakpoint(tablet) {
@@ -37,11 +97,15 @@
     }
 
     @include breakpoint(desktop) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1220px) {
       grid-template-columns: repeat(3, 1fr);
     }
 
     @include breakpoint(wide) {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 }

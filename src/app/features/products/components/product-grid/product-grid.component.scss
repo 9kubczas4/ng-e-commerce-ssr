@@ -17,7 +17,7 @@
 
 .product-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1rem;
   grid-template-columns: 1fr;
   padding: 0;
 
@@ -32,14 +32,19 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Desktop
+  // Desktop - 2 columns below 1220px
   @include breakpoint(desktop) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // 3 columns from 1220px and up
+  @media (min-width: 1220px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  // Wide screens
+  // Wide screens - keep 3 columns max
   @include breakpoint(wide) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   // Add staggered fade-in animation to product cards

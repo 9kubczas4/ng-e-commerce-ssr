@@ -1,28 +1,46 @@
 <div class="product-list-container">
-  <div class="filters-section">
+  <!-- Search bar spans full width on all devices -->
+  <div class="search-section">
     <app-search-bar
       (searchChange)="onSearchChange($event)">
     </app-search-bar>
-
-    <app-category-filter
-      [products]="products()"
-      (categoryChange)="onCategoryChange($event)">
-    </app-category-filter>
   </div>
 
-  @if (loading()) {
-    <div class="skeleton-grid">
-      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-        <app-product-card-skeleton />
+  <!-- Two-column layout on desktop: sidebar + content -->
+  <div class="content-wrapper">
+    <!-- Sidebar filter (desktop only) -->
+    <aside class="filters-sidebar">
+      <app-category-filter
+        [products]="products()"
+        (categoryChange)="onCategoryChange($event)">
+      </app-category-filter>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="products-section">
+      <!-- Mobile/Tablet category filter (horizontal pills) -->
+      <div class="mobile-filters">
+        <app-category-filter
+          [products]="products()"
+          (categoryChange)="onCategoryChange($event)">
+        </app-category-filter>
+      </div>
+
+      @if (loading()) {
+        <div class="skeleton-grid">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <app-product-card-skeleton />
+          }
+        </div>
+      } @else {
+        <app-product-grid
+          [products]="products()"
+          [searchQuery]="searchQuery()"
+          [selectedCategory]="selectedCategory()"
+          (productClick)="onProductClick($event)"
+          (addToBasket)="onAddToBasket($event)">
+        </app-product-grid>
       }
-    </div>
-  } @else {
-    <app-product-grid
-      [products]="products()"
-      [searchQuery]="searchQuery()"
-      [selectedCategory]="selectedCategory()"
-      (productClick)="onProductClick($event)"
-      (addToBasket)="onAddToBasket($event)">
-    </app-product-grid>
-  }
+    </main>
+  </div>
 </div>

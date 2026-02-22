@@ -162,7 +162,7 @@
 }
 
 .add-to-basket-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 1.25rem;
   background: var(--primary);
   color: white;
   border: none;
@@ -173,7 +173,7 @@
   transition: background 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
   min-height: 44px; // Touch-friendly
-  min-width: 44px;
+  flex-shrink: 0; // Prevent button from shrinking
 
   &:hover {
     background: var(--primary-dark);
@@ -193,6 +193,7 @@
     padding: 0.625rem 1rem;
     font-size: 0.8125rem;
     flex: 1 1 100%;
+    width: 100%; // Full width on mobile
 
     &:hover {
       transform: none;
