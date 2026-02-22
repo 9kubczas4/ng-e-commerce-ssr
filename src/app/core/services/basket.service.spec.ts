@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { PLATFORM_ID } from '@angular/core';
 import { BasketService } from './basket.service';
 import { Product } from '../../features/products/models/product.model';
 
@@ -375,6 +376,114 @@ describe('BasketService', () => {
 
       getItemSpy.mockRestore();
       consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('SSR Platform Detection', () => {
+    it('should not access localStorage on server platform', () => {
+      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+
+      // Create service with server platform
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+      const serverService = TestBed.inject(BasketService);
+
+      // Verify localStorage was not accessed during initialization
+      expect(getItemSpy).not.toHaveBeenCalled();
+
+      // Add item on server
+      serverService.addItem(mockProduct1);
+
+      // Verify localStorage was not accessed for save
+      expect(setItemSpy).not.toHaveBeenCalled();
+
+      // Basket should still work in memory
+      const basket = serverService.basket();
+      expect(basket.items.length).toBe(1);
+      expect(basket.items[0].product.id).toBe('test-1');
+
+      getItemSpy.mockRestore();
+      setItemSpy.mockRestore();
+    });
+
+    it('should access localStorage on browser platform', () => {
+      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+
+      // Create service with browser platform
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: PLATFORM_ID, useValue: 'browser' }
+        ]
+      });
+      const browserService = TestBed.inject(BasketService);
+
+      // Verify localStorage was accessed during initialization
+      expect(getItemSpy).toHaveBeenCalled();
+
+      // Add item on browser
+      browserService.addItem(mockProduct1);
+
+      // Verify localStorage was accessed for save
+      expect(setItemSpy).toHaveBeenCalled();
+
+      getItemSpy.mockRestore();
+      setItemSpy.mockRestore();
+    });
+
+    it('should maintain basket state in memory on server without localStorage', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+      const serverService = TestBed.inject(BasketService);
+
+      // Perform basket operations
+      serverService.addItem(mockProduct1);
+      serverService.addItem(mockProduct2);
+      serverService.updateQuantity('test-1', 3);
+
+      // Verify basket state is maintained in memory
+      const basket = serverService.basket();
+      expect(basket.items.length).toBe(2);
+      expect(basket.items[0].quantity).toBe(3);
+      expect(basket.itemCount).toBe(4);
+      expect(basket.totalPrice).toBe(48.00); // (10 * 3) + (20 * 0.9 * 1)
+    });
+
+    it('should handle all basket operations on server platform', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+      const serverService = TestBed.inject(BasketService);
+
+      // Test add
+      serverService.addItem(mockProduct1);
+      expect(serverService.basket().items.length).toBe(1);
+
+      // Test update quantity
+      serverService.updateQuantity('test-1', 5);
+      expect(serverService.basket().items[0].quantity).toBe(5);
+
+      // Test remove
+      serverService.removeItem('test-1');
+      expect(serverService.basket().items.length).toBe(0);
+
+      // Test clear
+      serverService.addItem(mockProduct2);
+      serverService.clearBasket();
+      expect(serverService.basket().items.length).toBe(0);
     });
   });
 });

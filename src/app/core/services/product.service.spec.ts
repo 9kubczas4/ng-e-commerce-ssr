@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import { PLATFORM_ID } from '@angular/core';
 import { ProductService } from './product.service';
 import { Product, SAMPLE_PRODUCTS } from '../../features/products/models/product.model';
-import { TransferState } from '@angular/core';
+import { TransferState, makeStateKey } from '@angular/core';
 
 describe('ProductService', () => {
   let service: ProductService;
@@ -212,6 +213,159 @@ describe('ProductService', () => {
       const results = service.filterByCategory('Accessories', mockProducts);
       expect(results).toHaveLength(1);
       expect(results[0].id).toBe('test-2');
+    });
+  });
+
+  describe('SSR Platform Detection and TransferState', () => {
+    const PRODUCTS_KEY = makeStateKey<Product[]>('products');
+
+    it('should use TransferState data when available', () => {
+      const mockProducts: Product[] = [
+        {
+          id: 'transfer-1',
+          title: 'Transfer Product',
+          description: 'From server',
+          price: 99.99,
+          imageUrl: '/transfer.jpg',
+          category: 'Test'
+        }
+      ];
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [TransferState]
+      });
+
+      const newTransferState = TestBed.inject(TransferState);
+      newTransferState.set(PRODUCTS_KEY, mockProducts);
+
+      const newService = TestBed.inject(ProductService);
+      newService.loadProducts();
+
+      expect(newService.products()).toEqual(mockProducts);
+    });
+
+    it('should remove TransferState key after using it', () => {
+      const mockProducts: Product[] = [SAMPLE_PRODUCTS[0]];
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [TransferState]
+      });
+
+      const newTransferState = TestBed.inject(TransferState);
+      newTransferState.set(PRODUCTS_KEY, mockProducts);
+
+      const newService = TestBed.inject(ProductService);
+      newService.loadProducts();
+
+      expect(newTransferState.hasKey(PRODUCTS_KEY)).toBe(false);
+    });
+
+    it('should load SAMPLE_PRODUCTS when TransferState is empty on browser', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          { provide: PLATFORM_ID, useValue: 'browser' }
+        ]
+      });
+
+      const newService = TestBed.inject(ProductService);
+      newService.loadProducts();
+
+      expect(newService.products()).toEqual(SAMPLE_PRODUCTS);
+    });
+
+    it('should set TransferState on server platform', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+
+      const newTransferState = TestBed.inject(TransferState);
+      const newService = TestBed.inject(ProductService);
+
+      newService.loadProducts();
+
+      expect(newTransferState.hasKey(PRODUCTS_KEY)).toBe(true);
+      expect(newTransferState.get(PRODUCTS_KEY, [])).toEqual(SAMPLE_PRODUCTS);
+    });
+
+    it('should not set TransferState on browser platform', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          { provide: PLATFORM_ID, useValue: 'browser' }
+        ]
+      });
+
+      const newTransferState = TestBed.inject(TransferState);
+      const newService = TestBed.inject(ProductService);
+
+      newService.loadProducts();
+
+      expect(newTransferState.hasKey(PRODUCTS_KEY)).toBe(false);
+    });
+
+    it('should work correctly on server without browser APIs', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+
+      const newService = TestBed.inject(ProductService);
+
+      // Should not throw when loading products on server
+      expect(() => newService.loadProducts()).not.toThrow();
+
+      // Should have products loaded
+      expect(newService.products()).toEqual(SAMPLE_PRODUCTS);
+
+      // Should be able to search and filter
+      const searchResults = newService.searchProducts('Angular', newService.products());
+      expect(searchResults.length).toBeGreaterThan(0);
+
+      const filterResults = newService.filterByCategory('Apparel', newService.products());
+      expect(filterResults.length).toBeGreaterThan(0);
+    });
+
+    it('should handle TransferState priority over direct load', () => {
+      const transferProducts: Product[] = [
+        {
+          id: 'priority-1',
+          title: 'Priority Product',
+          description: 'Should be used',
+          price: 1.00,
+          imageUrl: '/priority.jpg',
+          category: 'Test'
+        }
+      ];
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          { provide: PLATFORM_ID, useValue: 'browser' }
+        ]
+      });
+
+      const newTransferState = TestBed.inject(TransferState);
+      newTransferState.set(PRODUCTS_KEY, transferProducts);
+
+      const newService = TestBed.inject(ProductService);
+      newService.loadProducts();
+
+      // Should use TransferState data, not SAMPLE_PRODUCTS
+      expect(newService.products()).toEqual(transferProducts);
+      expect(newService.products()).not.toEqual(SAMPLE_PRODUCTS);
     });
   });
 });

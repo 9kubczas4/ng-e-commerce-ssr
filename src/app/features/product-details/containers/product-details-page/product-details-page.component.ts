@@ -32,6 +32,11 @@ export class ProductDetailsPageComponent implements OnInit {
   hasDiscount = computed(() => !!this.product()?.discount);
 
   ngOnInit(): void {
+    // Load products if not already loaded (e.g., direct navigation to this page)
+    if (this.productService.products().length === 0) {
+      this.productService.loadProducts();
+    }
+
     const productId = this.route.snapshot.paramMap.get('id');
 
     if (!productId) {

@@ -37,7 +37,8 @@ describe('ProductDetailsPageComponent', () => {
   beforeEach(async () => {
     mockProductService = {
       products: signal([mockProduct, mockProductNoDiscount]),
-      getProductById: vi.fn()
+      getProductById: vi.fn(),
+      loadProducts: vi.fn()
     };
 
     mockBasketService = {
@@ -74,6 +75,28 @@ describe('ProductDetailsPageComponent', () => {
       fixture.detectChanges();
 
       expect(component).toBeTruthy();
+    });
+
+    it('should load products if products array is empty on init', () => {
+      mockProductService.products = signal([]);
+      mockProductService.getProductById.mockReturnValue(mockProduct);
+
+      fixture = TestBed.createComponent(ProductDetailsPageComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(mockProductService.loadProducts).toHaveBeenCalled();
+    });
+
+    it('should not load products if products array is not empty on init', () => {
+      mockProductService.products = signal([mockProduct, mockProductNoDiscount]);
+      mockProductService.getProductById.mockReturnValue(mockProduct);
+
+      fixture = TestBed.createComponent(ProductDetailsPageComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(mockProductService.loadProducts).not.toHaveBeenCalled();
     });
 
     it('should load product by ID from route params', () => {
