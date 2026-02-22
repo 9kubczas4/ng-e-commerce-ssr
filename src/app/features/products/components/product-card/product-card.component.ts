@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, input, output, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Product } from '../../models/product.model';
 
@@ -35,10 +35,16 @@ import { Product } from '../../models/product.model';
 
       <button
         class="add-to-basket-btn"
+        [class.added]="showAddedFeedback()"
         (click)="onAddToBasket($event)"
         type="button"
         aria-label="Add {{ product().title }} to basket">
-        Add to Basket
+        @if (showAddedFeedback()) {
+          <span class="success-icon" aria-hidden="true">✓</span>
+          Added!
+        } @else {
+          Add to Basket
+        }
       </button>
     </div>
   </div>
@@ -149,6 +155,10 @@ import { Product } from '../../models/product.model';
       cursor: pointer;
       transition: all 0.2s ease;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
     .add-to-basket-btn:hover {
@@ -158,6 +168,39 @@ import { Product } from '../../models/product.model';
 
     .add-to-basket-btn:active {
       transform: scale(0.98);
+    }
+
+    .add-to-basket-btn.added {
+      background: #10b981;
+      animation: successPulse 0.5s ease;
+    }
+
+    .success-icon {
+      font-size: 1.25rem;
+      animation: checkmark 0.3s ease;
+    }
+
+    @keyframes successPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes checkmark {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     @media (max-width: 768px) {
@@ -187,6 +230,10 @@ export class ProductCardComponent {
   addToBasket = output<Product>();
   cardClick = output<string>();
 
+  // Local state for add-to-basket feedback
+  private addedToBasket = signal(false);
+  showAddedFeedback = this.addedToBasket.asReadonly();
+
   // Computed values
   discountedPrice = computed(() => {
     const p = this.product();
@@ -198,6 +245,12 @@ export class ProductCardComponent {
   onAddToBasket(event: Event): void {
     event.stopPropagation();
     this.addToBasket.emit(this.product());
+
+    // Show feedback animation
+    this.addedToBasket.set(true);
+    setTimeout(() => {
+      this.addedToBasket.set(false);
+    }, 2000);
   }
 
   onCardClick(): void {

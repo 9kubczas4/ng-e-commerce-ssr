@@ -36,6 +36,7 @@ describe('ProductListComponent', () => {
   beforeEach(async () => {
     mockProductService = {
       products: signal(mockProducts),
+      loading: signal(false),
       loadProducts: vi.fn()
     };
 

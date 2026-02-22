@@ -10,11 +10,19 @@
     </app-category-filter>
   </div>
 
-  <app-product-grid
-    [products]="products()"
-    [searchQuery]="searchQuery()"
-    [selectedCategory]="selectedCategory()"
-    (productClick)="onProductClick($event)"
-    (addToBasket)="onAddToBasket($event)">
-  </app-product-grid>
+  @if (loading()) {
+    <div class="skeleton-grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <app-product-card-skeleton />
+      }
+    </div>
+  } @else {
+    <app-product-grid
+      [products]="products()"
+      [searchQuery]="searchQuery()"
+      [selectedCategory]="selectedCategory()"
+      (productClick)="onProductClick($event)"
+      (addToBasket)="onAddToBasket($event)">
+    </app-product-grid>
+  }
 </div>

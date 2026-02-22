@@ -11,8 +11,10 @@ export class ProductService {
   private platformId = inject(PLATFORM_ID);
   private transferState = inject(TransferState);
   private productsSignal = signal<Product[]>([]);
+  private loadingSignal = signal<boolean>(false);
 
   products = this.productsSignal.asReadonly();
+  loading = this.loadingSignal.asReadonly();
 
   loadProducts(): void {
     // Check if data is available in TransferState (from server)
@@ -22,13 +24,19 @@ export class ProductService {
       // Remove the key to prevent memory leaks
       this.transferState.remove(PRODUCTS_KEY);
     } else {
-      // Load products normally
-      this.productsSignal.set(SAMPLE_PRODUCTS);
+      // Simulate loading state for better UX
+      this.loadingSignal.set(true);
 
-      // If on server, store in TransferState for client hydration
-      if (!isPlatformBrowser(this.platformId)) {
-        this.transferState.set(PRODUCTS_KEY, SAMPLE_PRODUCTS);
-      }
+      // Simulate async loading with a small delay
+      setTimeout(() => {
+        this.productsSignal.set(SAMPLE_PRODUCTS);
+        this.loadingSignal.set(false);
+
+        // If on server, store in TransferState for client hydration
+        if (!isPlatformBrowser(this.platformId)) {
+          this.transferState.set(PRODUCTS_KEY, SAMPLE_PRODUCTS);
+        }
+      }, 300);
     }
   }
 

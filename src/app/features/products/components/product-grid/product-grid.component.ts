@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy, computed, input, output } from '@angular/core';
 import { Product } from '../../models/product.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
+import { ProductCardSkeletonComponent } from '../product-card-skeleton/product-card-skeleton.component';
 
 @Component({
   selector: 'app-product-grid',
-  imports: [ProductCardComponent],
+  imports: [ProductCardComponent, ProductCardSkeletonComponent],
   templateUrl: './product-grid.component.html',
   styleUrl: './product-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -14,6 +15,7 @@ export class ProductGridComponent {
   products = input.required<Product[]>();
   searchQuery = input<string>('');
   selectedCategory = input<string | null>(null);
+  isLoading = input<boolean>(false);
 
   // Computed filtered products
   filteredProducts = computed(() => this.filterProducts());
@@ -21,6 +23,11 @@ export class ProductGridComponent {
   // Outputs
   productClick = output<string>();
   addToBasket = output<Product>();
+
+  // Helper for skeleton loaders
+  get skeletonArray(): number[] {
+    return Array(6).fill(0);
+  }
 
   private filterProducts(): Product[] {
     let filtered = this.products();

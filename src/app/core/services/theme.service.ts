@@ -44,10 +44,22 @@ export class ThemeService {
 
   /**
    * Apply theme by setting data-theme attribute on document root
+   * Adds smooth transition class during theme change
    */
   private applyTheme(theme: Theme): void {
     if (isPlatformBrowser(this.platformId)) {
-      document.documentElement.setAttribute('data-theme', theme);
+      const root = document.documentElement;
+
+      // Add transition class for smooth theme switching
+      root.classList.add('theme-transition');
+
+      // Set the new theme
+      root.setAttribute('data-theme', theme);
+
+      // Remove transition class after animation completes
+      setTimeout(() => {
+        root.classList.remove('theme-transition');
+      }, 300);
     }
   }
 

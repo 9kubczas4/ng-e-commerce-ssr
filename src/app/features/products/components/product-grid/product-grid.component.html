@@ -1,5 +1,11 @@
 <div class="product-grid-container">
-  @if (filteredProducts().length > 0) {
+  @if (isLoading()) {
+    <div class="product-grid">
+      @for (item of skeletonArray; track $index) {
+        <app-product-card-skeleton />
+      }
+    </div>
+  } @else if (filteredProducts().length > 0) {
     <div class="product-grid">
       @for (product of filteredProducts(); track product.id) {
         <app-product-card

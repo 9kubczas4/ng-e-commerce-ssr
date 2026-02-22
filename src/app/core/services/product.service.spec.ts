@@ -21,8 +21,10 @@ describe('ProductService', () => {
   });
 
   describe('loadProducts', () => {
-    it('should load sample products into the signal', () => {
+    it('should load sample products into the signal', async () => {
       service.loadProducts();
+      // Wait for async loading to complete
+      await new Promise(resolve => setTimeout(resolve, 350));
       expect(service.products()).toEqual(SAMPLE_PRODUCTS);
     });
 
@@ -32,8 +34,10 @@ describe('ProductService', () => {
   });
 
   describe('getProductById', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       service.loadProducts();
+      // Wait for async loading to complete
+      await new Promise(resolve => setTimeout(resolve, 350));
     });
 
     it('should return product when valid ID is provided', () => {
@@ -262,7 +266,7 @@ describe('ProductService', () => {
       expect(newTransferState.hasKey(PRODUCTS_KEY)).toBe(false);
     });
 
-    it('should load SAMPLE_PRODUCTS when TransferState is empty on browser', () => {
+    it('should load SAMPLE_PRODUCTS when TransferState is empty on browser', async () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -273,11 +277,13 @@ describe('ProductService', () => {
 
       const newService = TestBed.inject(ProductService);
       newService.loadProducts();
+      // Wait for async loading to complete
+      await new Promise(resolve => setTimeout(resolve, 350));
 
       expect(newService.products()).toEqual(SAMPLE_PRODUCTS);
     });
 
-    it('should set TransferState on server platform', () => {
+    it('should set TransferState on server platform', async () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -290,6 +296,8 @@ describe('ProductService', () => {
       const newService = TestBed.inject(ProductService);
 
       newService.loadProducts();
+      // Wait for async loading to complete
+      await new Promise(resolve => setTimeout(resolve, 350));
 
       expect(newTransferState.hasKey(PRODUCTS_KEY)).toBe(true);
       expect(newTransferState.get(PRODUCTS_KEY, [])).toEqual(SAMPLE_PRODUCTS);
@@ -312,7 +320,7 @@ describe('ProductService', () => {
       expect(newTransferState.hasKey(PRODUCTS_KEY)).toBe(false);
     });
 
-    it('should work correctly on server without browser APIs', () => {
+    it('should work correctly on server without browser APIs', async () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -325,6 +333,9 @@ describe('ProductService', () => {
 
       // Should not throw when loading products on server
       expect(() => newService.loadProducts()).not.toThrow();
+
+      // Wait for async loading to complete
+      await new Promise(resolve => setTimeout(resolve, 350));
 
       // Should have products loaded
       expect(newService.products()).toEqual(SAMPLE_PRODUCTS);

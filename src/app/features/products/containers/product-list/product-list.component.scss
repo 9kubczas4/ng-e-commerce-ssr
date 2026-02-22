@@ -26,4 +26,22 @@
       gap: 2rem;
     }
   }
+
+  .skeleton-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+
+    @include breakpoint(tablet) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include breakpoint(desktop) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include breakpoint(wide) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
 }

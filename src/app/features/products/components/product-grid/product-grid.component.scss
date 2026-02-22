@@ -1,5 +1,16 @@
 @use '../../../../../styles/breakpoints' as *;
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .product-grid-container {
   width: 100%;
 }
@@ -29,6 +40,18 @@
   // Wide screens
   @include breakpoint(wide) {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  // Add staggered fade-in animation to product cards
+  app-product-card,
+  app-product-card-skeleton {
+    animation: fadeInUp 0.4s ease-out backwards;
+
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.05}s;
+      }
+    }
   }
 }
 

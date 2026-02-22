@@ -6,10 +6,11 @@ import { Product } from '../../models/product.model';
 import { ProductGridComponent } from '../../components/product-grid/product-grid.component';
 import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
 import { CategoryFilterComponent } from '../../components/category-filter/category-filter.component';
+import { ProductCardSkeletonComponent } from '../../components/product-card-skeleton/product-card-skeleton.component';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ProductGridComponent, SearchBarComponent, CategoryFilterComponent],
+  imports: [ProductGridComponent, SearchBarComponent, CategoryFilterComponent, ProductCardSkeletonComponent],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -21,6 +22,7 @@ export class ProductListComponent implements OnInit {
 
   // State
   products = this.productService.products;
+  loading = this.productService.loading;
   searchQuery = signal('');
   selectedCategory = signal<string | null>(null);
 
