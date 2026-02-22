@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { ProductListComponent } from './product-list.component';
 import { ProductService } from '../../services/product.service';
 import { BasketService } from '../../../../core/services/basket.service';
-import { Product } from '../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 import { signal } from '@angular/core';
 
 describe('ProductListComponent', () => {

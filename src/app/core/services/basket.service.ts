@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Basket, BasketItem } from '../../features/basket/models/basket-item.model';
-import { Product } from '../../features/products/models/product.model';
+import { Basket, BasketItem } from '../models/basket.model';
+import { Product } from '../models/product.model';
 
 const BASKET_STORAGE_KEY = 'angular-dev-shop-basket';
 const MAX_QUANTITY = 99;
@@ -12,7 +12,7 @@ const MAX_QUANTITY = 99;
 export class BasketService {
   private platformId = inject(PLATFORM_ID);
 
-  private basketSignal = signal<Basket>({
+  private basketSignal = signal<Basket<Product>>({
     items: [],
     totalPrice: 0,
     itemCount: 0
@@ -30,7 +30,7 @@ export class BasketService {
       item => item.product.id === product.id
     );
 
-    let updatedItems: BasketItem[];
+    let updatedItems: BasketItem<Product>[];
 
     if (existingItemIndex >= 0) {
       // Product exists, increment quantity
@@ -106,7 +106,7 @@ export class BasketService {
     this.updateBasket([]);
   }
 
-  private updateBasket(items: BasketItem[]): void {
+  private updateBasket(items: BasketItem<Product>[]): void {
     const { totalPrice, itemCount } = this.calculateTotals(items);
 
     this.basketSignal.set({
@@ -118,7 +118,7 @@ export class BasketService {
     this.saveToStorage();
   }
 
-  private calculateTotals(items: BasketItem[]): { totalPrice: number; itemCount: number } {
+  private calculateTotals(items: BasketItem<Product>[]): { totalPrice: number; itemCount: number } {
     let totalPrice = 0;
     let itemCount = 0;
 

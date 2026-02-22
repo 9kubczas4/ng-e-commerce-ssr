@@ -5,7 +5,7 @@ import { signal } from '@angular/core';
 import { ProductDetailsPageComponent } from './product-details-page.component';
 import { ProductService } from '../../services/product.service';
 import { BasketService } from '../../../../core/services/basket.service';
-import { Product } from '../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 
 describe('ProductDetailsPageComponent', () => {
   let component: ProductDetailsPageComponent;

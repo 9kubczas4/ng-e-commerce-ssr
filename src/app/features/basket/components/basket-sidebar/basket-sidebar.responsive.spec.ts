@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BasketSidebarComponent } from './basket-sidebar.component';
 import { BasketService } from '../../../../core/services/basket.service';
 import { signal } from '@angular/core';
-import { Basket } from '../../models/basket-item.model';
-import { Product } from '../../../products/models/product.model';
+import { Basket } from '../../../../core/models/basket.model';
+import { Product } from '../../../../core/models/product.model';
 
 describe('BasketSidebarComponent - Responsive Behavior', () => {
   let component: BasketSidebarComponent;

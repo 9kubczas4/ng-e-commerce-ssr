@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@ang
 import { Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { BasketService } from '../../../../core/services/basket.service';
-import { Product } from '../../models/product.model';
+import { Product } from '../../../../core/models/product.model';
 import { ProductGridComponent } from './components/product-grid/product-grid.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { CategoryFilterComponent } from './components/category-filter/category-filter.component';

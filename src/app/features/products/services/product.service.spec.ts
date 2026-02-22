@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PLATFORM_ID } from '@angular/core';
-import { ProductService } from './product.service';
-import { Product, SAMPLE_PRODUCTS } from '../models/product.model';
+import { ProductService, SAMPLE_PRODUCTS } from './product.service';
+import { Product } from '../../../core/models/product.model';
 import { TransferState, makeStateKey } from '@angular/core';
 
 describe('ProductService', () => {
