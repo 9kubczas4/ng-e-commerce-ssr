@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductCardComponent } from './product-card.component';
-import { Product } from '../../../../../../core/models/product.model';
+import { Product } from '@core/models/product.model';
 
 describe('ProductCardComponent - Responsive Behavior', () => {
   let fixture: ComponentFixture<ProductCardComponent>;

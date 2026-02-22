@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BasketService } from '../../../../core/services/basket.service';
+import { BasketService } from '@core/services/basket.service';
 
 @Component({
   selector: 'app-basket-sidebar',

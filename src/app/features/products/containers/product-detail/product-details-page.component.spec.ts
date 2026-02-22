@@ -3,9 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { signal } from '@angular/core';
 import { ProductDetailsPageComponent } from './product-details-page.component';
-import { ProductService } from '../../services/product.service';
-import { BasketService } from '../../../../core/services/basket.service';
-import { Product } from '../../../../core/models/product.model';
+import { ProductService } from '@features/products/services/product.service';
+import { BasketService } from '@core/services/basket.service';
+import { Product } from '@core/models/product.model';
 
 describe('ProductDetailsPageComponent', () => {
   let component: ProductDetailsPageComponent;

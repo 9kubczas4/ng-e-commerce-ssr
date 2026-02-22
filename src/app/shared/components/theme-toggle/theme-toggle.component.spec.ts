@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ThemeToggleComponent } from './theme-toggle.component';
-import { ThemeService } from '../../../core/services/theme.service';
+import { ThemeService } from '@core/services/theme.service';
 import { signal } from '@angular/core';
 import { PLATFORM_ID } from '@angular/core';
 

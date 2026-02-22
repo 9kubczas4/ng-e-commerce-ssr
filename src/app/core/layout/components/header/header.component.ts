@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
-import { BasketService } from '../../../services/basket.service';
-import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle/theme-toggle.component';
+import { BasketService } from '@core/services/basket.service';
+import { ThemeToggleComponent } from '@shared/components/theme-toggle/theme-toggle.component';
 
 /* eslint-disable @angular-eslint/component-selector */
 @Component({
