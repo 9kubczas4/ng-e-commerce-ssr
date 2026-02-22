@@ -1,3 +1,5 @@
+@use '../../../../../styles/breakpoints' as *;
+
 .product-grid-container {
   width: 100%;
 }
@@ -6,22 +8,26 @@
   display: grid;
   gap: 1.5rem;
   grid-template-columns: 1fr;
-}
+  padding: 0;
 
-@media (min-width: 768px) {
-  .product-grid {
+  // Mobile-specific optimizations
+  @include breakpoint-max(tablet) {
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  // Tablet and up
+  @include breakpoint(tablet) {
     grid-template-columns: repeat(2, 1fr);
   }
-}
 
-@media (min-width: 1024px) {
-  .product-grid {
+  // Desktop
+  @include breakpoint(desktop) {
     grid-template-columns: repeat(3, 1fr);
   }
-}
 
-@media (min-width: 1440px) {
-  .product-grid {
+  // Wide screens
+  @include breakpoint(wide) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -30,9 +36,18 @@
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-secondary);
-}
 
-.empty-state p {
-  font-size: 1.125rem;
-  margin: 0;
+  // Mobile-specific empty state
+  @include breakpoint-max(tablet) {
+    padding: 2rem 1rem;
+  }
+
+  p {
+    font-size: 1.125rem;
+    margin: 0;
+
+    @include breakpoint-max(tablet) {
+      font-size: 1rem;
+    }
+  }
 }

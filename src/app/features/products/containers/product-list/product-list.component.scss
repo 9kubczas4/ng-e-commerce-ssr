@@ -1,7 +1,13 @@
+@use '../../../../../styles/breakpoints' as *;
+
 .product-list-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 2rem 1rem;
+
+  @include breakpoint-max(tablet) {
+    padding: 1rem 0.75rem;
+  }
 
   .filters-section {
     display: flex;
@@ -9,7 +15,12 @@
     gap: 1.5rem;
     margin-bottom: 2rem;
 
-    @media (min-width: 768px) {
+    @include breakpoint-max(tablet) {
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @include breakpoint(tablet) {
       flex-direction: row;
       align-items: flex-start;
       gap: 2rem;

@@ -1,4 +1,5 @@
 @use '../../../../../styles/glass-effects' as *;
+@use '../../../../../styles/breakpoints' as *;
 
 .basket-overlay {
   position: fixed;
@@ -37,8 +38,10 @@
     transform: translateX(0);
   }
 
-  @media (max-width: 768px) {
+  // Mobile optimization: full-width overlay
+  @include breakpoint-max(tablet) {
     max-width: 100%;
+    left: 0;
   }
 }
 
@@ -53,6 +56,14 @@
     margin: 0;
     font-size: 1.5rem;
     color: var(--text-primary);
+
+    @include breakpoint-max(tablet) {
+      font-size: 1.25rem;
+    }
+  }
+
+  @include breakpoint-max(tablet) {
+    padding: 1rem;
   }
 }
 
@@ -85,6 +96,10 @@
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
+
+  @include breakpoint-max(tablet) {
+    padding: 1rem;
+  }
 }
 
 .empty-basket {
@@ -95,10 +110,18 @@
   p {
     margin: 0 0 0.5rem 0;
     font-size: 1.125rem;
+
+    @include breakpoint-max(tablet) {
+      font-size: 1rem;
+    }
   }
 
   .empty-basket-subtitle {
     font-size: 0.875rem;
+  }
+
+  @include breakpoint-max(tablet) {
+    padding: 2rem 1rem;
   }
 }
 
@@ -118,6 +141,12 @@
   &:last-child {
     margin-bottom: 0;
   }
+
+  @include breakpoint-max(tablet) {
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
 }
 
 .item-image {
@@ -126,6 +155,11 @@
   object-fit: cover;
   border-radius: 8px;
   flex-shrink: 0;
+
+  @include breakpoint-max(tablet) {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 .item-details {
@@ -133,6 +167,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0; // Allow text truncation
 }
 
 .item-title {
@@ -140,6 +175,10 @@
   font-size: 1rem;
   color: var(--text-primary);
   font-weight: 600;
+
+  @include breakpoint-max(tablet) {
+    font-size: 0.9375rem;
+  }
 }
 
 .item-price {
@@ -147,6 +186,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+  flex-wrap: wrap;
 
   .original-price {
     text-decoration: line-through;
@@ -158,12 +198,21 @@
     color: var(--primary);
     font-weight: 600;
   }
+
+  @include breakpoint-max(tablet) {
+    font-size: 0.8125rem;
+  }
 }
 
 .item-controls {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
+
+  @include breakpoint-max(tablet) {
+    gap: 0.5rem;
+  }
 }
 
 .quantity-controls {
@@ -179,8 +228,8 @@
   background: var(--primary);
   color: white;
   border: none;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   min-width: 44px;
   min-height: 44px;
   border-radius: 6px;
@@ -211,6 +260,11 @@
   text-align: center;
   font-weight: 600;
   color: var(--text-primary);
+
+  @include breakpoint-max(tablet) {
+    min-width: 1.5rem;
+    font-size: 0.9375rem;
+  }
 }
 
 .remove-button {
@@ -234,12 +288,21 @@
     outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
+
+  @include breakpoint-max(tablet) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
 }
 
 .item-total {
   font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 600;
+
+  @include breakpoint-max(tablet) {
+    font-size: 0.8125rem;
+  }
 }
 
 .basket-footer {
@@ -247,6 +310,11 @@
   padding: 1.5rem;
   background: var(--surface);
   margin: -1.5rem -1.5rem 0;
+
+  @include breakpoint-max(tablet) {
+    padding: 1rem;
+    margin: -1rem -1rem 0;
+  }
 }
 
 .total-section {
@@ -260,16 +328,28 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-primary);
+
+  @include breakpoint-max(tablet) {
+    font-size: 1.125rem;
+  }
 }
 
 .total-price {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary);
+
+  @include breakpoint-max(tablet) {
+    font-size: 1.25rem;
+  }
 }
 
 .item-count {
   text-align: right;
   font-size: 0.875rem;
   color: var(--text-secondary);
+
+  @include breakpoint-max(tablet) {
+    font-size: 0.8125rem;
+  }
 }

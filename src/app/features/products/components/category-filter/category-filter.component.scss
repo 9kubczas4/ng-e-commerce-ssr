@@ -1,3 +1,5 @@
+@use '../../../../../styles/breakpoints' as *;
+
 .category-filter {
   width: 100%;
   max-width: 300px;
@@ -22,6 +24,7 @@
   justify-content: space-between;
   width: 100%;
   padding: 0.75rem 1rem;
+  min-height: 44px; // Touch-friendly
   border: 1px solid var(--border);
   background: var(--surface);
   backdrop-filter: blur(10px);
@@ -64,6 +67,11 @@
       transform: translateX(4px);
     }
   }
+
+  @include breakpoint-max(tablet) {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
 }
 
 .category-name {
@@ -98,7 +106,7 @@
 }
 
 // Responsive adjustments
-@media (max-width: 768px) {
+@include breakpoint-max(tablet) {
   .category-filter {
     max-width: 100%;
   }
