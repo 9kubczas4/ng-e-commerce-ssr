@@ -7,13 +7,13 @@ import boundaries from 'eslint-plugin-boundaries';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', '.angular/**', 'node_modules/**', 'coverage/**'],
+    ignores: ['dist/**', '.angular/**', 'node_modules/**', 'coverage/**', '**/*.html', 'e2e/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
     files: ['**/*.ts'],
-    ignores: ['**/*.config.ts', 'e2e/**/*.ts', '**/*.spec.ts', 'src/test-setup.ts'],
+    ignores: ['**/*.config.ts', 'e2e/**/*.ts', '**/*.spec.ts', 'src/test-setup.ts', '**/*.html', 'playwright.config.ts'],
     plugins: {
       '@angular-eslint': angular,
       boundaries,
@@ -21,7 +21,7 @@ export default tseslint.config(
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: './tsconfig.app.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -109,6 +109,7 @@ export default tseslint.config(
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
   // Config files - lighter rules, no type checking

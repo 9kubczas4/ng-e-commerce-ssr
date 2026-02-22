@@ -29,7 +29,7 @@ describe('BasketService - Error Handling', () => {
       const consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
       let callCount = 0;
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation((key: string) => {
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation((_key: string) => {
         callCount++;
         // First call is availability check
         if (callCount === 1) {
@@ -286,9 +286,7 @@ describe('BasketService - Error Handling', () => {
       const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Mock localStorage to be unavailable (availability check fails)
-      let callCount = 0;
       const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-        callCount++;
         // Availability check fails
         throw new Error('localStorage not available');
       });

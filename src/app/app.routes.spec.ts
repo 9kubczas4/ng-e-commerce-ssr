@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
   selector: 'app-test',
   template: '<div>Test</div>',
 })
-class TestComponent {}
+class _TestComponent {}
 
 describe('App Routes', () => {
   let router: Router;

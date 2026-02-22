@@ -6,14 +6,12 @@ import { TransferState, makeStateKey } from '@angular/core';
 
 describe('ProductService', () => {
   let service: ProductService;
-  let transferState: TransferState;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [TransferState]
     });
     service = TestBed.inject(ProductService);
-    transferState = TestBed.inject(TransferState);
   });
 
   it('should be created', () => {

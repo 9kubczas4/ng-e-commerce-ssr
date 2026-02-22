@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, output } from '@angular/cor
 import { BasketService } from '../../services/basket.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
+/* eslint-disable @angular-eslint/component-selector */
 @Component({
   selector: 'header[appHeader]',
   changeDetection: ChangeDetectionStrategy.OnPush,

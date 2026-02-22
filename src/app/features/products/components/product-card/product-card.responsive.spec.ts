@@ -4,7 +4,6 @@ import { ProductCardComponent } from './product-card.component';
 import { Product } from '../../models/product.model';
 
 describe('ProductCardComponent - Responsive Behavior', () => {
-  let component: ProductCardComponent;
   let fixture: ComponentFixture<ProductCardComponent>;
   let compiled: HTMLElement;
 
@@ -24,7 +23,6 @@ describe('ProductCardComponent - Responsive Behavior', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductCardComponent);
-    component = fixture.componentInstance;
     fixture.componentRef.setInput('product', mockProduct);
     fixture.detectChanges();
     compiled = fixture.nativeElement as HTMLElement;

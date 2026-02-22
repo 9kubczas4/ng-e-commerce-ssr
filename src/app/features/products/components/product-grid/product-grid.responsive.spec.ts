@@ -4,7 +4,6 @@ import { ProductGridComponent } from './product-grid.component';
 import { Product } from '../../models/product.model';
 
 describe('ProductGridComponent - Responsive Behavior', () => {
-  let component: ProductGridComponent;
   let fixture: ComponentFixture<ProductGridComponent>;
   let compiled: HTMLElement;
 
@@ -33,7 +32,6 @@ describe('ProductGridComponent - Responsive Behavior', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductGridComponent);
-    component = fixture.componentInstance;
     fixture.componentRef.setInput('products', mockProducts);
     fixture.detectChanges();
     compiled = fixture.nativeElement as HTMLElement;
