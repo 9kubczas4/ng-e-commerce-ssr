@@ -59,21 +59,47 @@ export class BasketService {
   }
 
   updateQuantity(productId: string, quantity: number): void {
-    // Validate quantity
-    if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QUANTITY) {
-      console.error(`Invalid quantity: ${quantity}. Must be between 1 and ${MAX_QUANTITY}`);
+    // Validate quantity - must be positive integer between 1 and MAX_QUANTITY
+    const validatedQuantity = this.validateQuantity(quantity);
+
+    if (validatedQuantity === null) {
+      console.error(`Invalid quantity: ${quantity}. Must be a positive integer between 1 and ${MAX_QUANTITY}`);
       return;
     }
 
     const currentBasket = this.basketSignal();
     const updatedItems = currentBasket.items.map(item => {
       if (item.product.id === productId) {
-        return { ...item, quantity };
+        return { ...item, quantity: validatedQuantity };
       }
       return item;
     });
 
     this.updateBasket(updatedItems);
+  }
+
+  /**
+   * Validate quantity input
+   * @param quantity - The quantity to validate
+   * @returns Validated quantity or null if invalid
+   */
+  private validateQuantity(quantity: number): number | null {
+    // Check if it's a number
+    if (typeof quantity !== 'number' || isNaN(quantity)) {
+      return null;
+    }
+
+    // Check if it's an integer
+    if (!Number.isInteger(quantity)) {
+      return null;
+    }
+
+    // Check if it's within valid range
+    if (quantity < 1 || quantity > MAX_QUANTITY) {
+      return null;
+    }
+
+    return quantity;
   }
 
   clearBasket(): void {

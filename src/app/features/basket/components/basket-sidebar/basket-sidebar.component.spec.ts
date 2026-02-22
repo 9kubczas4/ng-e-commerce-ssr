@@ -155,6 +155,18 @@ describe('BasketSidebarComponent', () => {
 
         expect(mockBasketService.updateQuantity).toHaveBeenCalledWith('product-1', 99);
       });
+
+      it('should not call updateQuantity when quantity is at maximum (99)', () => {
+        component.incrementQuantity('product-1', 99);
+
+        expect(mockBasketService.updateQuantity).not.toHaveBeenCalled();
+      });
+
+      it('should not call updateQuantity when quantity exceeds maximum', () => {
+        component.incrementQuantity('product-1', 100);
+
+        expect(mockBasketService.updateQuantity).not.toHaveBeenCalled();
+      });
     });
 
     describe('decrementQuantity', () => {

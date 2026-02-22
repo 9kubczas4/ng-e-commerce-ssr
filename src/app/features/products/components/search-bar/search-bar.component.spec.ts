@@ -56,6 +56,50 @@ describe('SearchBarComponent', () => {
 
       expect(component.searchQuery()).toBe('test@#$%');
     });
+
+    it('should sanitize HTML tags from input', () => {
+      const mockEvent = {
+        target: { value: '<script>alert("xss")</script>test' }
+      } as unknown as Event;
+
+      component.onSearchInput(mockEvent);
+
+      expect(component.searchQuery()).not.toContain('<script>');
+      expect(component.searchQuery()).not.toContain('</script>');
+    });
+
+    it('should trim whitespace from input', () => {
+      const mockEvent = {
+        target: { value: '  Angular  ' }
+      } as unknown as Event;
+
+      component.onSearchInput(mockEvent);
+
+      expect(component.searchQuery()).toBe('Angular');
+    });
+
+    it('should limit search query length to 100 characters', () => {
+      const longString = 'a'.repeat(150);
+      const mockEvent = {
+        target: { value: longString }
+      } as unknown as Event;
+
+      component.onSearchInput(mockEvent);
+
+      expect(component.searchQuery().length).toBe(100);
+    });
+
+    it('should allow common punctuation in search', () => {
+      const mockEvent = {
+        target: { value: "Angular's best-practices!" }
+      } as unknown as Event;
+
+      component.onSearchInput(mockEvent);
+
+      expect(component.searchQuery()).toContain("'");
+      expect(component.searchQuery()).toContain('-');
+      expect(component.searchQuery()).toContain('!');
+    });
   });
 
   describe('Debouncing', () => {

@@ -28,12 +28,18 @@ export class BasketSidebarComponent {
   }
 
   incrementQuantity(productId: string, currentQuantity: number): void {
-    this.basketService.updateQuantity(productId, currentQuantity + 1);
+    const newQuantity = currentQuantity + 1;
+    // Validate before updating - max is 99
+    if (newQuantity <= 99) {
+      this.basketService.updateQuantity(productId, newQuantity);
+    }
   }
 
   decrementQuantity(productId: string, currentQuantity: number): void {
-    if (currentQuantity > 1) {
-      this.basketService.updateQuantity(productId, currentQuantity - 1);
+    const newQuantity = currentQuantity - 1;
+    // Validate before updating - min is 1
+    if (newQuantity >= 1) {
+      this.basketService.updateQuantity(productId, newQuantity);
     }
   }
 
