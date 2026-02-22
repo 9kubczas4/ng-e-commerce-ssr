@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductGridComponent } from './product-grid.component';
-import { Product } from '../../models/product.model';
+import { Product } from '../../../../models/product.model';
 
 describe('ProductGridComponent - Responsive Behavior', () => {
   let fixture: ComponentFixture<ProductGridComponent>;

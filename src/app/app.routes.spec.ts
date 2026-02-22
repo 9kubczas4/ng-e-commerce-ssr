@@ -4,14 +4,6 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { Component } from '@angular/core';
-
-// Mock components for testing
-@Component({
-  selector: 'app-test',
-  template: '<div>Test</div>',
-})
-class _TestComponent {}
 
 describe('App Routes', () => {
   let router: Router;
@@ -43,22 +35,19 @@ describe('App Routes', () => {
       expect(rootRoute?.loadComponent).toBeDefined();
     });
 
-    it('should have home route as child of main layout', () => {
+    it('should have products routes as child of main layout at root path', () => {
       const rootRoute = routes.find((route) => route.path === '');
-      const homeRoute = rootRoute?.children?.find((child) => child.path === '');
-      expect(homeRoute).toBeDefined();
-      expect(homeRoute?.title).toBe('Angular Dev Shop - Home');
+      const productsRoute = rootRoute?.children?.find((child) => child.path === '');
+      expect(productsRoute).toBeDefined();
+      expect(productsRoute?.loadChildren).toBeDefined();
     });
 
-    // Commented out until product details is implemented
-    // it('should have product details route with id parameter', () => {
-    //   const rootRoute = routes.find((route) => route.path === '');
-    //   const productRoute = rootRoute?.children?.find(
-    //     (child) => child.path === 'product/:id'
-    //   );
-    //   expect(productRoute).toBeDefined();
-    //   expect(productRoute?.title).toBe('Product Details - Angular Dev Shop');
-    // });
+    it('should have products routes as child of main layout at product path', () => {
+      const rootRoute = routes.find((route) => route.path === '');
+      const productRoute = rootRoute?.children?.find((child) => child.path === 'product');
+      expect(productRoute).toBeDefined();
+      expect(productRoute?.loadChildren).toBeDefined();
+    });
   });
 
   describe('Lazy Loading', () => {
@@ -67,80 +56,66 @@ describe('App Routes', () => {
       expect(rootRoute?.loadComponent).toBeDefined();
       expect(typeof rootRoute?.loadComponent).toBe('function');
 
-      // Verify the lazy load function returns a promise-like object
       const loadResult = rootRoute?.loadComponent?.();
       expect(loadResult).toBeDefined();
     });
 
-    it('should lazy load ProductListComponent', async () => {
+    it('should lazy load products routes at root path', async () => {
       const rootRoute = routes.find((route) => route.path === '');
-      const homeRoute = rootRoute?.children?.find((child) => child.path === '');
-      expect(homeRoute?.loadComponent).toBeDefined();
-      expect(typeof homeRoute?.loadComponent).toBe('function');
+      const productsRoute = rootRoute?.children?.find((child) => child.path === '');
+      expect(productsRoute?.loadChildren).toBeDefined();
+      expect(typeof productsRoute?.loadChildren).toBe('function');
 
-      // Verify the lazy load function returns a promise-like object
-      const loadResult = homeRoute?.loadComponent?.();
+      const loadResult = productsRoute?.loadChildren?.();
       expect(loadResult).toBeDefined();
     });
 
-    // Commented out until product details is implemented
-    // it('should lazy load ProductDetailsPageComponent', async () => {
-    //   const rootRoute = routes.find((route) => route.path === '');
-    //   const productRoute = rootRoute?.children?.find(
-    //     (child) => child.path === 'product/:id'
-    //   );
-    //   expect(productRoute?.loadComponent).toBeDefined();
-    //   expect(typeof productRoute?.loadComponent).toBe('function');
+    it('should lazy load products routes at product path', async () => {
+      const rootRoute = routes.find((route) => route.path === '');
+      const productRoute = rootRoute?.children?.find((child) => child.path === 'product');
+      expect(productRoute?.loadChildren).toBeDefined();
+      expect(typeof productRoute?.loadChildren).toBe('function');
 
-    //   // Verify the lazy load function returns a promise
-    //   const loadResult = productRoute?.loadComponent?.();
-    //   expect(loadResult).toBeInstanceOf(Promise);
-    // });
+      const loadResult = productRoute?.loadChildren?.();
+      expect(loadResult).toBeDefined();
+    });
   });
 
   describe('Redirects', () => {
-    it('should redirect unknown routes to home', async () => {
-      await router.navigate(['/unknown-route']);
-      const path = location.path();
-      // Empty string is equivalent to root path in Angular routing
-      expect(path === '' || path === '/').toBe(true);
-    });
-
     it('should redirect deeply nested unknown routes to home', async () => {
       await router.navigate(['/some/deeply/nested/unknown/path']);
       const path = location.path();
-      // Empty string is equivalent to root path in Angular routing
       expect(path === '' || path === '/').toBe(true);
     });
 
     it('should not redirect valid routes', async () => {
       await router.navigate(['/']);
       const path = location.path();
-      // Empty string is equivalent to root path in Angular routing
       expect(path === '' || path === '/').toBe(true);
     });
   });
 
-  describe('Route Titles', () => {
-    it('should set title for home route', () => {
+  describe('Product Detail Routes', () => {
+    it('should resolve /product/:id URLs correctly', async () => {
       const rootRoute = routes.find((route) => route.path === '');
-      const homeRoute = rootRoute?.children?.find((child) => child.path === '');
-      expect(homeRoute?.title).toBe('Angular Dev Shop - Home');
+      const productRoute = rootRoute?.children?.find((child) => child.path === 'product');
+      expect(productRoute).toBeDefined();
+      expect(productRoute?.loadChildren).toBeDefined();
     });
 
-    // Commented out until product details is implemented
-    // it('should set title for product details route', () => {
-    //   const rootRoute = routes.find((route) => route.path === '');
-    //   const productRoute = rootRoute?.children?.find(
-    //     (child) => child.path === 'product/:id'
-    //   );
-    //   expect(productRoute?.title).toBe('Product Details - Angular Dev Shop');
-    // });
+    it('should support product detail navigation via /product/:id', async () => {
+      await router.navigate(['/product', '123']);
+      expect(router.url).toContain('/product/123');
+    });
+
+    it('should support product detail navigation via /:id', async () => {
+      await router.navigate(['/123']);
+      expect(router.url).toContain('/123');
+    });
   });
 
   describe('Route Structure', () => {
     it('should have correct number of top-level routes', () => {
-      // Root route and wildcard redirect
       expect(routes.length).toBe(2);
     });
 
@@ -149,6 +124,11 @@ describe('App Routes', () => {
       expect(rootRoute?.children).toBeDefined();
       expect(Array.isArray(rootRoute?.children)).toBe(true);
       expect(rootRoute?.children?.length).toBeGreaterThan(0);
+    });
+
+    it('should have two child routes under main layout', () => {
+      const rootRoute = routes.find((route) => route.path === '');
+      expect(rootRoute?.children?.length).toBe(2);
     });
   });
 });

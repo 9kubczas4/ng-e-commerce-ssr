@@ -10,19 +10,17 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () =>
-          import('./features/products/containers/product-list/product-list.component').then(
-            (m) => m.ProductListComponent
+        loadChildren: () =>
+          import('./features/products/products.routes').then(
+            (m) => m.PRODUCTS_ROUTES
           ),
-        title: 'Angular Dev Shop - Home',
       },
       {
-        path: 'product/:id',
-        loadComponent: () =>
-          import('./features/product-details/containers/product-details-page/product-details-page.component').then(
-            (m) => m.ProductDetailsPageComponent
+        path: 'product',
+        loadChildren: () =>
+          import('./features/products/products.routes').then(
+            (m) => m.PRODUCTS_ROUTES
           ),
-        title: 'Product Details - Angular Dev Shop',
       },
     ],
   },

@@ -1,12 +1,12 @@
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProductService } from '../../../../core/services/product.service';
+import { ProductService } from '../../services/product.service';
 import { BasketService } from '../../../../core/services/basket.service';
 import { Product } from '../../models/product.model';
-import { ProductGridComponent } from '../../components/product-grid/product-grid.component';
-import { SearchBarComponent } from '../../components/search-bar/search-bar.component';
-import { CategoryFilterComponent } from '../../components/category-filter/category-filter.component';
-import { ProductCardSkeletonComponent } from '../../components/product-card-skeleton/product-card-skeleton.component';
+import { ProductGridComponent } from './components/product-grid/product-grid.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { CategoryFilterComponent } from './components/category-filter/category-filter.component';
+import { ProductCardSkeletonComponent } from './components/product-card-skeleton/product-card-skeleton.component';
 
 @Component({
   selector: 'app-product-list',

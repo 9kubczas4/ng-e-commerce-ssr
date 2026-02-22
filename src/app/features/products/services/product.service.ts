@@ -1,6 +1,6 @@
 import { Injectable, signal, inject, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Product, SAMPLE_PRODUCTS } from '../../features/products/models/product.model';
+import { Product, SAMPLE_PRODUCTS } from '../models/product.model';
 
 const PRODUCTS_KEY = makeStateKey<Product[]>('products');
 

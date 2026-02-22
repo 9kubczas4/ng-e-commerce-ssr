@@ -1,11 +1,12 @@
 import { Component, inject, computed, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Product } from '../../../products/models/product.model';
-import { ProductService } from '../../../../core/services/product.service';
+import { Product } from '../../models/product.model';
+import { ProductService } from '../../services/product.service';
 import { BasketService } from '../../../../core/services/basket.service';
 
 @Component({
   selector: 'app-product-details-page',
+  imports: [],
   templateUrl: './product-details-page.component.html',
   styleUrls: ['./product-details-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

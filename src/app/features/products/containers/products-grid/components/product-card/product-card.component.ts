@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, computed, input, output, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { Product } from '../../models/product.model';
+import { Product } from '../../../../models/product.model';
 
 @Component({
   selector: 'app-product-card',
