@@ -1,4 +1,4 @@
-.theme-toggle {
+:host {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6,31 +6,33 @@
   height: 44px;
   padding: 0;
   background: transparent;
-  border: 2px solid var(--border, rgba(0, 0, 0, 0.1));
-  border-radius: 50%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: var(--text-primary, #1e1e1e);
+  transition: all 0.2s ease;
+  color: var(--text-primary);
 
   &:hover {
-    background: var(--surface, rgba(255, 255, 255, 0.7));
-    border-color: var(--primary, #dd0031);
-    transform: scale(1.05);
+    background: var(--surface);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--primary, #dd0031);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translateY(0);
   }
 }
 
 .theme-icon {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
 
   &--sun {
@@ -59,14 +61,6 @@
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-// Ensure button is accessible on mobile
-@media (max-width: 768px) {
-  .theme-toggle {
-    width: 48px;
-    height: 48px;
   }
 }
 
