@@ -1,11 +1,19 @@
-import { beforeAll } from 'vitest';
-import { getTestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from '@angular/platform-browser-dynamic/testing';
+import { afterEach, beforeEach } from 'vitest';
+import { getTestBed, ɵgetCleanupHook as getCleanupHook } from '@angular/core/testing';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+import { NgModule } from '@angular/core';
 
-beforeAll(() => {
-  // Initialize Angular testing environment
-  getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-});
+beforeEach(getCleanupHook(false));
+afterEach(getCleanupHook(true));
+
+@NgModule({ providers: [] })
+class TestModule {}
+
+getTestBed().initTestEnvironment(
+  [BrowserTestingModule, TestModule],
+  platformBrowserTesting(),
+  {
+    errorOnUnknownElements: true,
+    errorOnUnknownProperties: true,
+  }
+);

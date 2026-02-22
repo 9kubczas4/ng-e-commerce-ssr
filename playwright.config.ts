@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL: 'http://localhost:4000',
     trace: 'on-first-retry',
   },
   projects: [
@@ -31,7 +31,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run serve:ssr:angular-dev-shop',
-    url: 'http://localhost:4200',
+    url: 'http://localhost:4000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },

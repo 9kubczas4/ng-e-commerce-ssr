@@ -1,18 +1,20 @@
+import angular from '@analogjs/vite-plugin-angular';
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
 
 export default defineConfig({
+  plugins: [angular()] as any,
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.{spec,pbt.spec}.ts'],
+    css: true, // Enable CSS processing
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         '**/*.spec.ts',
-        '**/*.pbt.spec.ts',
         '**/node_modules/**',
         '**/dist/**',
         '**/.angular/**',
@@ -26,5 +28,8 @@ export default defineConfig({
       '@features': resolve(__dirname, './src/app/features'),
       '@shared': resolve(__dirname, './src/app/shared'),
     },
+  },
+  define: {
+    'import.meta.vitest': process.env['NODE_ENV'] !== 'production',
   },
 });

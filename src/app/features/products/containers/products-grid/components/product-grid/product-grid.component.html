@@ -1,0 +1,22 @@
+<div class="product-grid-container">
+  @if (isLoading()) {
+    <div class="product-grid">
+      @for (item of skeletonArray; track $index) {
+        <app-product-card-skeleton />
+      }
+    </div>
+  } @else if (filteredProducts().length > 0) {
+    <div class="product-grid">
+      @for (product of filteredProducts(); track product.id) {
+        <app-product-card
+          [product]="product"
+          (addToBasket)="onAddToBasket($event)"
+          (cardClick)="onProductClick($event)" />
+      }
+    </div>
+  } @else {
+    <div class="empty-state" data-testid="no-products">
+      <p>No products found matching your criteria.</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,38 @@
+@use '../../../../../../../styles/breakpoints' as *;
+
+.product-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  min-height: 400px;
+
+  @include breakpoint-max(tablet) {
+    min-height: 350px;
+  }
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  flex: 1;
+
+  @include breakpoint-max(tablet) {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+}
+
+.skeleton-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: auto;
+
+  @include breakpoint-max(tablet) {
+    gap: 0.5rem;
+  }
+}

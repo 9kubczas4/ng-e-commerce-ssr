@@ -1,0 +1,81 @@
+@use '../../../../../../../styles/breakpoints' as *;
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-grid-container {
+  width: 100%;
+}
+
+.product-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  padding: 0;
+
+  // Mobile-specific optimizations
+  @include breakpoint-max(tablet) {
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  // Tablet and up
+  @include breakpoint(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // Desktop - 2 columns below 1220px
+  @include breakpoint(desktop) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // 3 columns from 1220px and up
+  @media (min-width: 1220px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  // Wide screens - keep 3 columns max
+  @include breakpoint(wide) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  // Add staggered fade-in animation to product cards
+  app-product-card,
+  app-product-card-skeleton {
+    animation: fadeInUp 0.4s ease-out backwards;
+
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.05}s;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+
+  // Mobile-specific empty state
+  @include breakpoint-max(tablet) {
+    padding: 2rem 1rem;
+  }
+
+  p {
+    font-size: 1.125rem;
+    margin: 0;
+
+    @include breakpoint-max(tablet) {
+      font-size: 1rem;
+    }
+  }
+}
