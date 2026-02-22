@@ -1,0 +1,87 @@
+<div class="footer__container">
+  <!-- Main Footer Content -->
+  <div class="footer__content">
+    <!-- Brand Section -->
+    <div class="footer__brand">
+      <div class="footer__logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+        </svg>
+        <span class="footer__brand-name">Angular Dev Shop</span>
+      </div>
+      <p class="footer__description">
+        Modern e-commerce built with Angular. Showcasing best practices and cutting-edge web development.
+      </p>
+      <!-- Social Links -->
+      <div class="footer__social">
+        @for (social of socialLinks; track social.icon) {
+          <a
+            [href]="social.href"
+            class="footer__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="social.ariaLabel">
+            <span class="footer__social-icon">{{ social.label.charAt(0) }}</span>
+          </a>
+        }
+      </div>
+    </div>
+
+    <!-- Links Sections -->
+    <div class="footer__links">
+      <div class="footer__links-column">
+        <h3 class="footer__links-title">Shop</h3>
+        <ul class="footer__links-list">
+          @for (link of footerLinks.shop; track link.label) {
+            <li>
+              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="footer__links-column">
+        <h3 class="footer__links-title">Company</h3>
+        <ul class="footer__links-list">
+          @for (link of footerLinks.company; track link.label) {
+            <li>
+              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="footer__links-column">
+        <h3 class="footer__links-title">Support</h3>
+        <ul class="footer__links-list">
+          @for (link of footerLinks.support; track link.label) {
+            <li>
+              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="footer__links-column">
+        <h3 class="footer__links-title">Legal</h3>
+        <ul class="footer__links-list">
+          @for (link of footerLinks.legal; track link.label) {
+            <li>
+              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer__bottom">
+    <p class="footer__copyright">
+      © {{ currentYear }} Angular Dev Shop. All rights reserved.
+    </p>
+    <p class="footer__built-with">
+      Built with <span class="footer__heart" aria-label="love">❤️</span> using Angular {{ '21' }}
+    </p>
+  </div>
+</div>
