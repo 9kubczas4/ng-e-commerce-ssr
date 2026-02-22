@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeaderComponent } from './header.component';
-import { BasketService } from '../../services/basket.service';
+import { BasketService } from '../../../services/basket.service';
 import { signal } from '@angular/core';
-import { Basket } from '../../models/basket.model';
+import { Basket } from '../../../models/basket.model';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;

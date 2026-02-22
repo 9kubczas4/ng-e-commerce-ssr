@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MainLayoutComponent } from './main-layout.component';
-import { BasketSidebarComponent } from '../../../features/basket/components/basket-sidebar/basket-sidebar.component';
-import { HeaderComponent } from '../header/header.component';
+import { BasketSidebarComponent } from './components/basket-sidebar/basket-sidebar.component';
+import { HeaderComponent } from './components/header/header.component';
 import { provideRouter } from '@angular/router';
 
 describe('MainLayoutComponent', () => {
