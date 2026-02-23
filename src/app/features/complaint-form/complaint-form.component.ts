@@ -1,7 +1,8 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ComplaintReason, PreferredResolution } from '../../models/complaint.model';
+import { ComplaintReason, PreferredResolution } from './models/complaint.model';
+import { createComplaintForm, createProductGroup } from './form/complaint.form';
 
 @Component({
   selector: 'app-complaint-form',
@@ -11,14 +12,13 @@ import { ComplaintReason, PreferredResolution } from '../../models/complaint.mod
   styleUrls: ['./complaint-form.component.scss']
 })
 export class ComplaintFormComponent {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   protected isSubmitting = signal(false);
   protected isSubmitted = signal(false);
 
-  complaintForm!: FormGroup;
-  products!: FormArray;
+  complaintForm = createComplaintForm();
+  products = this.complaintForm.controls.products;
 
   protected readonly complaintReasons: Array<{ value: ComplaintReason; label: string }> = [
     { value: 'defective-product', label: 'Defective Product' },
@@ -35,29 +35,8 @@ export class ComplaintFormComponent {
     { value: 'repair', label: 'Repair' }
   ];
 
-  constructor() {
-    this.complaintForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
-      orderNumber: ['', [Validators.required, Validators.pattern(/^[A-Z0-9-]+$/)]],
-      products: this.fb.array([this.createProductGroup()]),
-      preferredResolution: ['', Validators.required]
-    });
-    this.products = this.complaintForm.get('products') as FormArray;
-  }
-
-  protected createProductGroup(): FormGroup {
-    return this.fb.group({
-      productName: ['', [Validators.required, Validators.minLength(3)]],
-      complaintReason: ['', Validators.required],
-      description: ['', [Validators.required, Validators.minLength(20), Validators.maxLength(1000)]]
-    });
-  }
-
   addProduct(): void {
-    this.products.push(this.createProductGroup());
+    this.products.push(createProductGroup());
   }
 
   removeProduct(index: number): void {
@@ -82,7 +61,7 @@ export class ComplaintFormComponent {
       setTimeout(() => {
         this.complaintForm.reset();
         this.products.clear();
-        this.products.push(this.createProductGroup());
+        this.products.push(createProductGroup());
         this.isSubmitted.set(false);
         this.router.navigate(['/']);
       }, 3000);
@@ -94,7 +73,7 @@ export class ComplaintFormComponent {
       ? this.products.at(productIndex).get(fieldName)
       : this.complaintForm.get(fieldName);
 
-    if (!field || !field.touched || !field.errors) {
+    if (!field?.touched || !field.errors) {
       return null;
     }
 
@@ -119,6 +98,6 @@ export class ComplaintFormComponent {
       ? this.products.at(productIndex).get(fieldName)
       : this.complaintForm.get(fieldName);
 
-    return !!(field && field.invalid && field.touched);
+    return !!(field?.invalid && field.touched);
   }
 }
