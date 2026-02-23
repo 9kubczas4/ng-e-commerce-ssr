@@ -34,7 +34,11 @@
         <ul class="footer__links-list">
           @for (link of footerLinks.shop; track link.label) {
             <li>
-              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              @if (link.isRoute) {
+                <a [routerLink]="link.route" class="footer__link">{{ link.label }}</a>
+              } @else {
+                <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              }
             </li>
           }
         </ul>
@@ -45,7 +49,11 @@
         <ul class="footer__links-list">
           @for (link of footerLinks.company; track link.label) {
             <li>
-              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              @if (link.isRoute) {
+                <a [routerLink]="link.route" class="footer__link">{{ link.label }}</a>
+              } @else {
+                <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              }
             </li>
           }
         </ul>
@@ -56,7 +64,11 @@
         <ul class="footer__links-list">
           @for (link of footerLinks.support; track link.label) {
             <li>
-              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              @if (link.isRoute) {
+                <a [routerLink]="link.route" class="footer__link footer__link--highlight">{{ link.label }}</a>
+              } @else {
+                <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              }
             </li>
           }
         </ul>
@@ -67,7 +79,11 @@
         <ul class="footer__links-list">
           @for (link of footerLinks.legal; track link.label) {
             <li>
-              <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              @if (link.isRoute) {
+                <a [routerLink]="link.route" class="footer__link">{{ link.label }}</a>
+              } @else {
+                <a [href]="link.href" class="footer__link">{{ link.label }}</a>
+              }
             </li>
           }
         </ul>

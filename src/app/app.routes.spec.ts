@@ -126,9 +126,9 @@ describe('App Routes', () => {
       expect(rootRoute?.children?.length).toBeGreaterThan(0);
     });
 
-    it('should have two child routes under main layout', () => {
+    it('should have three child routes under main layout', () => {
       const rootRoute = routes.find((route) => route.path === '');
-      expect(rootRoute?.children?.length).toBe(2);
+      expect(rootRoute?.children?.length).toBe(3);
     });
   });
 });

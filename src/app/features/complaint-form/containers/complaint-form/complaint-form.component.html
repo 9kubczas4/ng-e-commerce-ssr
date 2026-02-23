@@ -1,0 +1,304 @@
+<div class="complaint-form-page">
+  <div class="complaint-form-container">
+    <!-- Header -->
+    <div class="complaint-form-header">
+      <h1 class="complaint-form-title">Complaint Form</h1>
+      <p class="complaint-form-subtitle">
+        Fill out the form below to submit a product complaint. We'll respond within 48 hours.
+      </p>
+    </div>
+
+    <!-- Success Message -->
+    @if (isSubmitted()) {
+      <div class="success-message" role="alert" aria-live="polite">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <h2>Complaint Submitted Successfully!</h2>
+        <p>Thank you for your submission. We'll contact you shortly.</p>
+      </div>
+    }
+
+    <!-- Form -->
+    @if (!isSubmitted()) {
+      <form [formGroup]="complaintForm" (ngSubmit)="onSubmit()" class="complaint-form" novalidate>
+        <!-- Personal Information Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Personal Information</legend>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="firstName" class="form-label">
+                First Name <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                formControlName="firstName"
+                class="form-input"
+                [class.form-input--error]="isFieldInvalid('firstName')"
+                aria-required="true"
+                [attr.aria-invalid]="isFieldInvalid('firstName')"
+                [attr.aria-describedby]="isFieldInvalid('firstName') ? 'firstName-error' : null"
+              />
+              @if (isFieldInvalid('firstName')) {
+                <span id="firstName-error" class="form-error" role="alert">
+                  {{ getFieldError('firstName') }}
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="lastName" class="form-label">
+                Last Name <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                formControlName="lastName"
+                class="form-input"
+                [class.form-input--error]="isFieldInvalid('lastName')"
+                aria-required="true"
+                [attr.aria-invalid]="isFieldInvalid('lastName')"
+                [attr.aria-describedby]="isFieldInvalid('lastName') ? 'lastName-error' : null"
+              />
+              @if (isFieldInvalid('lastName')) {
+                <span id="lastName-error" class="form-error" role="alert">
+                  {{ getFieldError('lastName') }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="email" class="form-label">
+                Email <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="form-input"
+                [class.form-input--error]="isFieldInvalid('email')"
+                aria-required="true"
+                [attr.aria-invalid]="isFieldInvalid('email')"
+                [attr.aria-describedby]="isFieldInvalid('email') ? 'email-error' : null"
+                placeholder="example@email.com"
+              />
+              @if (isFieldInvalid('email')) {
+                <span id="email-error" class="form-error" role="alert">
+                  {{ getFieldError('email') }}
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="phone" class="form-label">
+                Phone <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                formControlName="phone"
+                class="form-input"
+                [class.form-input--error]="isFieldInvalid('phone')"
+                aria-required="true"
+                [attr.aria-invalid]="isFieldInvalid('phone')"
+                [attr.aria-describedby]="isFieldInvalid('phone') ? 'phone-error' : null"
+                placeholder="123456789"
+              />
+              @if (isFieldInvalid('phone')) {
+                <span id="phone-error" class="form-error" role="alert">
+                  {{ getFieldError('phone') }}
+                </span>
+              }
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Order Information Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Order Information</legend>
+
+          <div class="form-field">
+            <label for="orderNumber" class="form-label">
+              Order Number <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="orderNumber"
+              formControlName="orderNumber"
+              class="form-input"
+              [class.form-input--error]="isFieldInvalid('orderNumber')"
+              aria-required="true"
+              [attr.aria-invalid]="isFieldInvalid('orderNumber')"
+              [attr.aria-describedby]="isFieldInvalid('orderNumber') ? 'orderNumber-error' : null"
+              placeholder="ORD-2024-12345"
+            />
+            @if (isFieldInvalid('orderNumber')) {
+              <span id="orderNumber-error" class="form-error" role="alert">
+                {{ getFieldError('orderNumber') }}
+              </span>
+            }
+          </div>
+        </fieldset>
+
+        <!-- Products Section -->
+        <fieldset class="form-section" formArrayName="products">
+          <legend class="section-title">Products</legend>
+
+          @let hasMoreProducts = products.length > 1;
+          @for (product of products.controls; track $index; let i = $index) {
+            <div class="product-group" [formGroupName]="i">
+              <div class="product-header">
+                <h3 class="product-title">Product {{ i + 1 }}</h3>
+                @if (hasMoreProducts) {
+                  <button
+                    type="button"
+                    class="btn-remove"
+                    (click)="removeProduct(i)"
+                    [attr.aria-label]="'Remove product ' + (i + 1)"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                    Remove
+                  </button>
+                }
+              </div>
+
+              <div class="form-field">
+                <label [for]="'productName-' + i" class="form-label">
+                  Product Name <span class="required" aria-label="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  [id]="'productName-' + i"
+                  formControlName="productName"
+                  class="form-input"
+                  [class.form-input--error]="isFieldInvalid('productName', i)"
+                  aria-required="true"
+                  [attr.aria-invalid]="isFieldInvalid('productName', i)"
+                  [attr.aria-describedby]="isFieldInvalid('productName', i) ? 'productName-error-' + i : null"
+                />
+                @if (isFieldInvalid('productName', i)) {
+                  <span [id]="'productName-error-' + i" class="form-error" role="alert">
+                    {{ getFieldError('productName', i) }}
+                  </span>
+                }
+              </div>
+
+              <div class="form-field">
+                <label [for]="'complaintReason-' + i" class="form-label">
+                  Complaint Reason <span class="required" aria-label="required">*</span>
+                </label>
+                <select
+                  [id]="'complaintReason-' + i"
+                  formControlName="complaintReason"
+                  class="form-select"
+                  [class.form-input--error]="isFieldInvalid('complaintReason', i)"
+                  aria-required="true"
+                  [attr.aria-invalid]="isFieldInvalid('complaintReason', i)"
+                  [attr.aria-describedby]="isFieldInvalid('complaintReason', i) ? 'complaintReason-error-' + i : null"
+                >
+                  <option value="">Select a reason</option>
+                  @for (reason of complaintReasons; track reason.value) {
+                    <option [value]="reason.value">{{ reason.label }}</option>
+                  }
+                </select>
+                @if (isFieldInvalid('complaintReason', i)) {
+                  <span [id]="'complaintReason-error-' + i" class="form-error" role="alert">
+                    {{ getFieldError('complaintReason', i) }}
+                  </span>
+                }
+              </div>
+
+              <div class="form-field">
+                <label [for]="'description-' + i" class="form-label">
+                  Problem Description <span class="required" aria-label="required">*</span>
+                </label>
+                <textarea
+                  [id]="'description-' + i"
+                  formControlName="description"
+                  class="form-textarea"
+                  [class.form-input--error]="isFieldInvalid('description', i)"
+                  rows="6"
+                  aria-required="true"
+                  [attr.aria-invalid]="isFieldInvalid('description', i)"
+                  [attr.aria-describedby]="isFieldInvalid('description', i) ? 'description-error-' + i : null"
+                  placeholder="Describe the problem with the product in detail (minimum 20 characters)..."
+                ></textarea>
+                @if (isFieldInvalid('description', i)) {
+                  <span [id]="'description-error-' + i" class="form-error" role="alert">
+                    {{ getFieldError('description', i) }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          <button
+            type="button"
+            class="btn-add-product"
+            (click)="addProduct()"
+            aria-label="Add another product"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Add Another Product
+          </button>
+        </fieldset>
+
+        <!-- Resolution Section -->
+        <fieldset class="form-section">
+          <legend class="section-title">Preferred Resolution</legend>
+
+          <div class="form-field">
+            <label for="preferredResolution" class="form-label">
+              Preferred Resolution <span class="required" aria-label="required">*</span>
+            </label>
+            <select
+              id="preferredResolution"
+              formControlName="preferredResolution"
+              class="form-select"
+              [class.form-input--error]="isFieldInvalid('preferredResolution')"
+              aria-required="true"
+              [attr.aria-invalid]="isFieldInvalid('preferredResolution')"
+              [attr.aria-describedby]="isFieldInvalid('preferredResolution') ? 'preferredResolution-error' : null"
+            >
+              <option value="">Select a resolution</option>
+              @for (resolution of resolutionOptions; track resolution.value) {
+                <option [value]="resolution.value">{{ resolution.label }}</option>
+              }
+            </select>
+            @if (isFieldInvalid('preferredResolution')) {
+              <span id="preferredResolution-error" class="form-error" role="alert">
+                {{ getFieldError('preferredResolution') }}
+              </span>
+            }
+          </div>
+        </fieldset>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span>Submitting...</span>
+            } @else {
+              <span>Submit Complaint</span>
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

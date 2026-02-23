@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FooterComponent } from './footer.component';
+import { provideRouter } from '@angular/router';
 
 describe('FooterComponent', () => {
   let component: FooterComponent;
@@ -7,7 +8,8 @@ describe('FooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FooterComponent]
+      imports: [FooterComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FooterComponent);
@@ -43,6 +45,19 @@ describe('FooterComponent', () => {
     expect(shopLinks?.querySelectorAll('.footer__link').length).toBe(4);
   });
 
+  it('should render support links including complaint form link', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const supportLinks = Array.from(compiled.querySelectorAll('.footer__links-column'))
+      .find(col => col.querySelector('.footer__links-title')?.textContent?.includes('Support'));
+
+    expect(supportLinks).toBeTruthy();
+    expect(supportLinks?.querySelectorAll('.footer__link').length).toBe(5);
+
+    const complaintLink = Array.from(supportLinks?.querySelectorAll('.footer__link') || [])
+      .find(link => link.textContent?.includes('Complaints'));
+    expect(complaintLink).toBeTruthy();
+  });
+
   it('should render social links', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const socialLinks = compiled.querySelectorAll('.footer__social-link');
@@ -75,7 +90,9 @@ describe('FooterComponent', () => {
     const links = compiled.querySelectorAll('.footer__link');
 
     links.forEach(link => {
-      expect(link.getAttribute('href')).toBeTruthy();
+      const href = link.getAttribute('href');
+      const routerLink = link.getAttribute('ng-reflect-router-link');
+      expect(href || routerLink).toBeTruthy();
     });
   });
 });

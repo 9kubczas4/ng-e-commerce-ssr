@@ -1,16 +1,27 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+type FooterLink =
+  | { label: string; href: string; isRoute?: false }
+  | { label: string; route: string; isRoute: true };
 
 /* eslint-disable @angular-eslint/component-selector */
 @Component({
   selector: 'footer[appFooter]',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
   protected readonly currentYear = new Date().getFullYear();
 
-  protected readonly footerLinks = {
+  protected readonly footerLinks: {
+    shop: FooterLink[];
+    company: FooterLink[];
+    support: FooterLink[];
+    legal: FooterLink[];
+  } = {
     shop: [
       { label: 'All Products', href: '#' },
       { label: 'New Arrivals', href: '#' },
@@ -27,7 +38,8 @@ export class FooterComponent {
       { label: 'Help Center', href: '#' },
       { label: 'Contact Us', href: '#' },
       { label: 'Shipping Info', href: '#' },
-      { label: 'Returns', href: '#' }
+      { label: 'Returns', href: '#' },
+      { label: 'Complaints', route: '/complaint', isRoute: true }
     ],
     legal: [
       { label: 'Privacy Policy', href: '#' },
