@@ -3,11 +3,18 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ComplaintReason, PreferredResolution } from './models/complaint.model';
 import { createComplaintForm, createProductGroup } from './form/complaint.form';
+import { FieldErrorPipe } from './pipes/field-error.pipe';
+import { FieldInvalidPipe } from './pipes/field-invalid.pipe';
+
+interface AgentSubmitEvent extends SubmitEvent {
+  agentInvoked?: boolean;
+  respondWith?: (promise: Promise<unknown>) => void;
+}
 
 @Component({
   selector: 'app-complaint-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FieldErrorPipe, FieldInvalidPipe],
   templateUrl: './complaint-form.component.html',
   styleUrls: ['./complaint-form.component.scss']
 })
@@ -71,20 +78,22 @@ export class ComplaintFormComponent {
   }
 
   protected handleSubmit(event: SubmitEvent): void {
+    const agentEvent = event as AgentSubmitEvent;
+
     // Check if the form was invoked by an AI agent
-    if ((event as any).agentInvoked) {
+    if (agentEvent.agentInvoked) {
       this.agentInvoked.set(true);
-      
+
       // Prevent default form submission
       event.preventDefault();
-      
+
       // Validate the form
       if (this.complaintForm.invalid) {
         this.complaintForm.markAllAsTouched();
-        
+
         // Return validation errors to the agent
         const errors = this.collectFormErrors();
-        (event as any).respondWith?.(
+        agentEvent.respondWith?.(
           Promise.reject({
             error: 'Validation failed',
             details: errors
@@ -92,23 +101,23 @@ export class ComplaintFormComponent {
         );
         return;
       }
-      
+
       // Process the submission
       this.isSubmitting.set(true);
-      
+
       // Simulate async submission
       const submissionPromise = new Promise((resolve) => {
         setTimeout(() => {
           console.log('Agent-invoked complaint submitted:', this.complaintForm.value);
           this.isSubmitting.set(false);
           this.isSubmitted.set(true);
-          
+
           resolve({
             success: true,
             message: 'Complaint submitted successfully',
             data: this.complaintForm.value
           });
-          
+
           // Reset after showing success
           setTimeout(() => {
             this.complaintForm.reset();
@@ -119,9 +128,9 @@ export class ComplaintFormComponent {
           }, 3000);
         }, 1500);
       });
-      
+
       // Return the promise to the agent
-      (event as any).respondWith?.(submissionPromise);
+      agentEvent.respondWith?.(submissionPromise);
     } else {
       // Regular user submission
       this.onSubmit();
@@ -130,14 +139,14 @@ export class ComplaintFormComponent {
 
   private collectFormErrors(): Record<string, string[]> {
     const errors: Record<string, string[]> = {};
-    
+
     Object.keys(this.complaintForm.controls).forEach(key => {
       const control = this.complaintForm.get(key);
       if (control?.invalid && control.errors) {
         errors[key] = Object.keys(control.errors);
       }
     });
-    
+
     // Collect product errors
     this.products.controls.forEach((product, index) => {
       Object.keys(product.controls).forEach(key => {
@@ -147,40 +156,7 @@ export class ComplaintFormComponent {
         }
       });
     });
-    
+
     return errors;
-  }
-
-  getFieldError(fieldName: string, productIndex?: number): string | null {
-    const field = productIndex !== undefined
-      ? this.products.at(productIndex).get(fieldName)
-      : this.complaintForm.get(fieldName);
-
-    if (!field?.touched || !field.errors) {
-      return null;
-    }
-
-    if (field.errors['required']) return 'This field is required';
-    if (field.errors['email']) return 'Invalid email address';
-    if (field.errors['minlength']) {
-      return `Minimum length: ${field.errors['minlength'].requiredLength} characters`;
-    }
-    if (field.errors['maxlength']) {
-      return `Maximum length: ${field.errors['maxlength'].requiredLength} characters`;
-    }
-    if (field.errors['pattern']) {
-      if (fieldName === 'phone') return 'Invalid phone number (9-15 digits)';
-      if (fieldName === 'orderNumber') return 'Invalid order number';
-    }
-
-    return 'Invalid value';
-  }
-
-  isFieldInvalid(fieldName: string, productIndex?: number): boolean {
-    const field = productIndex !== undefined
-      ? this.products.at(productIndex).get(fieldName)
-      : this.complaintForm.get(fieldName);
-
-    return !!(field?.invalid && field.touched);
   }
 }
