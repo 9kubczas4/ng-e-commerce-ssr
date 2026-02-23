@@ -5,6 +5,7 @@ import { ComplaintReason, PreferredResolution } from './models/complaint.model';
 import { createComplaintForm, createProductGroup } from './form/complaint.form';
 import { FieldErrorPipe } from './pipes/field-error.pipe';
 import { FieldInvalidPipe } from './pipes/field-invalid.pipe';
+import { collectFormErrors } from './utils/form-errors.helper';
 
 interface AgentSubmitEvent extends SubmitEvent {
   agentInvoked?: boolean;
@@ -92,7 +93,7 @@ export class ComplaintFormComponent {
         this.complaintForm.markAllAsTouched();
 
         // Return validation errors to the agent
-        const errors = this.collectFormErrors();
+        const errors = collectFormErrors(this.complaintForm);
         agentEvent.respondWith?.(
           Promise.reject({
             error: 'Validation failed',
@@ -135,28 +136,5 @@ export class ComplaintFormComponent {
       // Regular user submission
       this.onSubmit();
     }
-  }
-
-  private collectFormErrors(): Record<string, string[]> {
-    const errors: Record<string, string[]> = {};
-
-    Object.keys(this.complaintForm.controls).forEach(key => {
-      const control = this.complaintForm.get(key);
-      if (control?.invalid && control.errors) {
-        errors[key] = Object.keys(control.errors);
-      }
-    });
-
-    // Collect product errors
-    this.products.controls.forEach((product, index) => {
-      Object.keys(product.controls).forEach(key => {
-        const control = product.get(key);
-        if (control?.invalid && control.errors) {
-          errors[`products[${index}].${key}`] = Object.keys(control.errors);
-        }
-      });
-    });
-
-    return errors;
   }
 }
