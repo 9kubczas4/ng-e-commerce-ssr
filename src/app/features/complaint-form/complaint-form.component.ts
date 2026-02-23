@@ -54,38 +54,12 @@ export class ComplaintFormComponent {
     }
   }
 
-  protected onSubmit(): void {
-    if (this.complaintForm.invalid) {
-      this.complaintForm.markAllAsTouched();
-      return;
-    }
-
-    this.isSubmitting.set(true);
-
-    setTimeout(() => {
-      console.log('Complaint submitted:', this.complaintForm.value);
-      this.isSubmitting.set(false);
-      this.isSubmitted.set(true);
-
-      setTimeout(() => {
-        this.complaintForm.reset();
-        this.products.clear();
-        this.products.push(createProductGroup());
-        this.isSubmitted.set(false);
-        this.agentInvoked.set(false);
-        this.router.navigate(['/']);
-      }, 3000);
-    }, 1500);
-  }
-
   protected handleSubmit(event: SubmitEvent): void {
     const agentEvent = event as AgentSubmitEvent;
 
     // Check if the form was invoked by an AI agent
     if (agentEvent.agentInvoked) {
       this.agentInvoked.set(true);
-
-      // Prevent default form submission
       event.preventDefault();
 
       // Validate the form
@@ -103,38 +77,45 @@ export class ComplaintFormComponent {
         return;
       }
 
-      // Process the submission
-      this.isSubmitting.set(true);
-
-      // Simulate async submission
-      const submissionPromise = new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('Agent-invoked complaint submitted:', this.complaintForm.value);
-          this.isSubmitting.set(false);
-          this.isSubmitted.set(true);
-
-          resolve({
-            success: true,
-            message: 'Complaint submitted successfully',
-            data: this.complaintForm.value
-          });
-
-          // Reset after showing success
-          setTimeout(() => {
-            this.complaintForm.reset();
-            this.products.clear();
-            this.products.push(createProductGroup());
-            this.isSubmitted.set(false);
-            this.agentInvoked.set(false);
-          }, 3000);
-        }, 1500);
-      });
-
-      // Return the promise to the agent
+      // Process the submission and return promise to agent
+      const submissionPromise = this.submitForm();
       agentEvent.respondWith?.(submissionPromise);
     } else {
       // Regular user submission
-      this.onSubmit();
+      this.submitForm();
     }
+  }
+
+  private submitForm(): Promise<unknown> {
+    if (this.complaintForm.invalid) {
+      this.complaintForm.markAllAsTouched();
+      return Promise.reject({ error: 'Form is invalid' });
+    }
+
+    this.isSubmitting.set(true);
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('Complaint submitted:', this.complaintForm.value);
+        this.isSubmitting.set(false);
+        this.isSubmitted.set(true);
+
+        resolve({
+          success: true,
+          message: 'Complaint submitted successfully',
+          data: this.complaintForm.value
+        });
+
+        // Reset form and redirect after showing success
+        setTimeout(() => {
+          this.complaintForm.reset();
+          this.products.clear();
+          this.products.push(createProductGroup());
+          this.isSubmitted.set(false);
+          this.agentInvoked.set(false);
+          this.router.navigate(['/']);
+        }, 3000);
+      }, 1500);
+    });
   }
 }
