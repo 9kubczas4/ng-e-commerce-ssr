@@ -68,7 +68,7 @@ export class ComplaintFormComponent {
     }, 1500);
   }
 
-  getFieldError(fieldName: string, productIndex: number | undefined = undefined): string | null {
+  getFieldError(fieldName: string, productIndex?: number): string | null {
     const field = productIndex !== undefined
       ? this.products.at(productIndex).get(fieldName)
       : this.complaintForm.get(fieldName);
@@ -93,7 +93,7 @@ export class ComplaintFormComponent {
     return 'Invalid value';
   }
 
-  isFieldInvalid(fieldName: string, productIndex: number | undefined = undefined): boolean {
+  isFieldInvalid(fieldName: string, productIndex?: number): boolean {
     const field = productIndex !== undefined
       ? this.products.at(productIndex).get(fieldName)
       : this.complaintForm.get(fieldName);
