@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   PLATFORM_ID,
+  OnDestroy,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser, DecimalPipe } from '@angular/common';
@@ -22,7 +23,7 @@ import { FieldInvalidPipe } from './pipes/field-invalid.pipe';
   styleUrls: ['./checkout.component.scss'],
   imports: [DecimalPipe, ReactiveFormsModule, FieldErrorPipe, FieldInvalidPipe],
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnDestroy {
   private readonly basketService = inject(BasketService);
   protected readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
@@ -31,6 +32,9 @@ export class CheckoutComponent {
   protected isSubmitting = signal(false);
   protected isSubmitted = signal(false);
   protected submitError = signal<string | null>(null);
+
+  // Redirect timer reference
+  private redirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Form
   protected checkoutForm = createCheckoutForm();
@@ -115,9 +119,20 @@ export class CheckoutComponent {
 
     // Redirect after 5 seconds (only in browser)
     if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => {
+      this.redirectTimer = setTimeout(() => {
         this.router.navigate(['/']);
       }, 5000);
+    }
+  }
+
+  /**
+   * Cleanup on component destroy
+   */
+  ngOnDestroy(): void {
+    // Clear redirect timer if it exists
+    if (this.redirectTimer !== null) {
+      clearTimeout(this.redirectTimer);
+      this.redirectTimer = null;
     }
   }
 }

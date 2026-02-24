@@ -181,6 +181,56 @@ describe('CheckoutComponent', () => {
     });
   });
 
+  describe('Manual Redirect', () => {
+    it('should navigate immediately when Return to Home button is clicked', () => {
+      // Set component to submitted state
+      component['isSubmitted'].set(true);
+      fixture.detectChanges();
+
+      // Find and click the Return to Home button
+      const compiled = fixture.nativeElement as HTMLElement;
+      const returnButton = compiled.querySelector('.btn-return-home') as HTMLButtonElement;
+
+      expect(returnButton).toBeTruthy();
+
+      returnButton.click();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    it('should clear redirect timer when component is destroyed', async () => {
+      // Spy on clearTimeout
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
+      // Fill in valid form and submit to trigger redirect timer
+      component['checkoutForm'].patchValue({
+        shipping: {
+          fullName: 'John Doe',
+          streetAddress: '123 Main Street',
+          city: 'New York',
+          postalCode: '10001',
+          country: 'USA',
+        },
+        payment: {
+          cardNumber: '1234567890123456',
+          expiryDate: '12/26',
+          cvv: '123',
+          cardholderName: 'John Doe',
+        },
+      });
+      component['checkoutForm'].updateValueAndValidity();
+      component['handleSubmit']();
+
+      // Wait for async processing to complete and timer to be set
+      await new Promise((resolve) => setTimeout(resolve, 1600));
+
+      // Destroy component
+      fixture.destroy();
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('Loading State', () => {
     beforeEach(() => {
       // Fill in valid form data
