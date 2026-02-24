@@ -1,4 +1,11 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 
 // Postal code validator (supports various formats)
 export function postalCodeValidator(): ValidatorFn {
@@ -56,4 +63,79 @@ export function cvvValidator(): ValidatorFn {
     const isValid = /^\d{3,4}$/.test(value);
     return isValid ? null : { invalidCvv: true };
   };
+}
+
+// TypeScript types for form controls
+export interface ShippingFormControls {
+  fullName: FormControl<string>;
+  streetAddress: FormControl<string>;
+  city: FormControl<string>;
+  postalCode: FormControl<string>;
+  country: FormControl<string>;
+}
+
+export interface PaymentFormControls {
+  cardNumber: FormControl<string>;
+  expiryDate: FormControl<string>;
+  cvv: FormControl<string>;
+  cardholderName: FormControl<string>;
+}
+
+export interface CheckoutFormControls {
+  shipping: FormGroup<ShippingFormControls>;
+  payment: FormGroup<PaymentFormControls>;
+}
+
+// Form creation functions
+export function createShippingGroup(): FormGroup<ShippingFormControls> {
+  return new FormGroup({
+    fullName: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(2)],
+      nonNullable: true,
+    }),
+    streetAddress: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(5)],
+      nonNullable: true,
+    }),
+    city: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(2)],
+      nonNullable: true,
+    }),
+    postalCode: new FormControl('', {
+      validators: [Validators.required, postalCodeValidator()],
+      nonNullable: true,
+    }),
+    country: new FormControl('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+  });
+}
+
+export function createPaymentGroup(): FormGroup<PaymentFormControls> {
+  return new FormGroup({
+    cardNumber: new FormControl('', {
+      validators: [Validators.required, cardNumberValidator()],
+      nonNullable: true,
+    }),
+    expiryDate: new FormControl('', {
+      validators: [Validators.required, expiryDateValidator()],
+      nonNullable: true,
+    }),
+    cvv: new FormControl('', {
+      validators: [Validators.required, cvvValidator()],
+      nonNullable: true,
+    }),
+    cardholderName: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(2)],
+      nonNullable: true,
+    }),
+  });
+}
+
+export function createCheckoutForm(): FormGroup<CheckoutFormControls> {
+  return new FormGroup({
+    shipping: createShippingGroup(),
+    payment: createPaymentGroup(),
+  });
 }
