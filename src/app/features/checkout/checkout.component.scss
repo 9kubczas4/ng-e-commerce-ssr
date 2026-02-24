@@ -94,15 +94,17 @@
   text-decoration: line-through;
 }
 
-.item-price-discounted {
+.item-price-discounted,
+.item-price-regular {
   font-size: 1rem;
   font-weight: 600;
+}
+
+.item-price-discounted {
   color: var(--primary);
 }
 
 .item-price-regular {
-  font-size: 1rem;
-  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -155,7 +157,6 @@
   flex-direction: column;
   gap: 1.5rem;
 }
-
 
 // Form Fields
 .form-row {
@@ -245,9 +246,8 @@
   padding-top: 1rem;
 }
 
-.btn-submit {
-  min-width: 200px;
-  padding: 0.875rem 2rem;
+.btn-submit,
+.btn-return-home {
   font-size: 1rem;
   font-weight: 600;
   color: white;
@@ -256,10 +256,6 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 
   &:hover:not(:disabled) {
     background: var(--primary-dark);
@@ -275,11 +271,25 @@
   &:active:not(:disabled) {
     transform: translateY(0);
   }
+}
+
+.btn-submit {
+  min-width: 200px;
+  padding: 0.875rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
+}
+
+.btn-return-home {
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
 }
 
 .btn-spinner {
@@ -290,7 +300,6 @@
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
-
 
 // Success Message
 .success-message {
@@ -338,49 +347,17 @@
 .btn-return-home {
   margin-top: 1rem;
   padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  background: var(--primary);
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(221, 0, 49, 0.3);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
 }
 
 // Animations
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
-
 
 // Responsive Styles
 @media (max-width: 767px) {

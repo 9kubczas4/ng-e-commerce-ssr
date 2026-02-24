@@ -1,4 +1,5 @@
-import { BasketItem, Product } from '@core/models/basket.model';
+import { BasketItem } from '@core/models/basket.model';
+import { Product } from '@core/models/product.model';
 
 /**
  * Shipping information collected during checkout

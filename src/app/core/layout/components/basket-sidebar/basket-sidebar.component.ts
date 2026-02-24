@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { BasketService } from '@core/services/basket.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { BasketService } from '@core/services/basket.service';
 })
 export class BasketSidebarComponent {
   private basketService = inject(BasketService);
+  private router = inject(Router);
 
   isOpen = signal(false);
   basket = this.basketService.basket;
@@ -21,6 +23,11 @@ export class BasketSidebarComponent {
 
   close(): void {
     this.isOpen.set(false);
+  }
+
+  navigateToCheckout(): void {
+    this.close();
+    this.router.navigate(['/checkout']);
   }
 
   removeItem(productId: string): void {

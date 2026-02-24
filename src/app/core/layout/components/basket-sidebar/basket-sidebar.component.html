@@ -91,6 +91,13 @@
         <div class="item-count">
           {{ basket().itemCount }} {{ basket().itemCount === 1 ? 'item' : 'items' }}
         </div>
+        <button
+          class="checkout-button"
+          (click)="navigateToCheckout()"
+          type="button"
+          data-testid="checkout-button">
+          Checkout
+        </button>
       </div>
     }
   </div>

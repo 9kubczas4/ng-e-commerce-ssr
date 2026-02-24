@@ -375,3 +375,37 @@
     font-size: 0.8125rem;
   }
 }
+
+.checkout-button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  min-height: 44px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  @include breakpoint-max(tablet) {
+    font-size: 0.9375rem;
+    padding: 0.875rem;
+  }
+}
