@@ -4,18 +4,34 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
+import { BasketService } from './core/services/basket.service';
+import { Product } from './core/models/product.model';
 
 describe('App Routes', () => {
   let router: Router;
   let location: Location;
+  let basketService: BasketService;
+
+  const mockProduct: Product = {
+    id: 'test-1',
+    title: 'Test Product',
+    description: 'Test description',
+    price: 10.0,
+    imageUrl: '/test.jpg',
+    category: 'Accessories',
+  };
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes)],
+      providers: [provideRouter(routes), BasketService],
     });
 
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
+    basketService = TestBed.inject(BasketService);
+
+    // Clear basket before each test
+    basketService.clearBasket();
   });
 
   describe('Route Definitions', () => {
@@ -98,8 +114,8 @@ describe('App Routes', () => {
 
   describe('Route Structure', () => {
     it('should have correct number of top-level routes', () => {
-      // Root redirect, product, complaint, wildcard
-      expect(routes.length).toBe(4);
+      // Root redirect, product, complaint, checkout, wildcard
+      expect(routes.length).toBe(5);
     });
 
     it('should have product and complaint feature routes', () => {
@@ -108,6 +124,50 @@ describe('App Routes', () => {
 
       expect(productRoute).toBeDefined();
       expect(complaintRoute).toBeDefined();
+    });
+  });
+
+  describe('Checkout Routes', () => {
+    it('should have checkout route', () => {
+      const checkoutRoute = routes.find((route) => route.path === 'checkout');
+      expect(checkoutRoute).toBeDefined();
+      expect(checkoutRoute?.loadChildren).toBeDefined();
+    });
+
+    it('should lazy load checkout routes', async () => {
+      const checkoutRoute = routes.find((route) => route.path === 'checkout');
+      expect(checkoutRoute?.loadChildren).toBeDefined();
+      expect(typeof checkoutRoute?.loadChildren).toBe('function');
+
+      const loadResult = checkoutRoute?.loadChildren?.();
+      expect(loadResult).toBeDefined();
+    });
+
+    it('should have basketGuard on checkout route', () => {
+      const checkoutRoute = routes.find((route) => route.path === 'checkout');
+      expect(checkoutRoute?.canActivate).toBeDefined();
+      expect(checkoutRoute?.canActivate?.length).toBeGreaterThan(0);
+    });
+
+    it('should navigate to checkout route', async () => {
+      // Add item to basket to pass guard
+      basketService.addItem(mockProduct);
+
+      await router.navigate(['/checkout']);
+      expect(router.url).toContain('/checkout');
+    });
+
+    it('should prevent navigation to checkout with empty basket', async () => {
+      // Ensure basket is empty
+      basketService.clearBasket();
+      expect(basketService.basket().itemCount).toBe(0);
+
+      // Attempt to navigate to checkout
+      await router.navigate(['/checkout']);
+
+      // Should redirect to home
+      const path = location.path();
+      expect(path === '' || path === '/' || path === '/product').toBe(true);
     });
   });
 });
