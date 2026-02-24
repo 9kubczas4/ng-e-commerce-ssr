@@ -133,9 +133,11 @@ describe('SearchBarComponent', () => {
       component.onSearchInput({ target: { value: 'an' } } as unknown as Event);
       component.onSearchInput({ target: { value: 'ang' } } as unknown as Event);
 
-      // Wait for debounce to complete
-      await new Promise(resolve => setTimeout(resolve, 400));
+      // Wait for debounce to complete (300ms debounce + buffer)
+      await new Promise(resolve => setTimeout(resolve, 450));
 
+      // Should have emitted at least one value
+      expect(emittedValues.length).toBeGreaterThan(0);
       // Last value should be the final input
       expect(emittedValues[emittedValues.length - 1]).toBe('ang');
     });
