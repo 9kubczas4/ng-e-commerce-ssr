@@ -7,20 +7,24 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DecimalPipe } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BasketService } from '@core/services/basket.service';
 import { createCheckoutForm } from './form/checkout.form';
 import { CheckoutFormValue, OrderResult } from './models/checkout.model';
+import { FieldErrorPipe } from './pipes/field-error.pipe';
+import { FieldInvalidPipe } from './pipes/field-invalid.pipe';
 
 @Component({
   selector: 'app-checkout',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
+  imports: [DecimalPipe, ReactiveFormsModule, FieldErrorPipe, FieldInvalidPipe],
 })
 export class CheckoutComponent {
   private readonly basketService = inject(BasketService);
-  private readonly router = inject(Router);
+  protected readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
 
   // State signals
@@ -30,6 +34,15 @@ export class CheckoutComponent {
 
   // Form
   protected checkoutForm = createCheckoutForm();
+
+  // Form groups for template access
+  protected get shippingForm() {
+    return this.checkoutForm.get('shipping')!;
+  }
+
+  protected get paymentForm() {
+    return this.checkoutForm.get('payment')!;
+  }
 
   // Computed basket data
   protected basketData = computed(() => {
