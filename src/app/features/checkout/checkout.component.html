@@ -8,290 +8,293 @@
       </p>
     </div>
 
-    <!-- Order Summary Section -->
-    <section class="order-summary" aria-labelledby="order-summary-title">
-      <h2 id="order-summary-title" class="section-title">Order Summary</h2>
+    <!-- Two-column layout wrapper for desktop -->
+    <div class="checkout-content-wrapper">
+      <!-- Order Summary Section -->
+      <section class="order-summary" aria-labelledby="order-summary-title">
+        <h2 id="order-summary-title" class="section-title">Order Summary</h2>
 
-      <div class="order-items">
-        @for (item of basketData().items; track item.product.id) {
-          <div class="order-item">
-            <div class="item-details">
-              <h3 class="item-title">{{ item.product.title }}</h3>
-              <p class="item-quantity">Quantity: {{ item.quantity }}</p>
+        <div class="order-items">
+          @for (item of basketData().items; track item.product.id) {
+            <div class="order-item">
+              <div class="item-details">
+                <h3 class="item-title">{{ item.product.title }}</h3>
+                <p class="item-quantity">Quantity: {{ item.quantity }}</p>
+              </div>
+              <div class="item-price">
+                @if (item.product.discount) {
+                  <span class="item-price-original">${{ item.product.price * item.quantity | number:'1.2-2' }}</span>
+                  <span class="item-price-discounted">
+                    ${{ (item.product.price * (1 - item.product.discount / 100) * item.quantity) | number:'1.2-2' }}
+                  </span>
+                } @else {
+                  <span class="item-price-regular">
+                    ${{ item.product.price * item.quantity | number:'1.2-2' }}
+                  </span>
+                }
+              </div>
             </div>
-            <div class="item-price">
-              @if (item.product.discount) {
-                <span class="item-price-original">${{ item.product.price * item.quantity | number:'1.2-2' }}</span>
-                <span class="item-price-discounted">
-                  ${{ (item.product.price * (1 - item.product.discount / 100) * item.quantity) | number:'1.2-2' }}
+          }
+        </div>
+
+        <div class="order-totals">
+          <div class="total-row">
+            <span class="total-label">Subtotal ({{ basketData().itemCount }} items):</span>
+            <span class="total-value">${{ basketData().subtotal | number:'1.2-2' }}</span>
+          </div>
+          <div class="total-row total-row--final">
+            <span class="total-label">Total:</span>
+            <span class="total-value">${{ basketData().total | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Checkout Form -->
+      <form
+        [formGroup]="checkoutForm"
+        (ngSubmit)="handleSubmit()"
+        class="checkout-form"
+        novalidate
+      >
+        <!-- Shipping Information Section -->
+        <fieldset class="form-section" formGroupName="shipping">
+          <legend class="section-title">Shipping Information</legend>
+
+          <div class="form-field">
+            <label for="fullName" class="form-label">
+              Full Name <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="fullName"
+              formControlName="fullName"
+              class="form-input"
+              [class.form-input--error]="shippingForm | fieldInvalid:'fullName'"
+              aria-required="true"
+              [attr.aria-invalid]="shippingForm | fieldInvalid:'fullName'"
+              [attr.aria-describedby]="(shippingForm | fieldInvalid:'fullName') ? 'fullName-error' : null"
+            />
+            @if (shippingForm | fieldInvalid:'fullName') {
+              <span id="fullName-error" class="form-error" role="alert">
+                {{ shippingForm | fieldError:'fullName' }}
+              </span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="streetAddress" class="form-label">
+              Street Address <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="streetAddress"
+              formControlName="streetAddress"
+              class="form-input"
+              [class.form-input--error]="shippingForm | fieldInvalid:'streetAddress'"
+              aria-required="true"
+              [attr.aria-invalid]="shippingForm | fieldInvalid:'streetAddress'"
+              [attr.aria-describedby]="(shippingForm | fieldInvalid:'streetAddress') ? 'streetAddress-error' : null"
+            />
+            @if (shippingForm | fieldInvalid:'streetAddress') {
+              <span id="streetAddress-error" class="form-error" role="alert">
+                {{ shippingForm | fieldError:'streetAddress' }}
+              </span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="city" class="form-label">
+                City <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="city"
+                formControlName="city"
+                class="form-input"
+                [class.form-input--error]="shippingForm | fieldInvalid:'city'"
+                aria-required="true"
+                [attr.aria-invalid]="shippingForm | fieldInvalid:'city'"
+                [attr.aria-describedby]="(shippingForm | fieldInvalid:'city') ? 'city-error' : null"
+              />
+              @if (shippingForm | fieldInvalid:'city') {
+                <span id="city-error" class="form-error" role="alert">
+                  {{ shippingForm | fieldError:'city' }}
                 </span>
-              } @else {
-                <span class="item-price-regular">
-                  ${{ item.product.price * item.quantity | number:'1.2-2' }}
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="postalCode" class="form-label">
+                Postal Code <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="postalCode"
+                formControlName="postalCode"
+                class="form-input"
+                [class.form-input--error]="shippingForm | fieldInvalid:'postalCode'"
+                aria-required="true"
+                [attr.aria-invalid]="shippingForm | fieldInvalid:'postalCode'"
+                [attr.aria-describedby]="(shippingForm | fieldInvalid:'postalCode') ? 'postalCode-error' : null"
+              />
+              @if (shippingForm | fieldInvalid:'postalCode') {
+                <span id="postalCode-error" class="form-error" role="alert">
+                  {{ shippingForm | fieldError:'postalCode' }}
                 </span>
               }
             </div>
           </div>
-        }
-      </div>
 
-      <div class="order-totals">
-        <div class="total-row">
-          <span class="total-label">Subtotal ({{ basketData().itemCount }} items):</span>
-          <span class="total-value">${{ basketData().subtotal | number:'1.2-2' }}</span>
-        </div>
-        <div class="total-row total-row--final">
-          <span class="total-label">Total:</span>
-          <span class="total-value">${{ basketData().total | number:'1.2-2' }}</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Checkout Form -->
-    <form
-      [formGroup]="checkoutForm"
-      (ngSubmit)="handleSubmit()"
-      class="checkout-form"
-      novalidate
-    >
-      <!-- Shipping Information Section -->
-      <fieldset class="form-section" formGroupName="shipping">
-        <legend class="section-title">Shipping Information</legend>
-
-        <div class="form-field">
-          <label for="fullName" class="form-label">
-            Full Name <span class="required" aria-label="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            formControlName="fullName"
-            class="form-input"
-            [class.form-input--error]="shippingForm | fieldInvalid:'fullName'"
-            aria-required="true"
-            [attr.aria-invalid]="shippingForm | fieldInvalid:'fullName'"
-            [attr.aria-describedby]="(shippingForm | fieldInvalid:'fullName') ? 'fullName-error' : null"
-          />
-          @if (shippingForm | fieldInvalid:'fullName') {
-            <span id="fullName-error" class="form-error" role="alert">
-              {{ shippingForm | fieldError:'fullName' }}
-            </span>
-          }
-        </div>
-
-        <div class="form-field">
-          <label for="streetAddress" class="form-label">
-            Street Address <span class="required" aria-label="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="streetAddress"
-            formControlName="streetAddress"
-            class="form-input"
-            [class.form-input--error]="shippingForm | fieldInvalid:'streetAddress'"
-            aria-required="true"
-            [attr.aria-invalid]="shippingForm | fieldInvalid:'streetAddress'"
-            [attr.aria-describedby]="(shippingForm | fieldInvalid:'streetAddress') ? 'streetAddress-error' : null"
-          />
-          @if (shippingForm | fieldInvalid:'streetAddress') {
-            <span id="streetAddress-error" class="form-error" role="alert">
-              {{ shippingForm | fieldError:'streetAddress' }}
-            </span>
-          }
-        </div>
-
-        <div class="form-row">
           <div class="form-field">
-            <label for="city" class="form-label">
-              City <span class="required" aria-label="required">*</span>
+            <label for="country" class="form-label">
+              Country <span class="required" aria-label="required">*</span>
+            </label>
+            <select
+              id="country"
+              formControlName="country"
+              class="form-select"
+              [class.form-input--error]="shippingForm | fieldInvalid:'country'"
+              aria-required="true"
+              [attr.aria-invalid]="shippingForm | fieldInvalid:'country'"
+              [attr.aria-describedby]="(shippingForm | fieldInvalid:'country') ? 'country-error' : null"
+            >
+              <option value="">Select a country</option>
+              <option value="US">United States</option>
+              <option value="CA">Canada</option>
+              <option value="GB">United Kingdom</option>
+              <option value="AU">Australia</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="IT">Italy</option>
+              <option value="ES">Spain</option>
+              <option value="NL">Netherlands</option>
+              <option value="SE">Sweden</option>
+            </select>
+            @if (shippingForm | fieldInvalid:'country') {
+              <span id="country-error" class="form-error" role="alert">
+                {{ shippingForm | fieldError:'country' }}
+              </span>
+            }
+          </div>
+        </fieldset>
+
+        <!-- Payment Information Section -->
+        <fieldset class="form-section" formGroupName="payment">
+          <legend class="section-title">Payment Information</legend>
+
+          <div class="form-field">
+            <label for="cardNumber" class="form-label">
+              Card Number <span class="required" aria-label="required">*</span>
             </label>
             <input
               type="text"
-              id="city"
-              formControlName="city"
+              id="cardNumber"
+              formControlName="cardNumber"
               class="form-input"
-              [class.form-input--error]="shippingForm | fieldInvalid:'city'"
+              [class.form-input--error]="paymentForm | fieldInvalid:'cardNumber'"
+              placeholder="1234 5678 9012 3456"
               aria-required="true"
-              [attr.aria-invalid]="shippingForm | fieldInvalid:'city'"
-              [attr.aria-describedby]="(shippingForm | fieldInvalid:'city') ? 'city-error' : null"
+              [attr.aria-invalid]="paymentForm | fieldInvalid:'cardNumber'"
+              [attr.aria-describedby]="(paymentForm | fieldInvalid:'cardNumber') ? 'cardNumber-error' : null"
+              maxlength="19"
             />
-            @if (shippingForm | fieldInvalid:'city') {
-              <span id="city-error" class="form-error" role="alert">
-                {{ shippingForm | fieldError:'city' }}
+            @if (paymentForm | fieldInvalid:'cardNumber') {
+              <span id="cardNumber-error" class="form-error" role="alert">
+                {{ paymentForm | fieldError:'cardNumber' }}
               </span>
             }
           </div>
 
+          <div class="form-row">
+            <div class="form-field">
+              <label for="expiryDate" class="form-label">
+                Expiry Date <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="expiryDate"
+                formControlName="expiryDate"
+                class="form-input"
+                [class.form-input--error]="paymentForm | fieldInvalid:'expiryDate'"
+                placeholder="MM/YY"
+                aria-required="true"
+                [attr.aria-invalid]="paymentForm | fieldInvalid:'expiryDate'"
+                [attr.aria-describedby]="(paymentForm | fieldInvalid:'expiryDate') ? 'expiryDate-error' : null"
+                maxlength="5"
+              />
+              @if (paymentForm | fieldInvalid:'expiryDate') {
+                <span id="expiryDate-error" class="form-error" role="alert">
+                  {{ paymentForm | fieldError:'expiryDate' }}
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="cvv" class="form-label">
+                CVV <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="cvv"
+                formControlName="cvv"
+                class="form-input"
+                [class.form-input--error]="paymentForm | fieldInvalid:'cvv'"
+                placeholder="123"
+                aria-required="true"
+                [attr.aria-invalid]="paymentForm | fieldInvalid:'cvv'"
+                [attr.aria-describedby]="(paymentForm | fieldInvalid:'cvv') ? 'cvv-error' : null"
+                maxlength="4"
+              />
+              @if (paymentForm | fieldInvalid:'cvv') {
+                <span id="cvv-error" class="form-error" role="alert">
+                  {{ paymentForm | fieldError:'cvv' }}
+                </span>
+              }
+            </div>
+          </div>
+
           <div class="form-field">
-            <label for="postalCode" class="form-label">
-              Postal Code <span class="required" aria-label="required">*</span>
+            <label for="cardholderName" class="form-label">
+              Cardholder Name <span class="required" aria-label="required">*</span>
             </label>
             <input
               type="text"
-              id="postalCode"
-              formControlName="postalCode"
+              id="cardholderName"
+              formControlName="cardholderName"
               class="form-input"
-              [class.form-input--error]="shippingForm | fieldInvalid:'postalCode'"
+              [class.form-input--error]="paymentForm | fieldInvalid:'cardholderName'"
+              placeholder="Name as it appears on card"
               aria-required="true"
-              [attr.aria-invalid]="shippingForm | fieldInvalid:'postalCode'"
-              [attr.aria-describedby]="(shippingForm | fieldInvalid:'postalCode') ? 'postalCode-error' : null"
+              [attr.aria-invalid]="paymentForm | fieldInvalid:'cardholderName'"
+              [attr.aria-describedby]="(paymentForm | fieldInvalid:'cardholderName') ? 'cardholderName-error' : null"
             />
-            @if (shippingForm | fieldInvalid:'postalCode') {
-              <span id="postalCode-error" class="form-error" role="alert">
-                {{ shippingForm | fieldError:'postalCode' }}
+            @if (paymentForm | fieldInvalid:'cardholderName') {
+              <span id="cardholderName-error" class="form-error" role="alert">
+                {{ paymentForm | fieldError:'cardholderName' }}
               </span>
             }
           </div>
-        </div>
+        </fieldset>
 
-        <div class="form-field">
-          <label for="country" class="form-label">
-            Country <span class="required" aria-label="required">*</span>
-          </label>
-          <select
-            id="country"
-            formControlName="country"
-            class="form-select"
-            [class.form-input--error]="shippingForm | fieldInvalid:'country'"
-            aria-required="true"
-            [attr.aria-invalid]="shippingForm | fieldInvalid:'country'"
-            [attr.aria-describedby]="(shippingForm | fieldInvalid:'country') ? 'country-error' : null"
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
           >
-            <option value="">Select a country</option>
-            <option value="US">United States</option>
-            <option value="CA">Canada</option>
-            <option value="GB">United Kingdom</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="FR">France</option>
-            <option value="IT">Italy</option>
-            <option value="ES">Spain</option>
-            <option value="NL">Netherlands</option>
-            <option value="SE">Sweden</option>
-          </select>
-          @if (shippingForm | fieldInvalid:'country') {
-            <span id="country-error" class="form-error" role="alert">
-              {{ shippingForm | fieldError:'country' }}
-            </span>
-          }
-        </div>
-      </fieldset>
-
-      <!-- Payment Information Section -->
-      <fieldset class="form-section" formGroupName="payment">
-        <legend class="section-title">Payment Information</legend>
-
-        <div class="form-field">
-          <label for="cardNumber" class="form-label">
-            Card Number <span class="required" aria-label="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="cardNumber"
-            formControlName="cardNumber"
-            class="form-input"
-            [class.form-input--error]="paymentForm | fieldInvalid:'cardNumber'"
-            placeholder="1234 5678 9012 3456"
-            aria-required="true"
-            [attr.aria-invalid]="paymentForm | fieldInvalid:'cardNumber'"
-            [attr.aria-describedby]="(paymentForm | fieldInvalid:'cardNumber') ? 'cardNumber-error' : null"
-            maxlength="19"
-          />
-          @if (paymentForm | fieldInvalid:'cardNumber') {
-            <span id="cardNumber-error" class="form-error" role="alert">
-              {{ paymentForm | fieldError:'cardNumber' }}
-            </span>
-          }
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <label for="expiryDate" class="form-label">
-              Expiry Date <span class="required" aria-label="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="expiryDate"
-              formControlName="expiryDate"
-              class="form-input"
-              [class.form-input--error]="paymentForm | fieldInvalid:'expiryDate'"
-              placeholder="MM/YY"
-              aria-required="true"
-              [attr.aria-invalid]="paymentForm | fieldInvalid:'expiryDate'"
-              [attr.aria-describedby]="(paymentForm | fieldInvalid:'expiryDate') ? 'expiryDate-error' : null"
-              maxlength="5"
-            />
-            @if (paymentForm | fieldInvalid:'expiryDate') {
-              <span id="expiryDate-error" class="form-error" role="alert">
-                {{ paymentForm | fieldError:'expiryDate' }}
-              </span>
+            @if (isSubmitting()) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span>Processing...</span>
+            } @else {
+              <span>Complete Purchase</span>
             }
-          </div>
-
-          <div class="form-field">
-            <label for="cvv" class="form-label">
-              CVV <span class="required" aria-label="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="cvv"
-              formControlName="cvv"
-              class="form-input"
-              [class.form-input--error]="paymentForm | fieldInvalid:'cvv'"
-              placeholder="123"
-              aria-required="true"
-              [attr.aria-invalid]="paymentForm | fieldInvalid:'cvv'"
-              [attr.aria-describedby]="(paymentForm | fieldInvalid:'cvv') ? 'cvv-error' : null"
-              maxlength="4"
-            />
-            @if (paymentForm | fieldInvalid:'cvv') {
-              <span id="cvv-error" class="form-error" role="alert">
-                {{ paymentForm | fieldError:'cvv' }}
-              </span>
-            }
-          </div>
+          </button>
         </div>
-
-        <div class="form-field">
-          <label for="cardholderName" class="form-label">
-            Cardholder Name <span class="required" aria-label="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="cardholderName"
-            formControlName="cardholderName"
-            class="form-input"
-            [class.form-input--error]="paymentForm | fieldInvalid:'cardholderName'"
-            placeholder="Name as it appears on card"
-            aria-required="true"
-            [attr.aria-invalid]="paymentForm | fieldInvalid:'cardholderName'"
-            [attr.aria-describedby]="(paymentForm | fieldInvalid:'cardholderName') ? 'cardholderName-error' : null"
-          />
-          @if (paymentForm | fieldInvalid:'cardholderName') {
-            <span id="cardholderName-error" class="form-error" role="alert">
-              {{ paymentForm | fieldError:'cardholderName' }}
-            </span>
-          }
-        </div>
-      </fieldset>
-
-      <!-- Submit Button -->
-      <div class="form-actions">
-        <button
-          type="submit"
-          class="btn-submit"
-          [disabled]="isSubmitting()"
-          [attr.aria-busy]="isSubmitting()"
-        >
-          @if (isSubmitting()) {
-            <span class="btn-spinner" aria-hidden="true"></span>
-            <span>Processing...</span>
-          } @else {
-            <span>Complete Purchase</span>
-          }
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
 
     <!-- Success Message -->
     @if (isSubmitted()) {
