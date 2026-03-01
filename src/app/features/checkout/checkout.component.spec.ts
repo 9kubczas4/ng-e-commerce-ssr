@@ -382,4 +382,439 @@ describe('CheckoutComponent', () => {
       expect(shippingGroup?.get('fullName')?.hasError('minlength')).toBe(false);
     });
   });
+
+  describe('Agent-Invoked Form Handling', () => {
+    describe('Agent vs User Submission Detection', () => {
+      it('should detect agent-invoked submission', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        expect(component['agentInvoked']()).toBe(true);
+      });
+
+      it('should detect user-invoked submission', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        // No agentInvoked property means user submission
+
+        component['handleSubmit'](mockEvent);
+
+        expect(component['agentInvoked']()).toBe(false);
+      });
+
+      it('should handle agentInvoked as false explicitly', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: false,
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        expect(component['agentInvoked']()).toBe(false);
+      });
+    });
+
+    describe('Agent Validation Error Responses', () => {
+      it('should return validation errors for agent when form is invalid', async () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault');
+        let rejectedError: unknown;
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: (promise: Promise<unknown>) => {
+            promise.catch((error) => {
+              rejectedError = error;
+            });
+          },
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        // Wait for promise to reject
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(rejectedError).toBeDefined();
+        expect((rejectedError as { error: string }).error).toBe('Validation failed');
+        expect((rejectedError as { details: unknown }).details).toBeDefined();
+      });
+
+      it('should include field-level errors in validation response', async () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        let rejectedError: unknown;
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: (promise: Promise<unknown>) => {
+            promise.catch((error) => {
+              rejectedError = error;
+            });
+          },
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        const errorDetails = (rejectedError as { details: Record<string, string[]> }).details;
+        expect(errorDetails).toBeDefined();
+        expect(errorDetails['shipping.fullName']).toContain('Full name is required');
+        expect(errorDetails['shipping.streetAddress']).toContain('Street address is required');
+        expect(errorDetails['payment.cardNumber']).toContain('Card number is required');
+      });
+
+      it('should not submit form when agent validation fails', async () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const respondWithMock = vi.fn((promise: Promise<unknown>) => {
+          // Catch the rejection to prevent unhandled rejection warning
+          promise.catch(() => {});
+        });
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: respondWithMock,
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(component['isSubmitting']()).toBe(false);
+        expect(component['isSubmitted']()).toBe(false);
+        expect(respondWithMock).toHaveBeenCalled();
+      });
+    });
+
+    describe('Agent Success Response Structure', () => {
+      beforeEach(() => {
+        // Fill in valid form data
+        component['checkoutForm'].patchValue({
+          shipping: {
+            fullName: 'Jane Smith',
+            streetAddress: '456 Oak Avenue',
+            city: 'Los Angeles',
+            postalCode: '90001',
+            country: 'US',
+          },
+          payment: {
+            cardNumber: '4532015112830366',
+            expiryDate: '12/28',
+            cvv: '456',
+            cardholderName: 'Jane Smith',
+          },
+        });
+        component['checkoutForm'].updateValueAndValidity();
+      });
+
+      it('should return success response for agent when form is valid', async () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault');
+        let resolvedValue: unknown;
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: (promise: Promise<unknown>) => {
+            promise.then((value) => {
+              resolvedValue = value;
+            });
+          },
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(component['isSubmitting']()).toBe(true);
+
+        // Wait for async processing
+        await new Promise((resolve) => setTimeout(resolve, 1600));
+
+        expect(resolvedValue).toBeDefined();
+        expect((resolvedValue as { success: boolean }).success).toBe(true);
+        expect((resolvedValue as { message: string }).message).toBe('Order processed successfully');
+        expect((resolvedValue as { orderId: string }).orderId).toMatch(/^ORD-\d+$/);
+      });
+
+      it('should set isSubmitted to true after agent submission succeeds', async () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: vi.fn(),
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 1600));
+
+        expect(component['isSubmitted']()).toBe(true);
+        expect(component['isSubmitting']()).toBe(false);
+      });
+
+      it('should clear basket after agent submission succeeds', async () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: vi.fn(),
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 1600));
+
+        expect(mockBasketService.clearBasket).toHaveBeenCalled();
+      });
+
+      it('should handle agent submission errors gracefully', async () => {
+        // Mock processOrder to reject
+        vi.spyOn(component as any, 'processOrder').mockRejectedValue(
+          new Error('Payment processing failed')
+        );
+
+        const mockEvent = new Event('submit') as SubmitEvent;
+        let rejectedError: unknown;
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: (promise: Promise<unknown>) => {
+            promise.catch((error) => {
+              rejectedError = error;
+            });
+          },
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        expect(rejectedError).toBeDefined();
+        expect((rejectedError as { error: string }).error).toBe('Payment processing failed');
+        expect(component['isSubmitting']()).toBe(false);
+        expect(component['isSubmitted']()).toBe(false);
+      });
+    });
+
+    describe('Card Field Security - Agent Population', () => {
+      it('should allow agent to populate shipping fields', () => {
+        // Simulate agent populating shipping fields
+        component['checkoutForm'].patchValue({
+          shipping: {
+            fullName: 'Agent Populated Name',
+            streetAddress: '789 Agent Street',
+            city: 'Agent City',
+            postalCode: '12345',
+            country: 'US',
+          },
+        });
+
+        const shippingGroup = component['checkoutForm'].get('shipping');
+        expect(shippingGroup?.get('fullName')?.value).toBe('Agent Populated Name');
+        expect(shippingGroup?.get('streetAddress')?.value).toBe('789 Agent Street');
+        expect(shippingGroup?.get('city')?.value).toBe('Agent City');
+        expect(shippingGroup?.get('postalCode')?.value).toBe('12345');
+        expect(shippingGroup?.get('country')?.value).toBe('US');
+      });
+
+      it('should allow agent to populate cardholder name', () => {
+        // Simulate agent populating cardholder name
+        component['checkoutForm'].patchValue({
+          payment: {
+            cardholderName: 'Agent Populated Cardholder',
+          },
+        });
+
+        const paymentGroup = component['checkoutForm'].get('payment');
+        expect(paymentGroup?.get('cardholderName')?.value).toBe('Agent Populated Cardholder');
+      });
+
+      it('should keep card number empty when agent populates other fields', () => {
+        // Simulate agent populating allowed fields only
+        component['checkoutForm'].patchValue({
+          shipping: {
+            fullName: 'Agent User',
+            streetAddress: '123 Agent Ave',
+            city: 'Agent Town',
+            postalCode: '54321',
+            country: 'CA',
+          },
+          payment: {
+            cardholderName: 'Agent User',
+          },
+        });
+
+        const paymentGroup = component['checkoutForm'].get('payment');
+        expect(paymentGroup?.get('cardNumber')?.value).toBe('');
+        expect(paymentGroup?.get('expiryDate')?.value).toBe('');
+        expect(paymentGroup?.get('cvv')?.value).toBe('');
+      });
+
+      it('should require manual entry of card details after agent population', () => {
+        // Agent populates allowed fields
+        component['checkoutForm'].patchValue({
+          shipping: {
+            fullName: 'Test User',
+            streetAddress: '999 Test Lane',
+            city: 'Test City',
+            postalCode: '99999',
+            country: 'GB',
+          },
+          payment: {
+            cardholderName: 'Test User',
+          },
+        });
+
+        // Form should still be invalid because card details are missing
+        expect(component['checkoutForm'].valid).toBe(false);
+
+        const paymentGroup = component['checkoutForm'].get('payment');
+        expect(paymentGroup?.get('cardNumber')?.hasError('required')).toBe(true);
+        expect(paymentGroup?.get('expiryDate')?.hasError('required')).toBe(true);
+        expect(paymentGroup?.get('cvv')?.hasError('required')).toBe(true);
+      });
+
+      it('should validate form only after user manually enters card details', () => {
+        // Agent populates allowed fields
+        component['checkoutForm'].patchValue({
+          shipping: {
+            fullName: 'Complete User',
+            streetAddress: '111 Complete St',
+            city: 'Complete City',
+            postalCode: '11111',
+            country: 'US',
+          },
+          payment: {
+            cardholderName: 'Complete User',
+          },
+        });
+
+        expect(component['checkoutForm'].valid).toBe(false);
+
+        // User manually enters card details
+        component['checkoutForm'].patchValue({
+          payment: {
+            cardNumber: '4532015112830366',
+            expiryDate: '06/29',
+            cvv: '789',
+          },
+        });
+        component['checkoutForm'].updateValueAndValidity();
+
+        expect(component['checkoutForm'].valid).toBe(true);
+      });
+    });
+
+    describe('Agent vs User Submission Behavior', () => {
+      beforeEach(() => {
+        // Fill in valid form data
+        component['checkoutForm'].patchValue({
+          shipping: {
+            fullName: 'Test User',
+            streetAddress: '123 Test Street',
+            city: 'Test City',
+            postalCode: '12345',
+            country: 'US',
+          },
+          payment: {
+            cardNumber: '4532015112830366',
+            expiryDate: '12/27',
+            cvv: '123',
+            cardholderName: 'Test User',
+          },
+        });
+        component['checkoutForm'].updateValueAndValidity();
+      });
+
+      it('should call preventDefault for agent submissions', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault');
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: vi.fn(),
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+      });
+
+      it('should not call preventDefault for user submissions', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const preventDefaultSpy = vi.spyOn(mockEvent, 'preventDefault');
+
+        component['handleSubmit'](mockEvent);
+
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call respondWith for agent submissions', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const respondWithMock = vi.fn();
+
+        Object.defineProperty(mockEvent, 'agentInvoked', {
+          value: true,
+          writable: false,
+        });
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: respondWithMock,
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        expect(respondWithMock).toHaveBeenCalled();
+        expect(respondWithMock).toHaveBeenCalledWith(expect.any(Promise));
+      });
+
+      it('should not call respondWith for user submissions', () => {
+        const mockEvent = new Event('submit') as SubmitEvent;
+        const respondWithMock = vi.fn();
+
+        Object.defineProperty(mockEvent, 'respondWith', {
+          value: respondWithMock,
+          writable: false,
+        });
+
+        component['handleSubmit'](mockEvent);
+
+        expect(respondWithMock).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
