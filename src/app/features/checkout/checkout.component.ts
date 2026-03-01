@@ -10,11 +10,18 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser, DecimalPipe, AsyncPipe } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { BasketService } from '@core/services/basket.service';
-import { createCheckoutForm } from './form/checkout.form';
+import {
+  createCheckoutForm,
+  CheckoutFormControls,
+  ShippingFormControls,
+  PaymentFormControls,
+} from './form/checkout.form';
 import { CheckoutFormValue, OrderResult } from './models/checkout.model';
 import { FieldErrorPipe } from './pipes/field-error.pipe';
+import { AgentSubmitEvent } from '@core/models/webmcp.model';
+import { collectFormErrors } from './utils/form-errors.helper';
 
 @Component({
   selector: 'app-checkout',
@@ -44,20 +51,21 @@ export class CheckoutComponent implements OnDestroy {
   protected isSubmitting = signal(false);
   protected isSubmitted = signal(false);
   protected submitError = signal<string | null>(null);
+  protected agentInvoked = signal(false);
 
   // Redirect timer reference
   private redirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Form
-  protected checkoutForm = createCheckoutForm();
+  protected checkoutForm: FormGroup<CheckoutFormControls> = createCheckoutForm();
 
   // Form groups for template access
-  protected get shippingForm() {
-    return this.checkoutForm.get('shipping')!;
+  protected get shippingForm(): FormGroup<ShippingFormControls> {
+    return this.checkoutForm.controls.shipping;
   }
 
-  protected get paymentForm() {
-    return this.checkoutForm.get('payment')!;
+  protected get paymentForm(): FormGroup<PaymentFormControls> {
+    return this.checkoutForm.controls.payment;
   }
 
   // Computed basket data
@@ -74,7 +82,13 @@ export class CheckoutComponent implements OnDestroy {
   /**
    * Handle form submission
    */
-  protected handleSubmit(): void {
+  protected handleSubmit(event: SubmitEvent): void {
+    // Cast to AgentSubmitEvent to access WebMCP properties
+    const agentEvent = event as AgentSubmitEvent;
+
+    // Update agentInvoked signal
+    this.agentInvoked.set(agentEvent.agentInvoked ?? false);
+
     // Reset error state
     this.submitError.set(null);
 
@@ -83,12 +97,61 @@ export class CheckoutComponent implements OnDestroy {
 
     // Validate form
     if (this.checkoutForm.invalid) {
-      // Focus on first invalid field for accessibility
+      // Handle agent-invoked validation errors
+      if (agentEvent.agentInvoked) {
+        event.preventDefault();
+        const validationErrors = collectFormErrors(this.checkoutForm);
+        agentEvent.respondWith?.(
+          Promise.reject({
+            error: 'Validation failed',
+            details: validationErrors,
+          })
+        );
+        return;
+      }
+
+      // Focus on first invalid field for accessibility (user submission)
       this.focusFirstInvalidField();
       return;
     }
 
-    // Process order
+    // Handle agent-invoked submission
+    if (agentEvent.agentInvoked) {
+      event.preventDefault();
+      this.isSubmitting.set(true);
+
+      const submissionPromise = this.processOrder(
+        this.checkoutForm.value as CheckoutFormValue
+      )
+        .then((result) => {
+          if (result.success) {
+            this.isSubmitted.set(true);
+            this.clearBasketAndRedirect();
+            return {
+              success: true,
+              message: result.message,
+              orderId: result.orderId,
+            };
+          } else {
+            this.submitError.set(result.message);
+            throw new Error(result.message);
+          }
+        })
+        .catch((error) => {
+          const errorMessage =
+            error?.message || 'An error occurred while processing your order';
+          this.submitError.set(errorMessage);
+          throw { error: errorMessage };
+        })
+        .finally(() => {
+          this.isSubmitting.set(false);
+        });
+
+      agentEvent.respondWith?.(submissionPromise);
+      return;
+    }
+
+    // Process order for regular user submission
     this.isSubmitting.set(true);
     this.processOrder(this.checkoutForm.value as CheckoutFormValue)
       .then((result) => {
@@ -190,58 +253,41 @@ export class CheckoutComponent implements OnDestroy {
   /**
    * Recursively find the first invalid control in a form group
    */
-  private findFirstInvalidControl(formGroup: import('@angular/forms').AbstractControl): import('@angular/forms').AbstractControl | null {
-    if (!('controls' in formGroup)) {
-      return null;
-    }
+  private findFirstInvalidControl(
+    formGroup: FormGroup<CheckoutFormControls>
+  ): FormGroup<ShippingFormControls | PaymentFormControls> | null {
+    const controls = formGroup.controls;
 
-    const controls = (formGroup as import('@angular/forms').FormGroup).controls;
-    for (const name in controls) {
-      const control = controls[name];
-      if (control.invalid) {
-        if ('controls' in control) {
-          // It's a FormGroup, recurse
-          const nestedInvalid = this.findFirstInvalidControl(control);
-          if (nestedInvalid) {
-            return nestedInvalid;
-          }
-        } else {
-          // It's a FormControl
-          return control;
+      for (const name in controls) {
+        const control = controls[name as keyof CheckoutFormControls];
+        if (control.invalid) {
+          return control as FormGroup<ShippingFormControls | PaymentFormControls>;
         }
       }
+      return null;
     }
-    return null;
-  }
 
   /**
    * Get the path to a control within a form group
    */
-  private getControlPath(
-    formGroup: import('@angular/forms').AbstractControl,
-    targetControl: import('@angular/forms').AbstractControl,
-    path = ''
-  ): string | null {
-    if (!('controls' in formGroup)) {
-      return null;
-    }
+  /**
+     * Get the path to a control within a form group
+     */
+    private getControlPath(
+      formGroup: FormGroup<CheckoutFormControls>,
+      targetControl: FormGroup<ShippingFormControls | PaymentFormControls>,
+      path = ''
+    ): string | null {
+      const controls = formGroup.controls;
 
-    const controls = (formGroup as import('@angular/forms').FormGroup).controls;
-    for (const name in controls) {
-      const control = controls[name];
-      const currentPath = path ? `${path}.${name}` : name;
+      for (const name in controls) {
+        const control = controls[name as keyof CheckoutFormControls];
+        const currentPath = path ? `${path}.${name}` : name;
 
-      if (control === targetControl) {
-        return currentPath;
-      }
-
-      if ('controls' in control) {
-        const nestedPath = this.getControlPath(control, targetControl, currentPath);
-        if (nestedPath) {
-          return nestedPath;
+        if (control === targetControl) {
+          return currentPath;
         }
       }
+      return null;
     }
-    return null;
-  }
 }

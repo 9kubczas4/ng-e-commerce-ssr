@@ -105,7 +105,8 @@ describe('CheckoutComponent', () => {
 
   describe('Form Submission with Invalid Data', () => {
     it('should not submit when form is invalid', () => {
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       expect(component['isSubmitting']()).toBe(false);
       expect(component['isSubmitted']()).toBe(false);
@@ -113,8 +114,9 @@ describe('CheckoutComponent', () => {
 
     it('should mark all fields as touched when submitting invalid form', () => {
       const markAllAsTouchedSpy = vi.spyOn(component['checkoutForm'], 'markAllAsTouched');
+      const mockEvent = new Event('submit') as SubmitEvent;
 
-      component['handleSubmit']();
+      component['handleSubmit'](mockEvent);
 
       expect(markAllAsTouchedSpy).toHaveBeenCalled();
     });
@@ -143,7 +145,8 @@ describe('CheckoutComponent', () => {
     });
 
     it('should submit form with valid data', async () => {
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       expect(component['isSubmitting']()).toBe(true);
 
@@ -155,7 +158,8 @@ describe('CheckoutComponent', () => {
     });
 
     it('should clear basket after successful submission', async () => {
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       // Wait for async processing
       await new Promise((resolve) => setTimeout(resolve, 1600));
@@ -164,7 +168,8 @@ describe('CheckoutComponent', () => {
     });
 
     it('should navigate to home after successful submission', async () => {
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       // Wait for async processing and redirect delay
       await new Promise((resolve) => setTimeout(resolve, 6600));
@@ -174,8 +179,9 @@ describe('CheckoutComponent', () => {
 
     it('should reset error state on new submission', () => {
       component['submitError'].set('Previous error');
+      const mockEvent = new Event('submit') as SubmitEvent;
 
-      component['handleSubmit']();
+      component['handleSubmit'](mockEvent);
 
       expect(component['submitError']()).toBeNull();
     });
@@ -219,7 +225,8 @@ describe('CheckoutComponent', () => {
         },
       });
       component['checkoutForm'].updateValueAndValidity();
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       // Wait for async processing to complete and timer to be set
       await new Promise((resolve) => setTimeout(resolve, 1600));
@@ -254,13 +261,15 @@ describe('CheckoutComponent', () => {
     });
 
     it('should set loading state during processing', () => {
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       expect(component['isSubmitting']()).toBe(true);
     });
 
     it('should clear loading state after processing completes', async () => {
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       expect(component['isSubmitting']()).toBe(true);
 
@@ -297,7 +306,8 @@ describe('CheckoutComponent', () => {
       // Ensure form is valid
       component['checkoutForm'].updateValueAndValidity();
 
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       // Wait for async processing
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -330,7 +340,8 @@ describe('CheckoutComponent', () => {
       // Ensure form is valid
       component['checkoutForm'].updateValueAndValidity();
 
-      component['handleSubmit']();
+      const mockEvent = new Event('submit') as SubmitEvent;
+      component['handleSubmit'](mockEvent);
 
       // Wait for async processing
       await new Promise((resolve) => setTimeout(resolve, 100));

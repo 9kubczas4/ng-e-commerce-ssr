@@ -52,9 +52,12 @@
       <!-- Checkout Form -->
       <form
         [formGroup]="checkoutForm"
-        (ngSubmit)="handleSubmit()"
+        (ngSubmit)="handleSubmit($event)"
         class="checkout-form"
         novalidate
+        toolname="fill_payment_address_form"
+        tooldescription="Use this tool to fill in the shipping address and cardholder name for checkout. This tool helps users complete their purchase by automatically populating the shipping information (full name, street address, city, postal code, country) and the cardholder name field. Note: For security reasons, card number, expiry date, and CVV must be entered manually by the user."
+        [attr.toolautosubmit]="agentInvoked() ? '' : null"
       >
         <!-- Shipping Information Section -->
         <fieldset class="form-section" formGroupName="shipping">
@@ -67,12 +70,15 @@
             <input
               type="text"
               id="fullName"
+              name="fullName"
               formControlName="fullName"
               class="form-input"
               [class.form-input--error]="(shippingForm | fieldError:'fullName' | async)"
               aria-required="true"
               [attr.aria-invalid]="(shippingForm | fieldError:'fullName' | async)"
               [attr.aria-describedby]="(shippingForm | fieldError:'fullName' | async) ? 'fullName-error' : null"
+              toolparamtitle="Full Name"
+              toolparamdescription="The recipient's complete legal name for shipping delivery"
             />
             @if (shippingForm | fieldError:'fullName' | async) {
               <span id="fullName-error" class="form-error" role="alert">
@@ -88,12 +94,15 @@
             <input
               type="text"
               id="streetAddress"
+              name="streetAddress"
               formControlName="streetAddress"
               class="form-input"
               [class.form-input--error]="(shippingForm | fieldError:'streetAddress' | async)"
               aria-required="true"
               [attr.aria-invalid]="(shippingForm | fieldError:'streetAddress' | async)"
               [attr.aria-describedby]="(shippingForm | fieldError:'streetAddress' | async) ? 'streetAddress-error' : null"
+              toolparamtitle="Street Address"
+              toolparamdescription="The complete street address including house/building number and street name for shipping delivery"
             />
             @if (shippingForm | fieldError:'streetAddress' | async) {
               <span id="streetAddress-error" class="form-error" role="alert">
@@ -110,12 +119,15 @@
               <input
                 type="text"
                 id="city"
+                name="city"
                 formControlName="city"
                 class="form-input"
                 [class.form-input--error]="(shippingForm | fieldError:'city' | async)"
                 aria-required="true"
                 [attr.aria-invalid]="(shippingForm | fieldError:'city' | async)"
                 [attr.aria-describedby]="(shippingForm | fieldError:'city' | async) ? 'city-error' : null"
+                toolparamtitle="City"
+                toolparamdescription="The city name for the shipping address"
               />
               @if (shippingForm | fieldError:'city' | async) {
                 <span id="city-error" class="form-error" role="alert">
@@ -131,12 +143,15 @@
               <input
                 type="text"
                 id="postalCode"
+                name="postalCode"
                 formControlName="postalCode"
                 class="form-input"
                 [class.form-input--error]="(shippingForm | fieldError:'postalCode' | async)"
                 aria-required="true"
                 [attr.aria-invalid]="(shippingForm | fieldError:'postalCode' | async)"
                 [attr.aria-describedby]="(shippingForm | fieldError:'postalCode' | async) ? 'postalCode-error' : null"
+                toolparamtitle="Postal Code"
+                toolparamdescription="The postal code or ZIP code for the shipping address"
               />
               @if (shippingForm | fieldError:'postalCode' | async) {
                 <span id="postalCode-error" class="form-error" role="alert">
@@ -152,12 +167,15 @@
             </label>
             <select
               id="country"
+              name="country"
               formControlName="country"
               class="form-select"
               [class.form-input--error]="(shippingForm | fieldError:'country' | async)"
               aria-required="true"
               [attr.aria-invalid]="(shippingForm | fieldError:'country' | async)"
               [attr.aria-describedby]="(shippingForm | fieldError:'country' | async) ? 'country-error' : null"
+              toolparamtitle="Country"
+              toolparamdescription="The country for the shipping address. Use the two-letter country code (e.g., US for United States, CA for Canada, GB for United Kingdom)"
             >
               <option value="">Select a country</option>
               <option value="US">United States</option>
@@ -261,6 +279,7 @@
             <input
               type="text"
               id="cardholderName"
+              name="cardholderName"
               formControlName="cardholderName"
               class="form-input"
               [class.form-input--error]="(paymentForm | fieldError:'cardholderName' | async)"
@@ -268,6 +287,8 @@
               aria-required="true"
               [attr.aria-invalid]="(paymentForm | fieldError:'cardholderName' | async)"
               [attr.aria-describedby]="(paymentForm | fieldError:'cardholderName' | async) ? 'cardholderName-error' : null"
+              toolparamtitle="Cardholder Name"
+              toolparamdescription="The full name of the cardholder as it appears on the payment card"
             />
             @if (paymentForm | fieldError:'cardholderName' | async) {
               <span id="cardholderName-error" class="form-error" role="alert">
