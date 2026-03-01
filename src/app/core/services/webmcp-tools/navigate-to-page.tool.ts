@@ -9,14 +9,14 @@ export interface NavigateToPageInput {
 export function createNavigateToPageTool(router: Router, productService: ProductService) {
   return {
     name: 'navigate_to_page',
-    description: 'Navigate to different pages in the application. Use this when the user wants to view a specific page like the complaint form, product details, home page, or checkout.',
+    description: 'Navigate to different pages in the application. Use this when the user wants to view a specific page like the complaint form (which can be filled using the submit_complaint tool), product details, home page, or checkout.',
     inputSchema: {
       type: 'object',
       properties: {
         page: {
           type: 'string',
           enum: ['complaint', 'product_detail', 'home', 'checkout'],
-          description: 'The page to navigate to. Use "complaint" for the complaint form, "product_detail" to view a specific product, "home" for the product catalog, or "checkout" for the checkout page.'
+          description: 'The page to navigate to. Use "complaint" to navigate to the complaint form page (the form can then be filled using the submit_complaint tool), "product_detail" to view a specific product, "home" for the product catalog, or "checkout" for the checkout page.'
         },
         productId: {
           type: 'string',

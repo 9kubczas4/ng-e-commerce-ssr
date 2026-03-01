@@ -136,13 +136,13 @@
   transition: all 0.2s ease;
 
   &:hover {
-    border-color: var(--primary);
+    border-color: rgba(255, 255, 255, 0.5);
   }
 
   &:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(221, 0, 49, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
   }
 
   &::placeholder {
