@@ -1,7 +1,9 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 import { createSearchProductTool } from './webmcp-tools/search-product.tool';
 import { createAddToBasketTool } from './webmcp-tools/add-to-basket.tool';
+import { createProceedCheckoutTool } from './webmcp-tools/proceed-checkout.tool';
 import { ProductService } from './product.service';
 import { SearchState } from './search-state.service';
 import { BasketService } from './basket.service';
@@ -14,6 +16,7 @@ export class WebMCPService {
   private readonly productService = inject(ProductService);
   private readonly searchState = inject(SearchState);
   private readonly basketService = inject(BasketService);
+  private readonly router = inject(Router);
   private toolsRegistered = false;
 
   isWebMCPAvailable(): boolean {
@@ -52,14 +55,32 @@ export class WebMCPService {
         };
       };
 
-      const searchProductTool = createSearchProductTool(this.productService, this.searchState);
-      nav.modelContext?.registerTool(searchProductTool);
+      // Register search_product tool
+      try {
+        const searchProductTool = createSearchProductTool(this.productService, this.searchState);
+        nav.modelContext?.registerTool(searchProductTool);
+        console.log('[WebMCP] Registered search_product tool');
+      } catch (error) {
+        console.error('[WebMCP] Failed to register search_product tool:', error);
+      }
 
-      const addToBasketTool = createAddToBasketTool(this.basketService, this.productService);
-      nav.modelContext?.registerTool(addToBasketTool);
+      // Register add_product_to_basket tool
+      try {
+        const addToBasketTool = createAddToBasketTool(this.basketService, this.productService);
+        nav.modelContext?.registerTool(addToBasketTool);
+        console.log('[WebMCP] Registered add_product_to_basket tool');
+      } catch (error) {
+        console.error('[WebMCP] Failed to register add_product_to_basket tool:', error);
+      }
 
-      // TODO: Register remaining tools
-      // - proceed_checkout tool
+      // Register proceed_checkout tool
+      try {
+        const proceedCheckoutTool = createProceedCheckoutTool(this.basketService, this.router);
+        nav.modelContext?.registerTool(proceedCheckoutTool);
+        console.log('[WebMCP] Registered proceed_checkout tool');
+      } catch (error) {
+        console.error('[WebMCP] Failed to register proceed_checkout tool:', error);
+      }
 
       this.toolsRegistered = true;
       console.log('[WebMCP] Tools registered successfully');
