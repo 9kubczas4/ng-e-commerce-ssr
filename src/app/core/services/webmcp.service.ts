@@ -1,8 +1,10 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { createSearchProductTool } from './webmcp-tools/search-product.tool';
+import { createAddToBasketTool } from './webmcp-tools/add-to-basket.tool';
 import { ProductService } from './product.service';
 import { SearchState } from './search-state.service';
+import { BasketService } from './basket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,7 @@ export class WebMCPService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly productService = inject(ProductService);
   private readonly searchState = inject(SearchState);
+  private readonly basketService = inject(BasketService);
   private toolsRegistered = false;
 
   isWebMCPAvailable(): boolean {
@@ -41,7 +44,7 @@ export class WebMCPService {
     }
 
     try {
-      // Register search_product tool
+      // Register tools
       const nav = navigator as Navigator & {
         modelContext?: {
           registerTool: (tool: unknown) => void;
@@ -52,8 +55,10 @@ export class WebMCPService {
       const searchProductTool = createSearchProductTool(this.productService, this.searchState);
       nav.modelContext?.registerTool(searchProductTool);
 
+      const addToBasketTool = createAddToBasketTool(this.basketService, this.productService);
+      nav.modelContext?.registerTool(addToBasketTool);
+
       // TODO: Register remaining tools
-      // - add_product_to_basket tool
       // - proceed_checkout tool
 
       this.toolsRegistered = true;
