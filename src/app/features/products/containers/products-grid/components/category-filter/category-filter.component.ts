@@ -41,8 +41,8 @@ export class CategoryFilterComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  selectCategory(category: Category | null): void {
-    this.searchStateService.setCategory(category);
+  selectCategory(category: string | null): void {
+    this.searchStateService.setCategory(category as Category | null);
   }
 
   isSelected(category: string | null): boolean {

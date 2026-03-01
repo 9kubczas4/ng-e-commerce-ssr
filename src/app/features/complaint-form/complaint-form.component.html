@@ -45,16 +45,16 @@
                 id="firstName"
                 formControlName="firstName"
                 class="form-input"
-                [class.form-input--error]="complaintForm | fieldInvalid:'firstName'"
+                [class.form-input--error]="(complaintForm | fieldError:'firstName' | async)"
                 aria-required="true"
-                [attr.aria-invalid]="complaintForm | fieldInvalid:'firstName'"
-                [attr.aria-describedby]="(complaintForm | fieldInvalid:'firstName') ? 'firstName-error' : null"
+                [attr.aria-invalid]="(complaintForm | fieldError:'firstName' | async)"
+                [attr.aria-describedby]="(complaintForm | fieldError:'firstName' | async) ? 'firstName-error' : null"
                 toolparamtitle="firstName"
                 toolparamdescription="Customer's first name"
               />
-              @if (complaintForm | fieldInvalid:'firstName') {
+              @if (complaintForm | fieldError:'firstName' | async) {
                 <span id="firstName-error" class="form-error" role="alert">
-                  {{ complaintForm | fieldError:'firstName' }}
+                  {{ complaintForm | fieldError:'firstName' | async }}
                 </span>
               }
             </div>
@@ -68,16 +68,16 @@
                 id="lastName"
                 formControlName="lastName"
                 class="form-input"
-                [class.form-input--error]="complaintForm | fieldInvalid:'lastName'"
+                [class.form-input--error]="(complaintForm | fieldError:'lastName' | async)"
                 aria-required="true"
-                [attr.aria-invalid]="complaintForm | fieldInvalid:'lastName'"
-                [attr.aria-describedby]="(complaintForm | fieldInvalid:'lastName') ? 'lastName-error' : null"
+                [attr.aria-invalid]="(complaintForm | fieldError:'lastName' | async)"
+                [attr.aria-describedby]="(complaintForm | fieldError:'lastName' | async) ? 'lastName-error' : null"
                 toolparamtitle="lastName"
                 toolparamdescription="Customer's last name"
               />
-              @if (complaintForm | fieldInvalid:'lastName') {
+              @if (complaintForm | fieldError:'lastName' | async) {
                 <span id="lastName-error" class="form-error" role="alert">
-                  {{ complaintForm | fieldError:'lastName' }}
+                  {{ complaintForm | fieldError:'lastName' | async }}
                 </span>
               }
             </div>
@@ -93,17 +93,17 @@
                 id="email"
                 formControlName="email"
                 class="form-input"
-                [class.form-input--error]="complaintForm | fieldInvalid:'email'"
+                [class.form-input--error]="(complaintForm | fieldError:'email' | async)"
                 aria-required="true"
-                [attr.aria-invalid]="complaintForm | fieldInvalid:'email'"
-                [attr.aria-describedby]="(complaintForm | fieldInvalid:'email') ? 'email-error' : null"
+                [attr.aria-invalid]="(complaintForm | fieldError:'email' | async)"
+                [attr.aria-describedby]="(complaintForm | fieldError:'email' | async) ? 'email-error' : null"
                 placeholder="example@email.com"
                 toolparamtitle="email"
                 toolparamdescription="Customer's email address for communication"
               />
-              @if (complaintForm | fieldInvalid:'email') {
+              @if (complaintForm | fieldError:'email' | async) {
                 <span id="email-error" class="form-error" role="alert">
-                  {{ complaintForm | fieldError:'email' }}
+                  {{ complaintForm | fieldError:'email' | async }}
                 </span>
               }
             </div>
@@ -117,17 +117,17 @@
                 id="phone"
                 formControlName="phone"
                 class="form-input"
-                [class.form-input--error]="complaintForm | fieldInvalid:'phone'"
+                [class.form-input--error]="(complaintForm | fieldError:'phone' | async)"
                 aria-required="true"
-                [attr.aria-invalid]="complaintForm | fieldInvalid:'phone'"
-                [attr.aria-describedby]="(complaintForm | fieldInvalid:'phone') ? 'phone-error' : null"
+                [attr.aria-invalid]="(complaintForm | fieldError:'phone' | async)"
+                [attr.aria-describedby]="(complaintForm | fieldError:'phone' | async) ? 'phone-error' : null"
                 placeholder="123456789"
                 toolparamtitle="phone"
                 toolparamdescription="Customer's phone number (9-15 digits)"
               />
-              @if (complaintForm | fieldInvalid:'phone') {
+              @if (complaintForm | fieldError:'phone' | async) {
                 <span id="phone-error" class="form-error" role="alert">
-                  {{ complaintForm | fieldError:'phone' }}
+                  {{ complaintForm | fieldError:'phone' | async }}
                 </span>
               }
             </div>
@@ -147,17 +147,17 @@
               id="orderNumber"
               formControlName="orderNumber"
               class="form-input"
-              [class.form-input--error]="complaintForm | fieldInvalid:'orderNumber'"
+              [class.form-input--error]="(complaintForm | fieldError:'orderNumber' | async)"
               aria-required="true"
-              [attr.aria-invalid]="complaintForm | fieldInvalid:'orderNumber'"
-              [attr.aria-describedby]="(complaintForm | fieldInvalid:'orderNumber') ? 'orderNumber-error' : null"
+              [attr.aria-invalid]="(complaintForm | fieldError:'orderNumber' | async)"
+              [attr.aria-describedby]="(complaintForm | fieldError:'orderNumber' | async) ? 'orderNumber-error' : null"
               placeholder="ORD-2024-12345"
               toolparamtitle="orderNumber"
               toolparamdescription="The order number associated with the complaint (format: ORD-YYYY-XXXXX)"
             />
-            @if (complaintForm | fieldInvalid:'orderNumber') {
+            @if (complaintForm | fieldError:'orderNumber' | async) {
               <span id="orderNumber-error" class="form-error" role="alert">
-                {{ complaintForm | fieldError:'orderNumber' }}
+                {{ complaintForm | fieldError:'orderNumber' | async }}
               </span>
             }
           </div>
@@ -196,16 +196,16 @@
                   [id]="'productName-' + i"
                   formControlName="productName"
                   class="form-input"
-                  [class.form-input--error]="products | fieldInvalid:'productName':i"
+                  [class.form-input--error]="(products | fieldError:'productName':i | async)"
                   aria-required="true"
-                  [attr.aria-invalid]="products | fieldInvalid:'productName':i"
-                  [attr.aria-describedby]="(products | fieldInvalid:'productName':i) ? 'productName-error-' + i : null"
+                  [attr.aria-invalid]="(products | fieldError:'productName':i | async)"
+                  [attr.aria-describedby]="(products | fieldError:'productName':i | async) ? 'productName-error-' + i : null"
                   toolparamtitle="productName"
                   toolparamdescription="Name of the product with the issue"
                 />
-                @if (products | fieldInvalid:'productName':i) {
+                @if (products | fieldError:'productName':i | async) {
                   <span [id]="'productName-error-' + i" class="form-error" role="alert">
-                    {{ products | fieldError:'productName':i }}
+                    {{ products | fieldError:'productName':i | async }}
                   </span>
                 }
               </div>
@@ -218,10 +218,10 @@
                   [id]="'complaintReason-' + i"
                   formControlName="complaintReason"
                   class="form-select"
-                  [class.form-input--error]="products | fieldInvalid:'complaintReason':i"
+                  [class.form-input--error]="(products | fieldError:'complaintReason':i | async)"
                   aria-required="true"
-                  [attr.aria-invalid]="products | fieldInvalid:'complaintReason':i"
-                  [attr.aria-describedby]="(products | fieldInvalid:'complaintReason':i) ? 'complaintReason-error-' + i : null"
+                  [attr.aria-invalid]="(products | fieldError:'complaintReason':i | async)"
+                  [attr.aria-describedby]="(products | fieldError:'complaintReason':i | async) ? 'complaintReason-error-' + i : null"
                   toolparamtitle="complaintReason"
                   toolparamdescription="Reason for the complaint. Use 'defective-product' for manufacturing defects, 'wrong-item' when incorrect product was shipped, 'damaged-shipping' for transit damage, 'missing-parts' for incomplete products, 'not-as-described' when product doesn't match description, or 'other' for other issues."
                 >
@@ -230,9 +230,9 @@
                     <option [value]="reason.value">{{ reason.label }}</option>
                   }
                 </select>
-                @if (products | fieldInvalid:'complaintReason':i) {
+                @if (products | fieldError:'complaintReason':i | async) {
                   <span [id]="'complaintReason-error-' + i" class="form-error" role="alert">
-                    {{ products | fieldError:'complaintReason':i }}
+                    {{ products | fieldError:'complaintReason':i | async }}
                   </span>
                 }
               </div>
@@ -245,18 +245,18 @@
                   [id]="'description-' + i"
                   formControlName="description"
                   class="form-textarea"
-                  [class.form-input--error]="products | fieldInvalid:'description':i"
+                  [class.form-input--error]="(products | fieldError:'description':i | async)"
                   rows="6"
                   aria-required="true"
-                  [attr.aria-invalid]="products | fieldInvalid:'description':i"
-                  [attr.aria-describedby]="(products | fieldInvalid:'description':i) ? 'description-error-' + i : null"
+                  [attr.aria-invalid]="(products | fieldError:'description':i | async)"
+                  [attr.aria-describedby]="(products | fieldError:'description':i | async) ? 'description-error-' + i : null"
                   placeholder="Describe the problem with the product in detail (minimum 20 characters)..."
                   toolparamtitle="description"
                   toolparamdescription="Detailed description of the problem with the product (minimum 20 characters)"
                 ></textarea>
-                @if (products | fieldInvalid:'description':i) {
+                @if (products | fieldError:'description':i | async) {
                   <span [id]="'description-error-' + i" class="form-error" role="alert">
-                    {{ products | fieldError:'description':i }}
+                    {{ products | fieldError:'description':i | async }}
                   </span>
                 }
               </div>
@@ -288,10 +288,10 @@
               id="preferredResolution"
               formControlName="preferredResolution"
               class="form-select"
-              [class.form-input--error]="complaintForm | fieldInvalid:'preferredResolution'"
+              [class.form-input--error]="(complaintForm | fieldError:'preferredResolution' | async)"
               aria-required="true"
-              [attr.aria-invalid]="complaintForm | fieldInvalid:'preferredResolution'"
-              [attr.aria-describedby]="(complaintForm | fieldInvalid:'preferredResolution') ? 'preferredResolution-error' : null"
+              [attr.aria-invalid]="(complaintForm | fieldError:'preferredResolution' | async)"
+              [attr.aria-describedby]="(complaintForm | fieldError:'preferredResolution' | async) ? 'preferredResolution-error' : null"
               toolparamtitle="preferredResolution"
               toolparamdescription="Customer's preferred resolution. Use 'refund' for money back, 'replacement' for a new product, or 'repair' to fix the existing product."
             >
@@ -300,9 +300,9 @@
                 <option [value]="resolution.value">{{ resolution.label }}</option>
               }
             </select>
-            @if (complaintForm | fieldInvalid:'preferredResolution') {
+            @if (complaintForm | fieldError:'preferredResolution' | async) {
               <span id="preferredResolution-error" class="form-error" role="alert">
-                {{ complaintForm | fieldError:'preferredResolution' }}
+                {{ complaintForm | fieldError:'preferredResolution' | async }}
               </span>
             }
           </div>

@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ComplaintReason, PreferredResolution } from './models/complaint.model';
 import { createComplaintForm, createProductGroup } from './form/complaint.form';
 import { FieldErrorPipe } from './pipes/field-error.pipe';
-import { FieldInvalidPipe } from './pipes/field-invalid.pipe';
 import { collectFormErrors } from './utils/form-errors.helper';
 
 interface AgentSubmitEvent extends SubmitEvent {
@@ -15,7 +15,7 @@ interface AgentSubmitEvent extends SubmitEvent {
 @Component({
   selector: 'app-complaint-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, FieldErrorPipe, FieldInvalidPipe],
+  imports: [ReactiveFormsModule, AsyncPipe, FieldErrorPipe],
   templateUrl: './complaint-form.component.html',
   styleUrls: ['./complaint-form.component.scss']
 })

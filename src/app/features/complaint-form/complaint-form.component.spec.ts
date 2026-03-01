@@ -3,13 +3,12 @@ import { ComplaintFormComponent } from './complaint-form.component';
 import { Router } from '@angular/router';
 import { FormArray } from '@angular/forms';
 import { FieldErrorPipe } from './pipes/field-error.pipe';
-import { FieldInvalidPipe } from './pipes/field-invalid.pipe';
+import { firstValueFrom } from 'rxjs';
 
 describe('ComplaintFormComponent', () => {
   let component: ComplaintFormComponent;
   let fixture: ComponentFixture<ComplaintFormComponent>;
   let fieldErrorPipe: FieldErrorPipe;
-  let fieldInvalidPipe: FieldInvalidPipe;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -25,7 +24,6 @@ describe('ComplaintFormComponent', () => {
     fixture = TestBed.createComponent(ComplaintFormComponent);
     component = fixture.componentInstance;
     fieldErrorPipe = new FieldErrorPipe();
-    fieldInvalidPipe = new FieldInvalidPipe();
     fixture.detectChanges();
   });
 
@@ -139,50 +137,70 @@ describe('ComplaintFormComponent', () => {
     expect(component['isSubmitting']()).toBe(false);
   });
 
-  it('should return correct error messages', () => {
+  it('should return correct error messages', async () => {
     const firstNameControl = component['complaintForm'].get('firstName');
     firstNameControl?.markAsTouched();
 
-    expect(fieldErrorPipe.transform(component['complaintForm'], 'firstName')).toBe('This field is required');
+    const error1$ = fieldErrorPipe.transform(component['complaintForm'], 'firstName');
+    const error1 = await firstValueFrom(error1$);
+    expect(error1).toBe('This field is required');
 
     firstNameControl?.setValue('A');
-    expect(fieldErrorPipe.transform(component['complaintForm'], 'firstName')).toContain('Minimum length');
+    const error2$ = fieldErrorPipe.transform(component['complaintForm'], 'firstName');
+    const error2 = await firstValueFrom(error2$);
+    expect(error2).toContain('Minimum length');
   });
 
-  it('should return correct error messages for product fields', () => {
+  it('should return correct error messages for product fields', async () => {
     const products = component['products'] as FormArray;
     const productNameControl = products.at(0).get('productName');
     productNameControl?.markAsTouched();
 
-    expect(fieldErrorPipe.transform(products, 'productName', 0)).toBe('This field is required');
+    const error1$ = fieldErrorPipe.transform(products, 'productName', 0);
+    const error1 = await firstValueFrom(error1$);
+    expect(error1).toBe('This field is required');
 
     productNameControl?.setValue('AB');
-    expect(fieldErrorPipe.transform(products, 'productName', 0)).toContain('Minimum length');
+    const error2$ = fieldErrorPipe.transform(products, 'productName', 0);
+    const error2 = await firstValueFrom(error2$);
+    expect(error2).toContain('Minimum length');
   });
 
-  it('should check if field is invalid correctly', () => {
+  it('should check if field is invalid correctly', async () => {
     const emailControl = component['complaintForm'].get('email');
 
-    expect(fieldInvalidPipe.transform(component['complaintForm'], 'email')).toBe(false);
+    const error1$ = fieldErrorPipe.transform(component['complaintForm'], 'email');
+    const error1 = await firstValueFrom(error1$);
+    expect(error1).toBe(null);
 
     emailControl?.markAsTouched();
-    expect(fieldInvalidPipe.transform(component['complaintForm'], 'email')).toBe(true);
+    const error2$ = fieldErrorPipe.transform(component['complaintForm'], 'email');
+    const error2 = await firstValueFrom(error2$);
+    expect(error2).toBeTruthy(); // Should have an error message
 
     emailControl?.setValue('valid@email.com');
-    expect(fieldInvalidPipe.transform(component['complaintForm'], 'email')).toBe(false);
+    const error3$ = fieldErrorPipe.transform(component['complaintForm'], 'email');
+    const error3 = await firstValueFrom(error3$);
+    expect(error3).toBe(null);
   });
 
-  it('should check if product field is invalid correctly', () => {
+  it('should check if product field is invalid correctly', async () => {
     const products = component['products'] as FormArray;
     const productNameControl = products.at(0).get('productName');
 
-    expect(fieldInvalidPipe.transform(products, 'productName', 0)).toBe(false);
+    const error1$ = fieldErrorPipe.transform(products, 'productName', 0);
+    const error1 = await firstValueFrom(error1$);
+    expect(error1).toBe(null);
 
     productNameControl?.markAsTouched();
-    expect(fieldInvalidPipe.transform(products, 'productName', 0)).toBe(true);
+    const error2$ = fieldErrorPipe.transform(products, 'productName', 0);
+    const error2 = await firstValueFrom(error2$);
+    expect(error2).toBeTruthy(); // Should have an error message
 
     productNameControl?.setValue('Valid Product Name');
-    expect(fieldInvalidPipe.transform(products, 'productName', 0)).toBe(false);
+    const error3$ = fieldErrorPipe.transform(products, 'productName', 0);
+    const error3 = await firstValueFrom(error3$);
+    expect(error3).toBe(null);
   });
 
   it('should render form title', () => {
@@ -206,7 +224,7 @@ describe('ComplaintFormComponent', () => {
     expect(firstNameInput?.getAttribute('aria-required')).toBe('true');
   });
 
-  it('should display error messages when field is invalid and touched', () => {
+  it('should display error messages when field is invalid and touched', async () => {
     const emailControl = component['complaintForm'].get('email');
 
     // Verify field starts invalid
@@ -217,13 +235,15 @@ describe('ComplaintFormComponent', () => {
 
     // Verify the pipe would return an error
     const errorPipe = new FieldErrorPipe();
-    const error = errorPipe.transform(component['complaintForm'], 'email');
+    const error$ = errorPipe.transform(component['complaintForm'], 'email');
+    const error = await firstValueFrom(error$);
     expect(error).toBeTruthy();
 
-    // Verify the invalid pipe would return true
-    const invalidPipe = new FieldInvalidPipe();
-    const isInvalid = invalidPipe.transform(component['complaintForm'], 'email');
-    expect(isInvalid).toBe(true);
+    // Verify the error pipe returns null when valid
+    emailControl?.setValue('valid@email.com');
+    const validError$ = errorPipe.transform(component['complaintForm'], 'email');
+    const validError = await firstValueFrom(validError$);
+    expect(validError).toBe(null);
   });
 
   it('should render add product button', () => {

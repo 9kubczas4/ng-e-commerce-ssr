@@ -69,14 +69,14 @@
               id="fullName"
               formControlName="fullName"
               class="form-input"
-              [class.form-input--error]="shippingForm | fieldInvalid:'fullName'"
+              [class.form-input--error]="(shippingForm | fieldError:'fullName' | async)"
               aria-required="true"
-              [attr.aria-invalid]="shippingForm | fieldInvalid:'fullName'"
-              [attr.aria-describedby]="(shippingForm | fieldInvalid:'fullName') ? 'fullName-error' : null"
+              [attr.aria-invalid]="(shippingForm | fieldError:'fullName' | async)"
+              [attr.aria-describedby]="(shippingForm | fieldError:'fullName' | async) ? 'fullName-error' : null"
             />
-            @if (shippingForm | fieldInvalid:'fullName') {
+            @if (shippingForm | fieldError:'fullName' | async) {
               <span id="fullName-error" class="form-error" role="alert">
-                {{ shippingForm | fieldError:'fullName' }}
+                {{ shippingForm | fieldError:'fullName' | async }}
               </span>
             }
           </div>
@@ -90,14 +90,14 @@
               id="streetAddress"
               formControlName="streetAddress"
               class="form-input"
-              [class.form-input--error]="shippingForm | fieldInvalid:'streetAddress'"
+              [class.form-input--error]="(shippingForm | fieldError:'streetAddress' | async)"
               aria-required="true"
-              [attr.aria-invalid]="shippingForm | fieldInvalid:'streetAddress'"
-              [attr.aria-describedby]="(shippingForm | fieldInvalid:'streetAddress') ? 'streetAddress-error' : null"
+              [attr.aria-invalid]="(shippingForm | fieldError:'streetAddress' | async)"
+              [attr.aria-describedby]="(shippingForm | fieldError:'streetAddress' | async) ? 'streetAddress-error' : null"
             />
-            @if (shippingForm | fieldInvalid:'streetAddress') {
+            @if (shippingForm | fieldError:'streetAddress' | async) {
               <span id="streetAddress-error" class="form-error" role="alert">
-                {{ shippingForm | fieldError:'streetAddress' }}
+                {{ shippingForm | fieldError:'streetAddress' | async }}
               </span>
             }
           </div>
@@ -112,14 +112,14 @@
                 id="city"
                 formControlName="city"
                 class="form-input"
-                [class.form-input--error]="shippingForm | fieldInvalid:'city'"
+                [class.form-input--error]="(shippingForm | fieldError:'city' | async)"
                 aria-required="true"
-                [attr.aria-invalid]="shippingForm | fieldInvalid:'city'"
-                [attr.aria-describedby]="(shippingForm | fieldInvalid:'city') ? 'city-error' : null"
+                [attr.aria-invalid]="(shippingForm | fieldError:'city' | async)"
+                [attr.aria-describedby]="(shippingForm | fieldError:'city' | async) ? 'city-error' : null"
               />
-              @if (shippingForm | fieldInvalid:'city') {
+              @if (shippingForm | fieldError:'city' | async) {
                 <span id="city-error" class="form-error" role="alert">
-                  {{ shippingForm | fieldError:'city' }}
+                  {{ shippingForm | fieldError:'city' | async }}
                 </span>
               }
             </div>
@@ -133,14 +133,14 @@
                 id="postalCode"
                 formControlName="postalCode"
                 class="form-input"
-                [class.form-input--error]="shippingForm | fieldInvalid:'postalCode'"
+                [class.form-input--error]="(shippingForm | fieldError:'postalCode' | async)"
                 aria-required="true"
-                [attr.aria-invalid]="shippingForm | fieldInvalid:'postalCode'"
-                [attr.aria-describedby]="(shippingForm | fieldInvalid:'postalCode') ? 'postalCode-error' : null"
+                [attr.aria-invalid]="(shippingForm | fieldError:'postalCode' | async)"
+                [attr.aria-describedby]="(shippingForm | fieldError:'postalCode' | async) ? 'postalCode-error' : null"
               />
-              @if (shippingForm | fieldInvalid:'postalCode') {
+              @if (shippingForm | fieldError:'postalCode' | async) {
                 <span id="postalCode-error" class="form-error" role="alert">
-                  {{ shippingForm | fieldError:'postalCode' }}
+                  {{ shippingForm | fieldError:'postalCode' | async }}
                 </span>
               }
             </div>
@@ -154,10 +154,10 @@
               id="country"
               formControlName="country"
               class="form-select"
-              [class.form-input--error]="shippingForm | fieldInvalid:'country'"
+              [class.form-input--error]="(shippingForm | fieldError:'country' | async)"
               aria-required="true"
-              [attr.aria-invalid]="shippingForm | fieldInvalid:'country'"
-              [attr.aria-describedby]="(shippingForm | fieldInvalid:'country') ? 'country-error' : null"
+              [attr.aria-invalid]="(shippingForm | fieldError:'country' | async)"
+              [attr.aria-describedby]="(shippingForm | fieldError:'country' | async) ? 'country-error' : null"
             >
               <option value="">Select a country</option>
               <option value="US">United States</option>
@@ -171,9 +171,9 @@
               <option value="NL">Netherlands</option>
               <option value="SE">Sweden</option>
             </select>
-            @if (shippingForm | fieldInvalid:'country') {
+            @if (shippingForm | fieldError:'country' | async) {
               <span id="country-error" class="form-error" role="alert">
-                {{ shippingForm | fieldError:'country' }}
+                {{ shippingForm | fieldError:'country' | async }}
               </span>
             }
           </div>
@@ -192,16 +192,16 @@
               id="cardNumber"
               formControlName="cardNumber"
               class="form-input"
-              [class.form-input--error]="paymentForm | fieldInvalid:'cardNumber'"
+              [class.form-input--error]="(paymentForm | fieldError:'cardNumber' | async)"
               placeholder="1234 5678 9012 3456"
               aria-required="true"
-              [attr.aria-invalid]="paymentForm | fieldInvalid:'cardNumber'"
-              [attr.aria-describedby]="(paymentForm | fieldInvalid:'cardNumber') ? 'cardNumber-error' : null"
+              [attr.aria-invalid]="(paymentForm | fieldError:'cardNumber' | async)"
+              [attr.aria-describedby]="(paymentForm | fieldError:'cardNumber' | async) ? 'cardNumber-error' : null"
               maxlength="19"
             />
-            @if (paymentForm | fieldInvalid:'cardNumber') {
+            @if (paymentForm | fieldError:'cardNumber' | async) {
               <span id="cardNumber-error" class="form-error" role="alert">
-                {{ paymentForm | fieldError:'cardNumber' }}
+                {{ paymentForm | fieldError:'cardNumber' | async }}
               </span>
             }
           </div>
@@ -216,16 +216,16 @@
                 id="expiryDate"
                 formControlName="expiryDate"
                 class="form-input"
-                [class.form-input--error]="paymentForm | fieldInvalid:'expiryDate'"
+                [class.form-input--error]="(paymentForm | fieldError:'expiryDate' | async)"
                 placeholder="MM/YY"
                 aria-required="true"
-                [attr.aria-invalid]="paymentForm | fieldInvalid:'expiryDate'"
-                [attr.aria-describedby]="(paymentForm | fieldInvalid:'expiryDate') ? 'expiryDate-error' : null"
+                [attr.aria-invalid]="(paymentForm | fieldError:'expiryDate' | async)"
+                [attr.aria-describedby]="(paymentForm | fieldError:'expiryDate' | async) ? 'expiryDate-error' : null"
                 maxlength="5"
               />
-              @if (paymentForm | fieldInvalid:'expiryDate') {
+              @if (paymentForm | fieldError:'expiryDate' | async) {
                 <span id="expiryDate-error" class="form-error" role="alert">
-                  {{ paymentForm | fieldError:'expiryDate' }}
+                  {{ paymentForm | fieldError:'expiryDate' | async }}
                 </span>
               }
             </div>
@@ -239,16 +239,16 @@
                 id="cvv"
                 formControlName="cvv"
                 class="form-input"
-                [class.form-input--error]="paymentForm | fieldInvalid:'cvv'"
+                [class.form-input--error]="(paymentForm | fieldError:'cvv' | async)"
                 placeholder="123"
                 aria-required="true"
-                [attr.aria-invalid]="paymentForm | fieldInvalid:'cvv'"
-                [attr.aria-describedby]="(paymentForm | fieldInvalid:'cvv') ? 'cvv-error' : null"
+                [attr.aria-invalid]="(paymentForm | fieldError:'cvv' | async)"
+                [attr.aria-describedby]="(paymentForm | fieldError:'cvv' | async) ? 'cvv-error' : null"
                 maxlength="4"
               />
-              @if (paymentForm | fieldInvalid:'cvv') {
+              @if (paymentForm | fieldError:'cvv' | async) {
                 <span id="cvv-error" class="form-error" role="alert">
-                  {{ paymentForm | fieldError:'cvv' }}
+                  {{ paymentForm | fieldError:'cvv' | async }}
                 </span>
               }
             </div>
@@ -263,15 +263,15 @@
               id="cardholderName"
               formControlName="cardholderName"
               class="form-input"
-              [class.form-input--error]="paymentForm | fieldInvalid:'cardholderName'"
+              [class.form-input--error]="(paymentForm | fieldError:'cardholderName' | async)"
               placeholder="Name as it appears on card"
               aria-required="true"
-              [attr.aria-invalid]="paymentForm | fieldInvalid:'cardholderName'"
-              [attr.aria-describedby]="(paymentForm | fieldInvalid:'cardholderName') ? 'cardholderName-error' : null"
+              [attr.aria-invalid]="(paymentForm | fieldError:'cardholderName' | async)"
+              [attr.aria-describedby]="(paymentForm | fieldError:'cardholderName' | async) ? 'cardholderName-error' : null"
             />
-            @if (paymentForm | fieldInvalid:'cardholderName') {
+            @if (paymentForm | fieldError:'cardholderName' | async) {
               <span id="cardholderName-error" class="form-error" role="alert">
-                {{ paymentForm | fieldError:'cardholderName' }}
+                {{ paymentForm | fieldError:'cardholderName' | async }}
               </span>
             }
           </div>
