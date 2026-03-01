@@ -1,0 +1,78 @@
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class WebMCPService {
+  private readonly platformId = inject(PLATFORM_ID);
+  private toolsRegistered = false;
+
+  isWebMCPAvailable(): boolean {
+    if (!isPlatformBrowser(this.platformId)) {
+      return false;
+    }
+
+    return typeof navigator !== 'undefined' && 'modelContext' in navigator;
+  }
+
+  initializeTools(): void {
+    // Skip registration in SSR context
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('[WebMCP] Skipping tool registration in SSR context');
+      return;
+    }
+
+    // Check if WebMCP API is available
+    if (!this.isWebMCPAvailable()) {
+      console.warn('[WebMCP] WebMCP API not available. Tools will not be registered.');
+      return;
+    }
+
+    // Prevent duplicate registration
+    if (this.toolsRegistered) {
+      console.log('[WebMCP] Tools already registered');
+      return;
+    }
+
+    try {
+      // TODO: Register individual tools here
+      // - search_product tool
+      // - add_product_to_basket tool
+      // - proceed_checkout tool
+
+      this.toolsRegistered = true;
+      console.log('[WebMCP] Tools registered successfully');
+    } catch (error) {
+      console.error('[WebMCP] Error registering tools:', error);
+      // Don't throw - allow application to continue without WebMCP
+    }
+  }
+
+  destroyTools(): void {
+    // Skip cleanup in SSR context
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    // Check if WebMCP API is available
+    if (!this.isWebMCPAvailable()) {
+      return;
+    }
+
+    // Only clean up if tools were registered
+    if (!this.toolsRegistered) {
+      return;
+    }
+
+    try {
+      // Use clearContext to remove all registered tools at once
+      const nav = navigator as Navigator & { modelContext?: { clearContext: () => void } };
+      nav.modelContext?.clearContext();
+      this.toolsRegistered = false;
+      console.log('[WebMCP] Tools unregistered successfully');
+    } catch (error) {
+      console.error('[WebMCP] Error unregistering tools:', error);
+    }
+  }
+}
