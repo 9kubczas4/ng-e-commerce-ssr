@@ -28,10 +28,18 @@
     align-items: center;
     gap: 0.75rem;
     color: var(--primary);
+    text-decoration: none;
     transition: transform 0.3s ease;
+    cursor: pointer;
 
     &:hover {
       transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 4px;
+      border-radius: 4px;
     }
   }
 
