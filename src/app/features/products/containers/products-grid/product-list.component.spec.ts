@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ProductListComponent } from './product-list.component';
-import { ProductService } from '@features/products/services/product.service';
+import { ProductService } from '@core/services/product.service';
 import { BasketService } from '@core/services/basket.service';
 import { Product } from '@core/models/product.model';
 import { signal } from '@angular/core';

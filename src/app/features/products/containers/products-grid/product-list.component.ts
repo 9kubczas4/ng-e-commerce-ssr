@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProductService } from '@features/products/services/product.service';
+import { ProductService } from '@core/services/product.service';
 import { BasketService } from '@core/services/basket.service';
 import { Product } from '@core/models/product.model';
 import { ProductGridComponent } from './components/product-grid/product-grid.component';

@@ -1,7 +1,7 @@
 import { Component, inject, computed, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from '@core/models/product.model';
-import { ProductService } from '@features/products/services/product.service';
+import { ProductService } from '@core/services/product.service';
 import { BasketService } from '@core/services/basket.service';
 
 @Component({
