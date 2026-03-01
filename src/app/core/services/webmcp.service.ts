@@ -8,6 +8,13 @@ import { ProductService } from './product.service';
 import { SearchState } from './search-state.service';
 import { BasketService } from './basket.service';
 
+interface ModelContextAPI {
+  registerTool: (tool: unknown) => void;
+  clearContext: () => void;
+}
+
+type NavigatorWithModelContext = Navigator & { modelContext?: ModelContextAPI };
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,100 +27,82 @@ export class WebMCPService {
   private toolsRegistered = false;
 
   isWebMCPAvailable(): boolean {
-    if (!isPlatformBrowser(this.platformId)) {
-      return false;
-    }
-
-    return typeof navigator !== 'undefined' && 'modelContext' in navigator;
+    return isPlatformBrowser(this.platformId) &&
+           typeof navigator !== 'undefined' &&
+           'modelContext' in navigator;
   }
 
   initializeTools(): void {
-    // Skip registration in SSR context
-    if (!isPlatformBrowser(this.platformId)) {
-      console.log('[WebMCP] Skipping tool registration in SSR context');
-      return;
-    }
-
-    // Check if WebMCP API is available
-    if (!this.isWebMCPAvailable()) {
-      console.warn('[WebMCP] WebMCP API not available. Tools will not be registered.');
-      return;
-    }
-
-    // Prevent duplicate registration
-    if (this.toolsRegistered) {
-      console.log('[WebMCP] Tools already registered');
+    if (!this.canRegisterTools()) {
       return;
     }
 
     try {
-      // Register tools
-      const nav = navigator as Navigator & {
-        modelContext?: {
-          registerTool: (tool: unknown) => void;
-          clearContext: () => void;
-        };
-      };
+      const modelContext = this.getModelContext();
 
-      // Register search_product tool
-      try {
-        const searchProductTool = createSearchProductTool(this.productService, this.searchState);
-        nav.modelContext?.registerTool(searchProductTool);
-        console.log('[WebMCP] Registered search_product tool');
-      } catch (error) {
-        console.error('[WebMCP] Failed to register search_product tool:', error);
-      }
+      this.registerTool(modelContext, 'search_product', () =>
+        createSearchProductTool(this.productService, this.searchState)
+      );
 
-      // Register add_product_to_basket tool
-      try {
-        const addToBasketTool = createAddToBasketTool(this.basketService, this.productService);
-        nav.modelContext?.registerTool(addToBasketTool);
-        console.log('[WebMCP] Registered add_product_to_basket tool');
-      } catch (error) {
-        console.error('[WebMCP] Failed to register add_product_to_basket tool:', error);
-      }
+      this.registerTool(modelContext, 'add_product_to_basket', () =>
+        createAddToBasketTool(this.basketService, this.productService)
+      );
 
-      // Register proceed_checkout tool
-      try {
-        const proceedCheckoutTool = createProceedCheckoutTool(this.basketService, this.router);
-        nav.modelContext?.registerTool(proceedCheckoutTool);
-        console.log('[WebMCP] Registered proceed_checkout tool');
-      } catch (error) {
-        console.error('[WebMCP] Failed to register proceed_checkout tool:', error);
-      }
+      this.registerTool(modelContext, 'proceed_checkout', () =>
+        createProceedCheckoutTool(this.basketService, this.router)
+      );
 
       this.toolsRegistered = true;
       console.log('[WebMCP] Tools registered successfully');
     } catch (error) {
       console.error('[WebMCP] Error registering tools:', error);
-      // Don't throw - allow application to continue without WebMCP
     }
   }
 
   destroyTools(): void {
-    // Skip cleanup in SSR context
-    if (!isPlatformBrowser(this.platformId)) {
-      return;
-    }
-
-    // Check if WebMCP API is available
-    if (!this.isWebMCPAvailable()) {
-      return;
-    }
-
-    // Only clean up if tools were registered
-    if (!this.toolsRegistered) {
+    if (!this.isWebMCPAvailable() || !this.toolsRegistered) {
       return;
     }
 
     try {
-      // Use clearContext to remove all registered tools at once
-      const nav = navigator as Navigator & { modelContext?: { clearContext: () => void } };
-      nav.modelContext?.clearContext();
+      this.getModelContext()?.clearContext();
       this.toolsRegistered = false;
       console.log('[WebMCP] Tools unregistered successfully');
     } catch (error) {
       console.error('[WebMCP] Error unregistering tools:', error);
+    }
+  }
+
+  private canRegisterTools(): boolean {
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('[WebMCP] Skipping tool registration in SSR context');
+      return false;
+    }
+
+    if (!this.isWebMCPAvailable()) {
+      console.warn('[WebMCP] WebMCP API not available. Tools will not be registered.');
+      return false;
+    }
+
+    if (this.toolsRegistered) {
+      console.log('[WebMCP] Tools already registered');
+      return false;
+    }
+
+    return true;
+  }
+
+  private getModelContext(): ModelContextAPI | undefined {
+    return (navigator as NavigatorWithModelContext).modelContext;
+  }
+
+  private registerTool(modelContext: ModelContextAPI | undefined, name: string, factory: () => unknown): void {
+    try {
+      const tool = factory();
+      modelContext?.registerTool(tool);
+      console.log(`[WebMCP] Registered ${name} tool`);
+    } catch (error) {
+      console.error(`[WebMCP] Failed to register ${name} tool:`, error);
     }
   }
 }
