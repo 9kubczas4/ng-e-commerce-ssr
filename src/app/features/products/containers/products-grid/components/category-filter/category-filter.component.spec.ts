@@ -2,10 +2,12 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CategoryFilterComponent } from './category-filter.component';
 import { Product } from '@core/models/product.model';
+import { SearchState } from '@core/services/search-state.service';
 
 describe('CategoryFilterComponent', () => {
   let component: CategoryFilterComponent;
   let fixture: ComponentFixture<CategoryFilterComponent>;
+  let searchStateService: SearchState;
 
   const mockProducts: Product[] = [
     {
@@ -44,11 +46,13 @@ describe('CategoryFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CategoryFilterComponent]
+      imports: [CategoryFilterComponent],
+      providers: [SearchState]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CategoryFilterComponent);
     component = fixture.componentInstance;
+    searchStateService = TestBed.inject(SearchState);
     fixture.componentRef.setInput('products', mockProducts);
     fixture.detectChanges();
   });
@@ -129,15 +133,9 @@ describe('CategoryFilterComponent', () => {
     });
 
     it('should emit categoryChange event when category is selected', () => {
-      const emittedValues: (string | null)[] = [];
-      component.categoryChange.subscribe((value: string | null) => {
-        emittedValues.push(value);
-      });
-
       component.selectCategory('Apparel');
 
-      expect(emittedValues).toHaveLength(1);
-      expect(emittedValues[0]).toBe('Apparel');
+      expect(searchStateService.selectedCategory()).toBe('Apparel');
     });
 
     it('should allow selecting null to show all products', () => {
@@ -150,15 +148,9 @@ describe('CategoryFilterComponent', () => {
     });
 
     it('should emit null when "All" option is selected', () => {
-      const emittedValues: (string | null)[] = [];
-      component.categoryChange.subscribe((value: string | null) => {
-        emittedValues.push(value);
-      });
-
       component.selectCategory(null);
 
-      expect(emittedValues).toHaveLength(1);
-      expect(emittedValues[0]).toBeNull();
+      expect(searchStateService.selectedCategory()).toBeNull();
     });
   });
 
@@ -187,16 +179,14 @@ describe('CategoryFilterComponent', () => {
 
   describe('Event Propagation', () => {
     it('should emit correct category value on multiple selections', () => {
-      const emittedValues: (string | null)[] = [];
-      component.categoryChange.subscribe((value: string | null) => {
-        emittedValues.push(value);
-      });
-
       component.selectCategory('Apparel');
-      component.selectCategory('Books');
-      component.selectCategory(null);
+      expect(searchStateService.selectedCategory()).toBe('Apparel');
 
-      expect(emittedValues).toEqual(['Apparel', 'Books', null]);
+      component.selectCategory('Books');
+      expect(searchStateService.selectedCategory()).toBe('Books');
+
+      component.selectCategory(null);
+      expect(searchStateService.selectedCategory()).toBeNull();
     });
   });
 });
