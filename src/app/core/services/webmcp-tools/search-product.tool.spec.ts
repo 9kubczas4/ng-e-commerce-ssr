@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createSearchProductTool } from './search-product.tool';
 import { Product } from '@core/models/product.model';
 import { SearchProductResponse, ErrorObject } from '@core/models/webmcp.model';
@@ -37,6 +37,10 @@ describe('SearchProductTool - Edge Cases', () => {
     filterByCategory: (category: string, products: Product[]) => Product[];
   };
 
+  let mockSearchStateService: {
+    setSearchState: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(() => {
     mockProductService = {
       products: () => mockProducts,
@@ -54,11 +58,15 @@ describe('SearchProductTool - Edge Cases', () => {
         return products.filter(product => product.category === category);
       }
     };
+
+    mockSearchStateService = {
+      setSearchState: vi.fn()
+    };
   });
 
   describe('Empty query edge case', () => {
     it('should return all products when query is empty string', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: '' });
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -66,10 +74,11 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products).toHaveLength(3);
       expect(response.count).toBe(3);
       expect(response.message).toBe('Found 3 products.');
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('', null);
     });
 
     it('should return all products when query is undefined', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({});
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -77,10 +86,11 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products).toHaveLength(3);
       expect(response.count).toBe(3);
       expect(response.message).toBe('Found 3 products.');
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('', null);
     });
 
     it('should return all products when query is whitespace only', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: '   ' });
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -88,12 +98,13 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products).toHaveLength(3);
       expect(response.count).toBe(3);
       expect(response.message).toBe('Found 3 products.');
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('   ', null);
     });
   });
 
   describe('No results edge case', () => {
     it('should return empty array with descriptive message when no products match', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: 'nonexistent product xyz' });
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -101,10 +112,11 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products).toHaveLength(0);
       expect(response.count).toBe(0);
       expect(response.message).toBe('No products found matching your search criteria.');
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('nonexistent product xyz', null);
     });
 
     it('should return empty array when category filter matches no products', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({ category: 'Electronics' });
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -112,10 +124,11 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products).toHaveLength(0);
       expect(response.count).toBe(0);
       expect(response.message).toBe('No products found matching your search criteria.');
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('', 'Electronics');
     });
 
     it('should return empty array when both query and category match no products', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({
         query: 'Angular',
         category: 'Electronics'
@@ -126,6 +139,7 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products).toHaveLength(0);
       expect(response.count).toBe(0);
       expect(response.message).toBe('No products found matching your search criteria.');
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('Angular', 'Electronics');
     });
   });
 
@@ -139,7 +153,7 @@ describe('SearchProductTool - Edge Cases', () => {
         filterByCategory: mockProductService.filterByCategory
       };
 
-      const tool = createSearchProductTool(errorService);
+      const tool = createSearchProductTool(errorService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: 'test' });
 
       const errorResponse: ErrorObject = JSON.parse(result.content[0].text);
@@ -158,7 +172,7 @@ describe('SearchProductTool - Edge Cases', () => {
         filterByCategory: mockProductService.filterByCategory
       };
 
-      const tool = createSearchProductTool(errorService);
+      const tool = createSearchProductTool(errorService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: 'Angular' });
 
       const errorResponse: ErrorObject = JSON.parse(result.content[0].text);
@@ -177,7 +191,7 @@ describe('SearchProductTool - Edge Cases', () => {
         }
       };
 
-      const tool = createSearchProductTool(errorService);
+      const tool = createSearchProductTool(errorService as any, mockSearchStateService as any);
       const result = await tool.execute({ category: 'Apparel' });
 
       const errorResponse: ErrorObject = JSON.parse(result.content[0].text);
@@ -196,7 +210,7 @@ describe('SearchProductTool - Edge Cases', () => {
         filterByCategory: mockProductService.filterByCategory
       };
 
-      const tool = createSearchProductTool(errorService);
+      const tool = createSearchProductTool(errorService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: 'test' });
 
       const errorResponse: ErrorObject = JSON.parse(result.content[0].text);
@@ -209,7 +223,7 @@ describe('SearchProductTool - Edge Cases', () => {
 
   describe('Message formatting', () => {
     it('should use singular form for single product result', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: 'React' });
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -220,7 +234,7 @@ describe('SearchProductTool - Edge Cases', () => {
     });
 
     it('should use plural form for multiple product results', async () => {
-      const tool = createSearchProductTool(mockProductService);
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
       const result = await tool.execute({ query: 'logo' });
 
       const response: SearchProductResponse = JSON.parse(result.content[0].text);
@@ -228,6 +242,29 @@ describe('SearchProductTool - Edge Cases', () => {
       expect(response.products.length).toBeGreaterThan(1);
       expect(response.count).toBe(response.products.length);
       expect(response.message).toContain('products.');
+    });
+  });
+
+  describe('UI state synchronization', () => {
+    it('should sync UI state when search is performed with query only', async () => {
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
+      await tool.execute({ query: 'Angular' });
+
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('Angular', null);
+    });
+
+    it('should sync UI state when search is performed with category only', async () => {
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
+      await tool.execute({ category: 'Apparel' });
+
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('', 'Apparel');
+    });
+
+    it('should sync UI state when search is performed with both query and category', async () => {
+      const tool = createSearchProductTool(mockProductService as any, mockSearchStateService as any);
+      await tool.execute({ query: 'shirt', category: 'Apparel' });
+
+      expect(mockSearchStateService.setSearchState).toHaveBeenCalledWith('shirt', 'Apparel');
     });
   });
 });

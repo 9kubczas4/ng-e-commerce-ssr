@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, computed, input, output, signal } from '@angular/core';
-import { Product } from '@core/models/product.model';
+import { Component, ChangeDetectionStrategy, computed, input, inject } from '@angular/core';
+import { Product, Category } from '@core/models/product.model';
+import { SearchState } from '@core/services/search-state.service';
 
 interface CategoryWithCount {
   name: string;
@@ -13,14 +14,13 @@ interface CategoryWithCount {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryFilterComponent {
+  private searchStateService = inject(SearchState);
+
   // Signal-based inputs
   products = input.required<Product[]>();
 
-  // Outputs
-  categoryChange = output<string | null>();
-
-  // Local state
-  selectedCategory = signal<string | null>(null);
+  // Get selected category directly from state service
+  selectedCategory = this.searchStateService.selectedCategory;
 
   // Computed categories with counts
   categories = computed(() => this.getCategories());
@@ -41,9 +41,8 @@ export class CategoryFilterComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  selectCategory(category: string | null): void {
-    this.selectedCategory.set(category);
-    this.categoryChange.emit(category);
+  selectCategory(category: Category | null): void {
+    this.searchStateService.setCategory(category);
   }
 
   isSelected(category: string | null): boolean {

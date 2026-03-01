@@ -1,9 +1,7 @@
 <div class="product-list-container">
   <!-- Search bar spans full width on all devices -->
   <div class="search-section">
-    <app-search-bar
-      (searchChange)="onSearchChange($event)">
-    </app-search-bar>
+    <app-search-bar></app-search-bar>
   </div>
 
   <!-- Two-column layout on desktop: sidebar + content -->
@@ -11,8 +9,7 @@
     <!-- Sidebar filter (desktop only) -->
     <aside class="filters-sidebar">
       <app-category-filter
-        [products]="products()"
-        (categoryChange)="onCategoryChange($event)">
+        [products]="products()">
       </app-category-filter>
     </aside>
 
@@ -21,8 +18,7 @@
       <!-- Mobile/Tablet category filter (horizontal pills) -->
       <div class="mobile-filters">
         <app-category-filter
-          [products]="products()"
-          (categoryChange)="onCategoryChange($event)">
+          [products]="products()">
         </app-category-filter>
       </div>
 

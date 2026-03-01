@@ -2,12 +2,15 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { createSearchProductTool } from './webmcp-tools/search-product.tool';
 import { ProductService } from './product.service';
+import { SearchState } from './search-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebMCPService {
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly productService = inject(ProductService);
+  private readonly searchState = inject(SearchState);
   private toolsRegistered = false;
 
   isWebMCPAvailable(): boolean {
@@ -18,7 +21,7 @@ export class WebMCPService {
     return typeof navigator !== 'undefined' && 'modelContext' in navigator;
   }
 
-  initializeTools(productService: ProductService): void {
+  initializeTools(): void {
     // Skip registration in SSR context
     if (!isPlatformBrowser(this.platformId)) {
       console.log('[WebMCP] Skipping tool registration in SSR context');
@@ -46,7 +49,7 @@ export class WebMCPService {
         };
       };
 
-      const searchProductTool = createSearchProductTool(productService);
+      const searchProductTool = createSearchProductTool(this.productService, this.searchState);
       nav.modelContext?.registerTool(searchProductTool);
 
       // TODO: Register remaining tools

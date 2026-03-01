@@ -6,14 +6,17 @@ import {
   ErrorObject
 } from '@core/models/webmcp.model';
 import { ProductService } from '../product.service';
+import { SearchState } from '../search-state.service';
 
 /**
  * Creates the search_product WebMCP tool
  * Allows AI agents to search for products by query and/or category
- *
- * @param productService - The ProductService instance to use for searching
+ * Syncs search state with the UI for visual feedback
  */
-export function createSearchProductTool(productService: ProductService): ToolRegistration {
+export function createSearchProductTool(
+  productService: ProductService,
+  searchStateService: SearchState
+): ToolRegistration {
 
   return {
     name: 'search_product',
@@ -36,6 +39,12 @@ export function createSearchProductTool(productService: ProductService): ToolReg
       try {
         // Validate and cast parameters
         const searchParams = params as SearchProductParams;
+
+        // Sync UI state with search parameters
+        searchStateService.setSearchState(
+          searchParams.query || '',
+          searchParams.category || null
+        );
 
         // Get all products
         let products = productService.products();
