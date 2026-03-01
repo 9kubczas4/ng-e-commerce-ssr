@@ -106,6 +106,22 @@ export interface ProceedCheckoutResponse {
 }
 
 /**
+ * Parameters for toggle_theme tool
+ */
+export interface ToggleThemeParams {
+  theme?: 'light' | 'dark' | 'toggle';
+}
+
+/**
+ * Response from toggle_theme tool
+ */
+export interface ToggleThemeResponse {
+  success: boolean;
+  message: string;
+  currentTheme: 'light' | 'dark';
+}
+
+/**
  * Extended SubmitEvent interface for WebMCP Declarative API
  * Includes agentInvoked flag and respondWith method for agent interactions
  */

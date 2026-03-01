@@ -4,9 +4,11 @@ import { Router } from '@angular/router';
 import { createSearchProductTool } from './webmcp-tools/search-product.tool';
 import { createAddToBasketTool } from './webmcp-tools/add-to-basket.tool';
 import { createProceedCheckoutTool } from './webmcp-tools/proceed-checkout.tool';
+import { createToggleThemeTool } from './webmcp-tools/toggle-theme.tool';
 import { ProductService } from './product.service';
 import { SearchState } from './search-state.service';
 import { BasketService } from './basket.service';
+import { ThemeService } from './theme.service';
 
 interface ModelContextAPI {
   registerTool: (tool: unknown) => void;
@@ -24,6 +26,7 @@ export class WebMCPService {
   private readonly searchState = inject(SearchState);
   private readonly basketService = inject(BasketService);
   private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
   private toolsRegistered = false;
 
   isWebMCPAvailable(): boolean {
@@ -50,6 +53,10 @@ export class WebMCPService {
 
       this.registerTool(modelContext, 'proceed_checkout', () =>
         createProceedCheckoutTool(this.basketService, this.router)
+      );
+
+      this.registerTool(modelContext, 'toggle_theme', () =>
+        createToggleThemeTool(this.themeService)
       );
 
       this.toolsRegistered = true;
