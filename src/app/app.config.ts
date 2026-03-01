@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideAppInitializer, inject } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideAppInitializer, inject, DestroyRef } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -12,7 +12,15 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideAppInitializer(() => {
       const webmcpService = inject(WebMCPService);
+      const destroyRef = inject(DestroyRef);
+
+      // Initialize WebMCP tools (only runs in browser context)
       webmcpService.initializeTools();
+
+      // Register cleanup on application destroy
+      destroyRef.onDestroy(() => {
+        webmcpService.destroyTools();
+      });
     })
   ],
 };
