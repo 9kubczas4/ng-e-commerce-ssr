@@ -122,6 +122,28 @@ export interface ToggleThemeResponse {
 }
 
 /**
+ * Parameters for manage_basket_quantity tool
+ */
+export interface ManageBasketQuantityParams {
+  productId: string;
+  quantity: number;
+}
+
+/**
+ * Response from manage_basket_quantity tool
+ */
+export interface ManageBasketQuantityResponse {
+  success: boolean;
+  message: string;
+  productId: string;
+  newQuantity: number;
+  basket: {
+    itemCount: number;
+    totalPrice: number;
+  };
+}
+
+/**
  * Extended SubmitEvent interface for WebMCP Declarative API
  * Includes agentInvoked flag and respondWith method for agent interactions
  */
