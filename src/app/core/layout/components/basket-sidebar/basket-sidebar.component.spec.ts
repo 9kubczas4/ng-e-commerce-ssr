@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subject } from 'rxjs';
 import { BasketSidebarComponent } from './basket-sidebar.component';
 import { BasketService } from '@core/services/basket.service';
 import { signal } from '@angular/core';
@@ -17,6 +18,7 @@ describe('BasketSidebarComponent', () => {
   };
   let mockRouter: {
     navigate: ReturnType<typeof vi.fn>;
+    events: Subject<any>;
   };
 
   const mockProduct1: Product = {
@@ -62,9 +64,10 @@ describe('BasketSidebarComponent', () => {
       updateQuantity: vi.fn()
     };
 
-    // Create mock router
+    // Create mock router with events observable
     mockRouter = {
-      navigate: vi.fn()
+      navigate: vi.fn(),
+      events: new Subject()
     };
 
     await TestBed.configureTestingModule({
@@ -409,6 +412,41 @@ describe('BasketSidebarComponent', () => {
       const price = component.getItemPrice(100, 100, 2);
 
       expect(price).toBe(0);
+    });
+  });
+
+  describe('Navigation Event Handling', () => {
+    it('should close sidebar when navigation event occurs', () => {
+      // Open the sidebar first
+      component.open();
+      expect(component.isOpen()).toBe(true);
+
+      // Emit a navigation event
+      mockRouter.events.next(new NavigationEnd(1, '/products', '/products'));
+
+      expect(component.isOpen()).toBe(false);
+    });
+
+    it('should remain closed if already closed when navigation occurs', () => {
+      expect(component.isOpen()).toBe(false);
+
+      // Emit a navigation event
+      mockRouter.events.next(new NavigationEnd(1, '/checkout', '/checkout'));
+
+      expect(component.isOpen()).toBe(false);
+    });
+
+    it('should close sidebar on multiple navigation events', () => {
+      // Open and navigate
+      component.open();
+      mockRouter.events.next(new NavigationEnd(1, '/products', '/products'));
+      expect(component.isOpen()).toBe(false);
+
+      // Open again and navigate again
+      component.open();
+      expect(component.isOpen()).toBe(true);
+      mockRouter.events.next(new NavigationEnd(2, '/checkout', '/checkout'));
+      expect(component.isOpen()).toBe(false);
     });
   });
 

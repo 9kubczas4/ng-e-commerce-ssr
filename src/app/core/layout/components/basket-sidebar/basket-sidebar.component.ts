@@ -1,7 +1,9 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { BasketService } from '@core/services/basket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-basket-sidebar',
@@ -16,6 +18,15 @@ export class BasketSidebarComponent {
 
   isOpen = signal(false);
   basket = this.basketService.basket;
+
+  constructor() {
+    // Close sidebar on navigation
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
+      .subscribe(() => {
+        this.close();
+      });
+  }
 
   open(): void {
     this.isOpen.set(true);
