@@ -6,6 +6,7 @@ import { createAddToBasketTool } from './webmcp-tools/add-to-basket.tool';
 import { createProceedCheckoutTool } from './webmcp-tools/proceed-checkout.tool';
 import { createToggleThemeTool } from './webmcp-tools/toggle-theme.tool';
 import { createManageBasketQuantityTool } from './webmcp-tools/manage-basket-quantity.tool';
+import { createNavigateToPageTool } from './webmcp-tools/navigate-to-page.tool';
 import { ProductService } from './product.service';
 import { SearchState } from './search-state.service';
 import { BasketService } from './basket.service';
@@ -62,6 +63,10 @@ export class WebMCPService {
 
       this.registerTool(modelContext, 'manage_basket_quantity', () =>
         createManageBasketQuantityTool(this.basketService, this.productService)
+      );
+
+      this.registerTool(modelContext, 'navigate_to_page', () =>
+        createNavigateToPageTool(this.router, this.productService)
       );
 
       this.toolsRegistered = true;

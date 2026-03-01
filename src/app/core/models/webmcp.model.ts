@@ -144,6 +144,25 @@ export interface ManageBasketQuantityResponse {
 }
 
 /**
+ * Parameters for navigate_to_page tool
+ */
+export interface NavigateToPageParams {
+  page: 'complaint' | 'product_detail' | 'home' | 'checkout';
+  productId?: string;
+}
+
+/**
+ * Response from navigate_to_page tool
+ */
+export interface NavigateToPageResponse {
+  success: boolean;
+  message: string;
+  page?: string;
+  productId?: string;
+  productTitle?: string;
+}
+
+/**
  * Extended SubmitEvent interface for WebMCP Declarative API
  * Includes agentInvoked flag and respondWith method for agent interactions
  */
