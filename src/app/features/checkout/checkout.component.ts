@@ -48,6 +48,23 @@ export class CheckoutComponent implements OnDestroy {
     });
   }
 
+  /**
+   * Format expiry date input as MM/YY
+   * Automatically inserts "/" after 2 digits
+   */
+  protected formatExpiryDate(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, ''); // Remove non-digits
+
+    // Auto-insert "/" after 2 digits
+    if (value.length >= 2) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+
+    // Update the form control with formatted value
+    this.paymentForm.controls.expiryDate.setValue(value, { emitEvent: false });
+  }
+
   // State signals
   protected isSubmitting = signal(false);
   protected isSubmitted = signal(false);
@@ -263,9 +280,6 @@ export class CheckoutComponent implements OnDestroy {
     return null;
   }
 
-  /**
-   * Get the path to a control within a form group
-   */
   /**
    * Get the path to a control within a form group
    */

@@ -241,6 +241,8 @@
                 [attr.aria-invalid]="(paymentForm | fieldError:'expiryDate' | async)"
                 [attr.aria-describedby]="(paymentForm | fieldError:'expiryDate' | async) ? 'expiryDate-error' : null"
                 maxlength="5"
+                (input)="formatExpiryDate($event)"
+                inputmode="numeric"
               />
               @if (paymentForm | fieldError:'expiryDate' | async) {
                 <span id="expiryDate-error" class="form-error" role="alert">
@@ -254,7 +256,7 @@
                 CVV <span class="required" aria-label="required">*</span>
               </label>
               <input
-                type="text"
+                type="password"
                 id="cvv"
                 formControlName="cvv"
                 class="form-input"
@@ -264,6 +266,7 @@
                 [attr.aria-invalid]="(paymentForm | fieldError:'cvv' | async)"
                 [attr.aria-describedby]="(paymentForm | fieldError:'cvv' | async) ? 'cvv-error' : null"
                 maxlength="4"
+                inputmode="numeric"
               />
               @if (paymentForm | fieldError:'cvv' | async) {
                 <span id="cvv-error" class="form-error" role="alert">

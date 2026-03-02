@@ -50,17 +50,19 @@ export class WebmcpFormSyncDirective implements OnDestroy {
    * Syncs form values from DOM to Angular reactive forms
    */
   private handleToolActivated(event: Event): void {
-    const toolEvent = event as unknown as { toolName: string };
+    // WebMCP events can have toolName in detail or directly on the event
+    const customEvent = event as CustomEvent;
+    const toolName = customEvent.detail?.toolName || (event as any).toolName;
     const formElement = this.elementRef.nativeElement as HTMLFormElement;
 
     console.log('[WebMCP Sync] Event received:', {
-      eventToolName: toolEvent?.toolName,
+      eventToolName: toolName,
       formToolName: formElement.getAttribute(this.TOOL_NAME_ATTR),
       formElement,
     });
 
     // Only handle events for this specific form
-    if (!formElement || formElement.getAttribute(this.TOOL_NAME_ATTR) !== toolEvent?.toolName) {
+    if (!formElement || formElement.getAttribute(this.TOOL_NAME_ATTR) !== toolName) {
       console.log('[WebMCP Sync] Skipping - tool name mismatch');
       return;
     }
