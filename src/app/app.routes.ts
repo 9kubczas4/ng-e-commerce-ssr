@@ -13,13 +13,6 @@ export const routes: Routes = [
       import('./features/products/products.routes').then((m) => m.PRODUCTS_ROUTES),
   },
   {
-    path: 'complaint',
-    loadChildren: () =>
-      import('./features/complaint-form/complaint-form.routes').then(
-        (m) => m.COMPLAINT_FORM_ROUTES
-      ),
-  },
-  {
     path: 'checkout',
     loadChildren: () =>
       import('./features/checkout/checkout.routes').then(
