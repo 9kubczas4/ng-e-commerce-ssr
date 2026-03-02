@@ -54,6 +54,7 @@
         [formGroup]="checkoutForm"
         (ngSubmit)="handleSubmit($event)"
         class="checkout-form"
+        appWebmcpFormSync
         novalidate
         toolname="fill_payment_address_form"
         tooldescription="Use this tool to fill in the shipping address and cardholder name for checkout. This tool helps users complete their purchase by automatically populating the shipping information (full name, street address, city, postal code, country) and the cardholder name field. Note: For security reasons, card number, expiry date, and CVV must be entered manually by the user."

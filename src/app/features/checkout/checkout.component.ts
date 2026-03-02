@@ -22,13 +22,14 @@ import { CheckoutFormValue, OrderResult } from './models/checkout.model';
 import { FieldErrorPipe } from './pipes/field-error.pipe';
 import { AgentSubmitEvent } from '@core/models/webmcp.model';
 import { collectFormErrors } from './utils/form-errors.helper';
+import { WebmcpFormSyncDirective } from '@shared/directives/webmcp-form-sync.directive';
 
 @Component({
   selector: 'app-checkout',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
-  imports: [DecimalPipe, AsyncPipe, ReactiveFormsModule, FieldErrorPipe],
+  imports: [DecimalPipe, AsyncPipe, ReactiveFormsModule, FieldErrorPipe, WebmcpFormSyncDirective],
 })
 export class CheckoutComponent implements OnDestroy {
   private readonly basketService = inject(BasketService);
@@ -120,9 +121,7 @@ export class CheckoutComponent implements OnDestroy {
       event.preventDefault();
       this.isSubmitting.set(true);
 
-      const submissionPromise = this.processOrder(
-        this.checkoutForm.value as CheckoutFormValue
-      )
+      const submissionPromise = this.processOrder(this.checkoutForm.value as CheckoutFormValue)
         .then((result) => {
           if (result.success) {
             this.isSubmitted.set(true);
@@ -138,8 +137,7 @@ export class CheckoutComponent implements OnDestroy {
           }
         })
         .catch((error) => {
-          const errorMessage =
-            error?.message || 'An error occurred while processing your order';
+          const errorMessage = error?.message || 'An error occurred while processing your order';
           this.submitError.set(errorMessage);
           throw { error: errorMessage };
         })
@@ -163,9 +161,7 @@ export class CheckoutComponent implements OnDestroy {
         }
       })
       .catch((error) => {
-        this.submitError.set(
-          error?.message || 'An error occurred while processing your order'
-        );
+        this.submitError.set(error?.message || 'An error occurred while processing your order');
       })
       .finally(() => {
         this.isSubmitting.set(false);
@@ -258,36 +254,36 @@ export class CheckoutComponent implements OnDestroy {
   ): FormGroup<ShippingFormControls | PaymentFormControls> | null {
     const controls = formGroup.controls;
 
-      for (const name in controls) {
-        const control = controls[name as keyof CheckoutFormControls];
-        if (control.invalid) {
-          return control as FormGroup<ShippingFormControls | PaymentFormControls>;
-        }
+    for (const name in controls) {
+      const control = controls[name as keyof CheckoutFormControls];
+      if (control.invalid) {
+        return control as FormGroup<ShippingFormControls | PaymentFormControls>;
       }
-      return null;
     }
+    return null;
+  }
 
   /**
    * Get the path to a control within a form group
    */
   /**
-     * Get the path to a control within a form group
-     */
-    private getControlPath(
-      formGroup: FormGroup<CheckoutFormControls>,
-      targetControl: FormGroup<ShippingFormControls | PaymentFormControls>,
-      path = ''
-    ): string | null {
-      const controls = formGroup.controls;
+   * Get the path to a control within a form group
+   */
+  private getControlPath(
+    formGroup: FormGroup<CheckoutFormControls>,
+    targetControl: FormGroup<ShippingFormControls | PaymentFormControls>,
+    path = ''
+  ): string | null {
+    const controls = formGroup.controls;
 
-      for (const name in controls) {
-        const control = controls[name as keyof CheckoutFormControls];
-        const currentPath = path ? `${path}.${name}` : name;
+    for (const name in controls) {
+      const control = controls[name as keyof CheckoutFormControls];
+      const currentPath = path ? `${path}.${name}` : name;
 
-        if (control === targetControl) {
-          return currentPath;
-        }
+      if (control === targetControl) {
+        return currentPath;
       }
-      return null;
     }
+    return null;
+  }
 }
