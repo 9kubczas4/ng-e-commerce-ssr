@@ -202,6 +202,19 @@
         <fieldset class="form-section" formGroupName="payment">
           <legend class="section-title">Payment Information</legend>
 
+          <button
+            type="button"
+            class="btn-use-saved-card"
+            (click)="useSavedCard()"
+            aria-label="Use saved payment card"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            Use Saved Card
+          </button>
+
           <div class="form-field">
             <label for="cardNumber" class="form-label">
               Card Number <span class="required" aria-label="required">*</span>
@@ -320,28 +333,5 @@
         </div>
       </form>
     </div>
-
-    <!-- Success Message -->
-    @if (isSubmitted()) {
-      <div class="success-message" role="alert" aria-live="polite">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-          <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
-        <h2>Order Placed Successfully!</h2>
-        <p>Thank you for your purchase. Your order has been confirmed.</p>
-        <div class="order-details">
-          <p>Total: ${{ basketData().total | number:'1.2-2' }}</p>
-          <p>Items: {{ basketData().itemCount }}</p>
-        </div>
-        <button
-          type="button"
-          class="btn-return-home"
-          (click)="router.navigate(['/'])"
-        >
-          Return to Home
-        </button>
-      </div>
-    }
   </div>
 </div>

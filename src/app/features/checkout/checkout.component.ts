@@ -5,7 +5,6 @@ import {
   computed,
   inject,
   PLATFORM_ID,
-  OnDestroy,
   afterNextRender,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -31,7 +30,7 @@ import { WebmcpFormSyncDirective } from '@shared/directives/webmcp-form-sync.dir
   styleUrls: ['./checkout.component.scss'],
   imports: [DecimalPipe, AsyncPipe, ReactiveFormsModule, FieldErrorPipe, WebmcpFormSyncDirective],
 })
-export class CheckoutComponent implements OnDestroy {
+export class CheckoutComponent {
   private readonly basketService = inject(BasketService);
   protected readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
@@ -65,14 +64,23 @@ export class CheckoutComponent implements OnDestroy {
     this.paymentForm.controls.expiryDate.setValue(value, { emitEvent: false });
   }
 
+  /**
+   * Fill payment form with saved card data (demo/testing purposes)
+   */
+  protected useSavedCard(): void {
+    this.paymentForm.patchValue({
+      cardNumber: '4532 1234 5678 9010',
+      expiryDate: '12/28',
+      cvv: '123',
+    });
+    this.paymentForm.markAllAsTouched();
+  }
+
   // State signals
   protected isSubmitting = signal(false);
-  protected isSubmitted = signal(false);
   protected submitError = signal<string | null>(null);
   protected agentInvoked = signal(false);
-
-  // Redirect timer reference
-  private redirectTimer: ReturnType<typeof setTimeout> | null = null;
+  protected orderSummary = signal<{ total: number; itemCount: number } | null>(null);
 
   // Form
   protected checkoutForm: FormGroup<CheckoutFormControls> = createCheckoutForm();
@@ -141,7 +149,6 @@ export class CheckoutComponent implements OnDestroy {
       const submissionPromise = this.processOrder(this.checkoutForm.value as CheckoutFormValue)
         .then((result) => {
           if (result.success) {
-            this.isSubmitted.set(true);
             this.clearBasketAndRedirect();
             return {
               success: true,
@@ -171,7 +178,6 @@ export class CheckoutComponent implements OnDestroy {
     this.processOrder(this.checkoutForm.value as CheckoutFormValue)
       .then((result) => {
         if (result.success) {
-          this.isSubmitted.set(true);
           this.clearBasketAndRedirect();
         } else {
           this.submitError.set(result.message);
@@ -203,29 +209,27 @@ export class CheckoutComponent implements OnDestroy {
   }
 
   /**
-   * Clear basket and redirect to home with timed delay
+   * Clear basket and redirect to confirmation page
    */
   private clearBasketAndRedirect(): void {
+    // Capture order summary before clearing basket
+    const currentBasket = this.basketData();
+    this.orderSummary.set({
+      total: currentBasket.total,
+      itemCount: currentBasket.itemCount,
+    });
+
     // Clear basket immediately
     this.basketService.clearBasket();
 
-    // Redirect after 5 seconds (only in browser)
-    if (isPlatformBrowser(this.platformId)) {
-      this.redirectTimer = setTimeout(() => {
-        this.router.navigate(['/']);
-      }, 5000);
-    }
-  }
-
-  /**
-   * Cleanup on component destroy
-   */
-  ngOnDestroy(): void {
-    // Clear redirect timer if it exists
-    if (this.redirectTimer !== null) {
-      clearTimeout(this.redirectTimer);
-      this.redirectTimer = null;
-    }
+    // Navigate to confirmation page with order data
+    this.router.navigate(['/checkout/confirmation'], {
+      state: {
+        orderTotal: currentBasket.total,
+        orderItemCount: currentBasket.itemCount,
+        orderId: `ORD-${Date.now()}`,
+      },
+    });
   }
 
   /**

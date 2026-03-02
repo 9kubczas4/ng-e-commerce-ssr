@@ -72,7 +72,6 @@ describe('CheckoutComponent', () => {
 
     it('should initialize state signals with correct default values', () => {
       expect(component['isSubmitting']()).toBe(false);
-      expect(component['isSubmitted']()).toBe(false);
       expect(component['submitError']()).toBeNull();
     });
   });
@@ -109,7 +108,6 @@ describe('CheckoutComponent', () => {
       component['handleSubmit'](mockEvent);
 
       expect(component['isSubmitting']()).toBe(false);
-      expect(component['isSubmitted']()).toBe(false);
     });
 
     it('should mark all fields as touched when submitting invalid form', () => {
@@ -153,8 +151,17 @@ describe('CheckoutComponent', () => {
       // Wait for async processing
       await new Promise((resolve) => setTimeout(resolve, 1600));
 
-      expect(component['isSubmitted']()).toBe(true);
       expect(component['isSubmitting']()).toBe(false);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(
+        ['/checkout/confirmation'],
+        expect.objectContaining({
+          state: expect.objectContaining({
+            orderTotal: expect.any(Number),
+            orderItemCount: expect.any(Number),
+            orderId: expect.any(String),
+          }),
+        })
+      );
     });
 
     it('should clear basket after successful submission', async () => {
@@ -167,15 +174,24 @@ describe('CheckoutComponent', () => {
       expect(mockBasketService.clearBasket).toHaveBeenCalled();
     });
 
-    it('should navigate to home after successful submission', async () => {
+    it('should navigate to confirmation page after successful submission', async () => {
       const mockEvent = new Event('submit') as SubmitEvent;
       component['handleSubmit'](mockEvent);
 
-      // Wait for async processing and redirect delay
-      await new Promise((resolve) => setTimeout(resolve, 6600));
+      // Wait for async processing
+      await new Promise((resolve) => setTimeout(resolve, 1600));
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
-    }, 7000); // Increase timeout to 7 seconds
+      expect(mockRouter.navigate).toHaveBeenCalledWith(
+        ['/checkout/confirmation'],
+        expect.objectContaining({
+          state: expect.objectContaining({
+            orderTotal: expect.any(Number),
+            orderItemCount: expect.any(Number),
+            orderId: expect.any(String),
+          }),
+        })
+      );
+    });
 
     it('should reset error state on new submission', () => {
       component['submitError'].set('Previous error');
@@ -184,57 +200,6 @@ describe('CheckoutComponent', () => {
       component['handleSubmit'](mockEvent);
 
       expect(component['submitError']()).toBeNull();
-    });
-  });
-
-  describe('Manual Redirect', () => {
-    it('should navigate immediately when Return to Home button is clicked', () => {
-      // Set component to submitted state
-      component['isSubmitted'].set(true);
-      fixture.detectChanges();
-
-      // Find and click the Return to Home button
-      const compiled = fixture.nativeElement as HTMLElement;
-      const returnButton = compiled.querySelector('.btn-return-home') as HTMLButtonElement;
-
-      expect(returnButton).toBeTruthy();
-
-      returnButton.click();
-
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
-    });
-
-    it('should clear redirect timer when component is destroyed', async () => {
-      // Spy on clearTimeout
-      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
-
-      // Fill in valid form and submit to trigger redirect timer
-      component['checkoutForm'].patchValue({
-        shipping: {
-          fullName: 'John Doe',
-          streetAddress: '123 Main Street',
-          city: 'New York',
-          postalCode: '10001',
-          country: 'USA',
-        },
-        payment: {
-          cardNumber: '1234567890123456',
-          expiryDate: '12/26',
-          cvv: '123',
-          cardholderName: 'John Doe',
-        },
-      });
-      component['checkoutForm'].updateValueAndValidity();
-      const mockEvent = new Event('submit') as SubmitEvent;
-      component['handleSubmit'](mockEvent);
-
-      // Wait for async processing to complete and timer to be set
-      await new Promise((resolve) => setTimeout(resolve, 1600));
-
-      // Destroy component
-      fixture.destroy();
-
-      expect(clearTimeoutSpy).toHaveBeenCalled();
     });
   });
 
@@ -314,7 +279,6 @@ describe('CheckoutComponent', () => {
 
       expect(component['submitError']()).toBe('Processing failed');
       expect(component['isSubmitting']()).toBe(false);
-      expect(component['isSubmitted']()).toBe(false);
     });
 
     it('should display generic error message when error has no message', async () => {
@@ -498,7 +462,6 @@ describe('CheckoutComponent', () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
 
         expect(component['isSubmitting']()).toBe(false);
-        expect(component['isSubmitted']()).toBe(false);
         expect(respondWithMock).toHaveBeenCalled();
       });
     });
@@ -556,7 +519,7 @@ describe('CheckoutComponent', () => {
         expect((resolvedValue as { orderId: string }).orderId).toMatch(/^ORD-\d+$/);
       });
 
-      it('should set isSubmitted to true after agent submission succeeds', async () => {
+      it('should navigate to confirmation page after agent submission succeeds', async () => {
         const mockEvent = new Event('submit') as SubmitEvent;
         Object.defineProperty(mockEvent, 'agentInvoked', {
           value: true,
@@ -571,8 +534,17 @@ describe('CheckoutComponent', () => {
 
         await new Promise((resolve) => setTimeout(resolve, 1600));
 
-        expect(component['isSubmitted']()).toBe(true);
         expect(component['isSubmitting']()).toBe(false);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(
+          ['/checkout/confirmation'],
+          expect.objectContaining({
+            state: expect.objectContaining({
+              orderTotal: expect.any(Number),
+              orderItemCount: expect.any(Number),
+              orderId: expect.any(String),
+            }),
+          })
+        );
       });
 
       it('should clear basket after agent submission succeeds', async () => {
@@ -622,7 +594,6 @@ describe('CheckoutComponent', () => {
         expect(rejectedError).toBeDefined();
         expect((rejectedError as { error: string }).error).toBe('Payment processing failed');
         expect(component['isSubmitting']()).toBe(false);
-        expect(component['isSubmitted']()).toBe(false);
       });
     });
 

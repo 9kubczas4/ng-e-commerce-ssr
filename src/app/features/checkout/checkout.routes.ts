@@ -6,4 +6,11 @@ export const CHECKOUT_ROUTES: Routes = [
     loadComponent: () =>
       import('./checkout.component').then((m) => m.CheckoutComponent),
   },
+  {
+    path: 'confirmation',
+    loadComponent: () =>
+      import('./order-confirmation/order-confirmation.component').then(
+        (m) => m.OrderConfirmationComponent
+      ),
+  },
 ];
