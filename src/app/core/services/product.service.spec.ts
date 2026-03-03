@@ -229,7 +229,7 @@ describe('ProductService', () => {
           description: 'From server',
           price: 99.99,
           imageUrl: '/transfer.jpg',
-          category: 'Test'
+          category: 'Accessories'
         }
       ];
 
@@ -354,7 +354,7 @@ describe('ProductService', () => {
           description: 'Should be used',
           price: 1.00,
           imageUrl: '/priority.jpg',
-          category: 'Test'
+          category: 'Accessories'
         }
       ];
 

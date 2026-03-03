@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { HeaderComponent } from './header.component';
 import { BasketService } from '@core/services/basket.service';
 import { signal } from '@angular/core';
@@ -23,7 +24,8 @@ describe('HeaderComponent', () => {
 
     await TestBed.configureTestingModule({
       providers: [
-        { provide: BasketService, useValue: mockBasketService }
+        { provide: BasketService, useValue: mockBasketService },
+        provideRouter([])
       ]
     })
     .overrideComponent(HeaderComponent, {
@@ -49,6 +51,15 @@ describe('HeaderComponent', () => {
 
     expect(logo).toBeTruthy();
     expect(title?.textContent).toContain('Angular Dev Shop');
+  });
+
+  it('should navigate to home when logo is clicked', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const logoLink = compiled.querySelector('.header__logo') as HTMLAnchorElement;
+
+    expect(logoLink).toBeTruthy();
+    expect(logoLink.getAttribute('routerLink')).toBe('/product');
+    expect(logoLink.getAttribute('aria-label')).toBe('Go to home page');
   });
 
   it('should display theme toggle button', () => {

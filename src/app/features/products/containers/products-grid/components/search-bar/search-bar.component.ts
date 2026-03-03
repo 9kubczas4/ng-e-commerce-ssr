@@ -1,4 +1,5 @@
-import { Component, output, signal, effect, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { SearchState } from '@core/services/search-state.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -7,24 +8,11 @@ import { Component, output, signal, effect, ChangeDetectionStrategy, OnDestroy }
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchBarComponent implements OnDestroy {
-  searchChange = output<string>();
-  searchQuery = signal('');
+  private searchStateService = inject(SearchState);
+
+  searchQuery = this.searchStateService.searchQuery;
 
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
-  constructor() {
-    effect(() => {
-      const query = this.searchQuery();
-
-      if (this.debounceTimer) {
-        clearTimeout(this.debounceTimer);
-      }
-
-      this.debounceTimer = setTimeout(() => {
-        this.searchChange.emit(query);
-      }, 300);
-    });
-  }
 
   ngOnDestroy(): void {
     if (this.debounceTimer) {
@@ -35,11 +23,21 @@ export class SearchBarComponent implements OnDestroy {
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     const sanitized = this.sanitizeSearchQuery(value);
-    this.searchQuery.set(sanitized);
+
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    this.debounceTimer = setTimeout(() => {
+      this.searchStateService.setSearchQuery(sanitized);
+    }, 300);
   }
 
   clearSearch(): void {
-    this.searchQuery.set('');
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.searchStateService.setSearchQuery('');
   }
 
   /**

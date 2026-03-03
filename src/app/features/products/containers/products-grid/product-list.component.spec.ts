@@ -2,8 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ProductListComponent } from './product-list.component';
-import { ProductService } from '@features/products/services/product.service';
+import { ProductService } from '@core/services/product.service';
 import { BasketService } from '@core/services/basket.service';
+import { SearchState } from '@core/services/search-state.service';
 import { Product } from '@core/models/product.model';
 import { signal } from '@angular/core';
 
@@ -13,6 +14,7 @@ describe('ProductListComponent', () => {
   let mockProductService: any;
   let mockBasketService: any;
   let mockRouter: any;
+  let searchStateService: SearchState;
 
   const mockProducts: Product[] = [
     {
@@ -53,12 +55,14 @@ describe('ProductListComponent', () => {
       providers: [
         { provide: ProductService, useValue: mockProductService },
         { provide: BasketService, useValue: mockBasketService },
-        { provide: Router, useValue: mockRouter }
+        { provide: Router, useValue: mockRouter },
+        SearchState
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductListComponent);
     component = fixture.componentInstance;
+    searchStateService = TestBed.inject(SearchState);
     fixture.detectChanges();
   });
 
@@ -68,24 +72,6 @@ describe('ProductListComponent', () => {
 
   it('should load products on initialization', () => {
     expect(mockProductService.loadProducts).toHaveBeenCalled();
-  });
-
-  it('should update search query when onSearchChange is called', () => {
-    const query = 'Angular';
-    component.onSearchChange(query);
-    expect(component.searchQuery()).toBe(query);
-  });
-
-  it('should update selected category when onCategoryChange is called', () => {
-    const category = 'Apparel';
-    component.onCategoryChange(category);
-    expect(component.selectedCategory()).toBe(category);
-  });
-
-  it('should clear category when onCategoryChange is called with null', () => {
-    component.onCategoryChange('Apparel');
-    component.onCategoryChange(null);
-    expect(component.selectedCategory()).toBeNull();
   });
 
   it('should call basketService.addItem when onAddToBasket is called', () => {
@@ -138,8 +124,8 @@ describe('ProductListComponent', () => {
     });
 
     it('should pass products, searchQuery, and selectedCategory to ProductGrid component', () => {
-      component.searchQuery.set('Angular');
-      component.selectedCategory.set('Apparel');
+      searchStateService.setSearchQuery('Angular');
+      searchStateService.setCategory('Apparel');
       fixture.detectChanges();
 
       const productGrid = fixture.debugElement.query(
@@ -154,24 +140,14 @@ describe('ProductListComponent', () => {
 
   describe('Event Handling Flow', () => {
     it('should handle searchChange event from SearchBar', () => {
-      const searchBar = fixture.debugElement.query(
-        (el) => el.name === 'app-search-bar'
-      );
-
-      // Emit searchChange event
-      searchBar.componentInstance.searchChange.emit('test query');
+      searchStateService.setSearchQuery('test query');
       fixture.detectChanges();
 
       expect(component.searchQuery()).toBe('test query');
     });
 
     it('should handle categoryChange event from CategoryFilter', () => {
-      const categoryFilter = fixture.debugElement.query(
-        (el) => el.name === 'app-category-filter'
-      );
-
-      // Emit categoryChange event
-      categoryFilter.componentInstance.categoryChange.emit('Accessories');
+      searchStateService.setCategory('Accessories');
       fixture.detectChanges();
 
       expect(component.selectedCategory()).toBe('Accessories');
@@ -207,7 +183,7 @@ describe('ProductListComponent', () => {
         (el) => el.name === 'app-product-grid'
       );
 
-      component.onSearchChange('new search');
+      searchStateService.setSearchQuery('new search');
       fixture.detectChanges();
 
       expect(productGrid.componentInstance.searchQuery()).toBe('new search');
@@ -218,7 +194,7 @@ describe('ProductListComponent', () => {
         (el) => el.name === 'app-product-grid'
       );
 
-      component.onCategoryChange('Apparel');
+      searchStateService.setCategory('Apparel');
       fixture.detectChanges();
 
       expect(productGrid.componentInstance.selectedCategory()).toBe('Apparel');
@@ -258,18 +234,12 @@ describe('ProductListComponent', () => {
   describe('Complete Integration Flow', () => {
     it('should handle complete user flow: search -> filter -> add to basket -> navigate', () => {
       // User searches for a product
-      const searchBar = fixture.debugElement.query(
-        (el) => el.name === 'app-search-bar'
-      );
-      searchBar.componentInstance.searchChange.emit('Angular');
+      searchStateService.setSearchQuery('Angular');
       fixture.detectChanges();
       expect(component.searchQuery()).toBe('Angular');
 
       // User filters by category
-      const categoryFilter = fixture.debugElement.query(
-        (el) => el.name === 'app-category-filter'
-      );
-      categoryFilter.componentInstance.categoryChange.emit('Apparel');
+      searchStateService.setCategory('Apparel');
       fixture.detectChanges();
       expect(component.selectedCategory()).toBe('Apparel');
 
@@ -290,21 +260,21 @@ describe('ProductListComponent', () => {
 
     it('should maintain state consistency across multiple interactions', () => {
       // Set initial search
-      component.onSearchChange('shirt');
+      searchStateService.setSearchQuery('shirt');
       expect(component.searchQuery()).toBe('shirt');
 
       // Change category
-      component.onCategoryChange('Apparel');
+      searchStateService.setCategory('Apparel');
       expect(component.selectedCategory()).toBe('Apparel');
       expect(component.searchQuery()).toBe('shirt'); // Search should persist
 
       // Clear category
-      component.onCategoryChange(null);
+      searchStateService.setCategory(null);
       expect(component.selectedCategory()).toBeNull();
       expect(component.searchQuery()).toBe('shirt'); // Search should still persist
 
       // Update search again
-      component.onSearchChange('mug');
+      searchStateService.setSearchQuery('mug');
       expect(component.searchQuery()).toBe('mug');
       expect(component.selectedCategory()).toBeNull(); // Category should still be null
     });

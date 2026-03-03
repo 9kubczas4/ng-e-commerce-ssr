@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { BasketService } from '@core/services/basket.service';
 import { ThemeToggleComponent } from '@core/layout/components/theme-toggle/theme-toggle.component';
 
@@ -6,7 +7,7 @@ import { ThemeToggleComponent } from '@core/layout/components/theme-toggle/theme
 @Component({
   selector: 'header[appHeader]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ThemeToggleComponent],
+  imports: [ThemeToggleComponent, RouterLink],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

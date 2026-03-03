@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { basketGuard } from './core/guards/basket.guard';
 
 export const routes: Routes = [
   {
@@ -12,11 +13,12 @@ export const routes: Routes = [
       import('./features/products/products.routes').then((m) => m.PRODUCTS_ROUTES),
   },
   {
-    path: 'complaint',
+    path: 'checkout',
     loadChildren: () =>
-      import('./features/complaint-form/complaint-form.routes').then(
-        (m) => m.COMPLAINT_FORM_ROUTES
+      import('./features/checkout/checkout.routes').then(
+        (m) => m.CHECKOUT_ROUTES
       ),
+    canActivate: [basketGuard],
   },
   {
     path: '**',

@@ -1,0 +1,337 @@
+<div class="checkout-page">
+  <div class="checkout-container">
+    <!-- Header -->
+    <div class="checkout-header">
+      <h1 class="checkout-title">Checkout</h1>
+      <p class="checkout-subtitle">
+        Review your order and complete your purchase securely.
+      </p>
+    </div>
+
+    <!-- Two-column layout wrapper for desktop -->
+    <div class="checkout-content-wrapper">
+      <!-- Order Summary Section -->
+      <section class="order-summary" aria-labelledby="order-summary-title">
+        <h2 id="order-summary-title" class="section-title">Order Summary</h2>
+
+        <div class="order-items">
+          @for (item of basketData().items; track item.product.id) {
+            <div class="order-item">
+              <div class="item-details">
+                <h3 class="item-title">{{ item.product.title }}</h3>
+                <p class="item-quantity">Quantity: {{ item.quantity }}</p>
+              </div>
+              <div class="item-price">
+                @if (item.product.discount) {
+                  <span class="item-price-original">${{ item.product.price * item.quantity | number:'1.2-2' }}</span>
+                  <span class="item-price-discounted">
+                    ${{ (item.product.price * (1 - item.product.discount / 100) * item.quantity) | number:'1.2-2' }}
+                  </span>
+                } @else {
+                  <span class="item-price-regular">
+                    ${{ item.product.price * item.quantity | number:'1.2-2' }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="order-totals">
+          <div class="total-row">
+            <span class="total-label">Subtotal ({{ basketData().itemCount }} items):</span>
+            <span class="total-value">${{ basketData().subtotal | number:'1.2-2' }}</span>
+          </div>
+          <div class="total-row total-row--final">
+            <span class="total-label">Total:</span>
+            <span class="total-value">${{ basketData().total | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Checkout Form -->
+      <form
+        [formGroup]="checkoutForm"
+        (ngSubmit)="handleSubmit($event)"
+        class="checkout-form"
+        appWebmcpFormSync
+        novalidate
+        toolname="fill_payment_address_form"
+        tooldescription="Use this tool to fill in the shipping address and cardholder name for checkout. This tool helps users complete their purchase by automatically populating the shipping information (full name, street address, city, postal code, country) and the cardholder name field. Note: For security reasons, card number, expiry date, and CVV must be entered manually by the user."
+        [attr.toolautosubmit]="agentInvoked() ? '' : null"
+      >
+        <!-- Shipping Information Section -->
+        <fieldset class="form-section" formGroupName="shipping">
+          <legend class="section-title">Shipping Information</legend>
+
+          <div class="form-field">
+            <label for="fullName" class="form-label">
+              Full Name <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              formControlName="fullName"
+              class="form-input"
+              [class.form-input--error]="(shippingForm | fieldError:'fullName' | async)"
+              aria-required="true"
+              [attr.aria-invalid]="(shippingForm | fieldError:'fullName' | async)"
+              [attr.aria-describedby]="(shippingForm | fieldError:'fullName' | async) ? 'fullName-error' : null"
+              toolparamtitle="Full Name"
+              toolparamdescription="The recipient's complete legal name for shipping delivery"
+            />
+            @if (shippingForm | fieldError:'fullName' | async) {
+              <span id="fullName-error" class="form-error" role="alert">
+                {{ shippingForm | fieldError:'fullName' | async }}
+              </span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="streetAddress" class="form-label">
+              Street Address <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="streetAddress"
+              name="streetAddress"
+              formControlName="streetAddress"
+              class="form-input"
+              [class.form-input--error]="(shippingForm | fieldError:'streetAddress' | async)"
+              aria-required="true"
+              [attr.aria-invalid]="(shippingForm | fieldError:'streetAddress' | async)"
+              [attr.aria-describedby]="(shippingForm | fieldError:'streetAddress' | async) ? 'streetAddress-error' : null"
+              toolparamtitle="Street Address"
+              toolparamdescription="The complete street address including house/building number and street name for shipping delivery"
+            />
+            @if (shippingForm | fieldError:'streetAddress' | async) {
+              <span id="streetAddress-error" class="form-error" role="alert">
+                {{ shippingForm | fieldError:'streetAddress' | async }}
+              </span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="city" class="form-label">
+                City <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                formControlName="city"
+                class="form-input"
+                [class.form-input--error]="(shippingForm | fieldError:'city' | async)"
+                aria-required="true"
+                [attr.aria-invalid]="(shippingForm | fieldError:'city' | async)"
+                [attr.aria-describedby]="(shippingForm | fieldError:'city' | async) ? 'city-error' : null"
+                toolparamtitle="City"
+                toolparamdescription="The city name for the shipping address"
+              />
+              @if (shippingForm | fieldError:'city' | async) {
+                <span id="city-error" class="form-error" role="alert">
+                  {{ shippingForm | fieldError:'city' | async }}
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="postalCode" class="form-label">
+                Postal Code <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="postalCode"
+                name="postalCode"
+                formControlName="postalCode"
+                class="form-input"
+                [class.form-input--error]="(shippingForm | fieldError:'postalCode' | async)"
+                aria-required="true"
+                [attr.aria-invalid]="(shippingForm | fieldError:'postalCode' | async)"
+                [attr.aria-describedby]="(shippingForm | fieldError:'postalCode' | async) ? 'postalCode-error' : null"
+                toolparamtitle="Postal Code"
+                toolparamdescription="The postal code or ZIP code for the shipping address"
+              />
+              @if (shippingForm | fieldError:'postalCode' | async) {
+                <span id="postalCode-error" class="form-error" role="alert">
+                  {{ shippingForm | fieldError:'postalCode' | async }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="country" class="form-label">
+              Country <span class="required" aria-label="required">*</span>
+            </label>
+            <select
+              id="country"
+              name="country"
+              formControlName="country"
+              class="form-select"
+              [class.form-input--error]="(shippingForm | fieldError:'country' | async)"
+              aria-required="true"
+              [attr.aria-invalid]="(shippingForm | fieldError:'country' | async)"
+              [attr.aria-describedby]="(shippingForm | fieldError:'country' | async) ? 'country-error' : null"
+              toolparamtitle="Country"
+              toolparamdescription="The country for the shipping address. Use the two-letter country code (e.g., US for United States, CA for Canada, GB for United Kingdom)"
+            >
+              <option value="">Select a country</option>
+              <option value="US">United States</option>
+              <option value="CA">Canada</option>
+              <option value="GB">United Kingdom</option>
+              <option value="AU">Australia</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="IT">Italy</option>
+              <option value="ES">Spain</option>
+              <option value="NL">Netherlands</option>
+              <option value="SE">Sweden</option>
+            </select>
+            @if (shippingForm | fieldError:'country' | async) {
+              <span id="country-error" class="form-error" role="alert">
+                {{ shippingForm | fieldError:'country' | async }}
+              </span>
+            }
+          </div>
+        </fieldset>
+
+        <!-- Payment Information Section -->
+        <fieldset class="form-section" formGroupName="payment">
+          <legend class="section-title">Payment Information</legend>
+
+          <button
+            type="button"
+            class="btn-use-saved-card"
+            (click)="useSavedCard()"
+            aria-label="Use saved payment card"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            Use Saved Card
+          </button>
+
+          <div class="form-field">
+            <label for="cardNumber" class="form-label">
+              Card Number <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="cardNumber"
+              formControlName="cardNumber"
+              class="form-input"
+              [class.form-input--error]="(paymentForm | fieldError:'cardNumber' | async)"
+              placeholder="1234 5678 9012 3456"
+              aria-required="true"
+              [attr.aria-invalid]="(paymentForm | fieldError:'cardNumber' | async)"
+              [attr.aria-describedby]="(paymentForm | fieldError:'cardNumber' | async) ? 'cardNumber-error' : null"
+              maxlength="19"
+            />
+            @if (paymentForm | fieldError:'cardNumber' | async) {
+              <span id="cardNumber-error" class="form-error" role="alert">
+                {{ paymentForm | fieldError:'cardNumber' | async }}
+              </span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="expiryDate" class="form-label">
+                Expiry Date <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="expiryDate"
+                formControlName="expiryDate"
+                class="form-input"
+                [class.form-input--error]="(paymentForm | fieldError:'expiryDate' | async)"
+                placeholder="MM/YY"
+                aria-required="true"
+                [attr.aria-invalid]="(paymentForm | fieldError:'expiryDate' | async)"
+                [attr.aria-describedby]="(paymentForm | fieldError:'expiryDate' | async) ? 'expiryDate-error' : null"
+                maxlength="5"
+                (input)="formatExpiryDate($event)"
+                inputmode="numeric"
+              />
+              @if (paymentForm | fieldError:'expiryDate' | async) {
+                <span id="expiryDate-error" class="form-error" role="alert">
+                  {{ paymentForm | fieldError:'expiryDate' | async }}
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="cvv" class="form-label">
+                CVV <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="password"
+                id="cvv"
+                formControlName="cvv"
+                class="form-input"
+                [class.form-input--error]="(paymentForm | fieldError:'cvv' | async)"
+                placeholder="123"
+                aria-required="true"
+                [attr.aria-invalid]="(paymentForm | fieldError:'cvv' | async)"
+                [attr.aria-describedby]="(paymentForm | fieldError:'cvv' | async) ? 'cvv-error' : null"
+                maxlength="4"
+                inputmode="numeric"
+              />
+              @if (paymentForm | fieldError:'cvv' | async) {
+                <span id="cvv-error" class="form-error" role="alert">
+                  {{ paymentForm | fieldError:'cvv' | async }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="cardholderName" class="form-label">
+              Cardholder Name <span class="required" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="cardholderName"
+              name="cardholderName"
+              formControlName="cardholderName"
+              class="form-input"
+              [class.form-input--error]="(paymentForm | fieldError:'cardholderName' | async)"
+              placeholder="Name as it appears on card"
+              aria-required="true"
+              [attr.aria-invalid]="(paymentForm | fieldError:'cardholderName' | async)"
+              [attr.aria-describedby]="(paymentForm | fieldError:'cardholderName' | async) ? 'cardholderName-error' : null"
+              toolparamtitle="Cardholder Name"
+              toolparamdescription="The full name of the cardholder as it appears on the payment card"
+            />
+            @if (paymentForm | fieldError:'cardholderName' | async) {
+              <span id="cardholderName-error" class="form-error" role="alert">
+                {{ paymentForm | fieldError:'cardholderName' | async }}
+              </span>
+            }
+          </div>
+        </fieldset>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span>Processing...</span>
+            } @else {
+              <span>Complete Purchase</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

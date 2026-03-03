@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subject } from 'rxjs';
 import { BasketSidebarComponent } from './basket-sidebar.component';
 import { BasketService } from '@core/services/basket.service';
 import { signal } from '@angular/core';
@@ -13,6 +15,10 @@ describe('BasketSidebarComponent', () => {
     basket: ReturnType<typeof signal<Basket>>;
     removeItem: ReturnType<typeof vi.fn>;
     updateQuantity: ReturnType<typeof vi.fn>;
+  };
+  let mockRouter: {
+    navigate: ReturnType<typeof vi.fn>;
+    events: Subject<any>;
   };
 
   const mockProduct1: Product = {
@@ -58,10 +64,17 @@ describe('BasketSidebarComponent', () => {
       updateQuantity: vi.fn()
     };
 
+    // Create mock router with events observable
+    mockRouter = {
+      navigate: vi.fn(),
+      events: new Subject()
+    };
+
     await TestBed.configureTestingModule({
       imports: [BasketSidebarComponent],
       providers: [
-        { provide: BasketService, useValue: mockBasketService }
+        { provide: BasketService, useValue: mockBasketService },
+        { provide: Router, useValue: mockRouter }
       ]
     }).compileComponents();
 
@@ -399,6 +412,123 @@ describe('BasketSidebarComponent', () => {
       const price = component.getItemPrice(100, 100, 2);
 
       expect(price).toBe(0);
+    });
+  });
+
+  describe('Navigation Event Handling', () => {
+    it('should close sidebar when navigation event occurs', () => {
+      // Open the sidebar first
+      component.open();
+      expect(component.isOpen()).toBe(true);
+
+      // Emit a navigation event
+      mockRouter.events.next(new NavigationEnd(1, '/products', '/products'));
+
+      expect(component.isOpen()).toBe(false);
+    });
+
+    it('should remain closed if already closed when navigation occurs', () => {
+      expect(component.isOpen()).toBe(false);
+
+      // Emit a navigation event
+      mockRouter.events.next(new NavigationEnd(1, '/checkout', '/checkout'));
+
+      expect(component.isOpen()).toBe(false);
+    });
+
+    it('should close sidebar on multiple navigation events', () => {
+      // Open and navigate
+      component.open();
+      mockRouter.events.next(new NavigationEnd(1, '/products', '/products'));
+      expect(component.isOpen()).toBe(false);
+
+      // Open again and navigate again
+      component.open();
+      expect(component.isOpen()).toBe(true);
+      mockRouter.events.next(new NavigationEnd(2, '/checkout', '/checkout'));
+      expect(component.isOpen()).toBe(false);
+    });
+  });
+
+  describe('Checkout Button', () => {
+    it('should display checkout button when basket has items', () => {
+      const basketSignalWithItems = signal<Basket>(basketWithItems);
+      mockBasketService.basket = basketSignalWithItems.asReadonly();
+
+      fixture = TestBed.createComponent(BasketSidebarComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const checkoutButton = compiled.querySelector('[data-testid="checkout-button"]');
+
+      expect(checkoutButton).toBeTruthy();
+      expect(checkoutButton?.textContent?.trim()).toBe('Checkout');
+    });
+
+    it('should not display checkout button when basket is empty', () => {
+      mockBasketService.basket = signal(emptyBasket).asReadonly();
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const checkoutButton = compiled.querySelector('[data-testid="checkout-button"]');
+
+      expect(checkoutButton).toBeFalsy();
+    });
+
+    it('should navigate to checkout route when checkout button is clicked', () => {
+      const basketSignalWithItems = signal<Basket>(basketWithItems);
+      mockBasketService.basket = basketSignalWithItems.asReadonly();
+
+      fixture = TestBed.createComponent(BasketSidebarComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const checkoutButton = compiled.querySelector('[data-testid="checkout-button"]') as HTMLButtonElement;
+
+      checkoutButton.click();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/checkout']);
+      expect(mockRouter.navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should close sidebar when navigating to checkout', () => {
+      const basketSignalWithItems = signal<Basket>(basketWithItems);
+      mockBasketService.basket = basketSignalWithItems.asReadonly();
+
+      fixture = TestBed.createComponent(BasketSidebarComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      // Open the sidebar first
+      component.open();
+      expect(component.isOpen()).toBe(true);
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const checkoutButton = compiled.querySelector('[data-testid="checkout-button"]') as HTMLButtonElement;
+
+      checkoutButton.click();
+
+      expect(component.isOpen()).toBe(false);
+    });
+
+    it('should call navigateToCheckout method when checkout button is clicked', () => {
+      const basketSignalWithItems = signal<Basket>(basketWithItems);
+      mockBasketService.basket = basketSignalWithItems.asReadonly();
+
+      fixture = TestBed.createComponent(BasketSidebarComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      const navigateSpy = vi.spyOn(component, 'navigateToCheckout');
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const checkoutButton = compiled.querySelector('[data-testid="checkout-button"]') as HTMLButtonElement;
+
+      checkoutButton.click();
+
+      expect(navigateSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

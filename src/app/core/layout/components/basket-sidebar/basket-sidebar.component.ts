@@ -1,6 +1,9 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { BasketService } from '@core/services/basket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-basket-sidebar',
@@ -11,9 +14,19 @@ import { BasketService } from '@core/services/basket.service';
 })
 export class BasketSidebarComponent {
   private basketService = inject(BasketService);
+  private router = inject(Router);
 
   isOpen = signal(false);
   basket = this.basketService.basket;
+
+  constructor() {
+    // Close sidebar on navigation
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
+      .subscribe(() => {
+        this.close();
+      });
+  }
 
   open(): void {
     this.isOpen.set(true);
@@ -21,6 +34,11 @@ export class BasketSidebarComponent {
 
   close(): void {
     this.isOpen.set(false);
+  }
+
+  navigateToCheckout(): void {
+    this.close();
+    this.router.navigate(['/checkout']);
   }
 
   removeItem(productId: string): void {

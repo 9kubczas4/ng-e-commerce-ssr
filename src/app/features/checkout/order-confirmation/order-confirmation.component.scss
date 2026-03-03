@@ -1,0 +1,109 @@
+.confirmation-page {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.confirmation-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.success-message {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: var(--glass-shadow);
+
+  svg {
+    color: var(--success-color, #10b981);
+    margin: 0 auto 1.5rem;
+    display: block;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .order-id {
+    font-family: monospace;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: 1rem;
+  }
+
+  .order-details {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--glass-bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+
+    p {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 0.5rem 0;
+
+      &:first-child {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .btn-return-home {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+
+    &:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .success-message {
+    padding: 2rem 1.5rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .order-details p:first-child {
+      font-size: 1.25rem;
+    }
+  }
+}

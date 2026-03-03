@@ -39,7 +39,6 @@ export class FooterComponent {
       { label: 'Contact Us', href: '#' },
       { label: 'Shipping Info', href: '#' },
       { label: 'Returns', href: '#' },
-      { label: 'Complaints', route: '/complaint', isRoute: true }
     ],
     legal: [
       { label: 'Privacy Policy', href: '#' },
